@@ -51,21 +51,31 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $usuario->id,
+            'password' => 'nullable|min:6',
             'role_id' => 'required|exists:roles,id',
         ]);
 
-        $usuario->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role_id' => $request->role_id,
-        ]);
+        try {
+            $usuario->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->filled('password') ? Hash::make($request->password) : $usuario->password,
+                'role_id' => $request->role_id,
+            ]);
 
-        return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado');
+            return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error al actualizar el usuario: ' . $e->getMessage());
+        }
     }
 
     public function destroy(User $usuario)
     {
-        $usuario->delete();
-        return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado');
+        try {
+            $usuario->delete();
+            return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error al eliminar el usuario: ' . $e->getMessage());
+        }
     }
 }

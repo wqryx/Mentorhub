@@ -53,8 +53,47 @@ class User extends Authenticatable
      * The roles that belong to the user.
      */
     public function role()
-{
-    return $this->belongsTo(Role::class);
-}
-
+    {
+        return $this->belongsTo(Role::class);
+    }
+    
+    /**
+     * Check if user has a specific role
+     */
+    public function hasRole(string $role): bool
+    {
+        return $this->role->name === $role;
+    }
+    
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('Admin');
+    }
+    
+    /**
+     * Check if user is a mentor
+     */
+    public function isMentor(): bool
+    {
+        return $this->hasRole('Mentor');
+    }
+    
+    /**
+     * Check if user is a student
+     */
+    public function isEstudiante(): bool
+    {
+        return $this->hasRole('Estudiante');
+    }
+    
+    /**
+     * Check if user is a guest
+     */
+    public function isGuest(): bool
+    {
+        return $this->hasRole('Guest');
+    }
 }

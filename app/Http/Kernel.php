@@ -38,7 +38,10 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
 
-        // 👇 Añade aquí tu middleware personalizado
+        // Role middleware
+        'role' => \App\Http\Middleware\CheckRole::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'mentor' => \App\Http\Middleware\MentorMiddleware::class,
+        'estudiante' => \App\Http\Middleware\EstudianteMiddleware::class,
     ];
 }
