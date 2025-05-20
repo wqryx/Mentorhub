@@ -4,16 +4,58 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class AdminMiddleware
 {
-    public function handle(Request $request, Closure $next): Response
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next): mixed
     {
-        if (auth()->check() && auth()->user()->role->name === 'admin') {
-            return $next($request);
+        // Verificar si el usuario está autenticado
+        if (!Auth::guard('web')->check()) {
+            // Limpiar completamente la sesión
+            $request->session()->flush();
+            Auth::guard('web')->logout();
+            
+            // Redirigir a la página de login
+            return redirect()->guest(route('admin.login'))
+                ->with('error', 'Por favor, inicia sesión para acceder a esta página');
         }
 
-        abort(403, 'Acceso no autorizado');
+        // Obtener el usuario actual
+        $user = Auth::guard('web')->user();
+        
+        // Verificar si el usuario existe
+        if (!$user) {
+            // Limpiar completamente la sesión
+            $request->session()->flush();
+            Auth::guard('web')->logout();
+            
+            return redirect()->guest(route('admin.login'))
+                ->with('error', 'Sesión inválida');
+        }
+
+        // Verificar si el usuario tiene el rol de admin
+        if (!$user->hasRole('Admin')) {
+            // Limpiar completamente la sesión
+            $request->session()->flush();
+            Auth::guard('web')->logout();
+            
+            return redirect()->guest(route('admin.login'))
+                ->with('error', 'No tienes permisos de administrador');
+        }
+
+        // Limpiar cualquier mensaje de error previo
+        $request->session()->forget('error');
+        $request->session()->forget('success');
+        
+        // Regenerar la sesión para prevenir ataques de fijación de sesión
+        $request->session()->regenerate();
+
+        return $next($request);
     }
 }

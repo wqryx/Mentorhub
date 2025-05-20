@@ -138,12 +138,36 @@
                     <a href="#mentorias" class="nav-link text-gray-700 hover:text-primary-color font-medium">Mentorías</a>
                     <a href="#foros" class="nav-link text-gray-700 hover:text-primary-color font-medium">Foros</a>
                     <a href="#contacto" class="nav-link text-gray-700 hover:text-primary-color font-medium">Contacto</a>
+                    <a href="/admin/register" class="nav-link text-gray-700 hover:text-primary-color font-medium">Registro Admin</a>
                 </nav>
                 
                 <!-- Botones de inicio de sesión / registro -->
+                <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <a href="{{ route('welcome') }}" class="flex items-center">
+                        <svg class="h-8 w-8 text-primary-color" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="ml-2 text-xl font-bold text-gray-800">MentorHub</span>
+                    </a>
+                </div>
                 <div class="hidden md:flex items-center space-x-4">
-                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-primary-color font-medium">Iniciar sesión</a>
-                    <a href="{{ route('register') }}" class="btn-primary">Registrarse</a>
+                    <a href="{{ route('guest.login') }}" class="text-gray-600 hover:text-primary-color transition-colors">
+                        <svg class="h-5 w-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Acceso como invitado
+                    </a>
+                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-primary-color transition-colors">
+                        <svg class="h-5 w-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                        </svg>
+                        Iniciar sesión
+                    </a>
+                    <a href="{{ route('register') }}" class="bg-primary-color text-white px-4 py-2 rounded-md hover:bg-primary-color-dark transition-colors">
+                        Registrarse
+                    </a>
                 </div>
                 
                 <!-- Menú móvil (toggle) -->
@@ -159,7 +183,9 @@
             <!-- Menú móvil (expandible) -->
             <div id="mobileMenu" class="md:hidden hidden">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <a href="#inicio" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Inicio</a>
+                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Iniciar Sesión</a>
+                    <a href="/admin/register" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Registro Admin</a>
+                    <a href="/admin/register" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Registro Admin</a>
                     <a href="#cursos" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Tutoriales / Cursos</a>
                     <a href="#mentorias" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Mentorías</a>
                     <a href="#foros" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Foros</a>

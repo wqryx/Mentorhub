@@ -36,12 +36,15 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        // Asegurarse de que no haya sesión activa
+        if (auth()->check()) {
+            auth()->logout();
+            $request->session()->flush();
+        }
 
-        $request->session()->invalidate();
+        // Limpiar cualquier mensaje de error previo
+        $request->session()->forget('error');
 
-        $request->session()->regenerateToken();
-
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

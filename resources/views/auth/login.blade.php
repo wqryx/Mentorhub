@@ -100,13 +100,8 @@
             <!-- Formulario de inicio de sesión -->
             <div class="w-full md:w-1/2 px-4 py-12 sm:px-6 lg:px-8">
                 <div class="max-w-md mx-auto">
-                    <div class="flex justify-center mb-8">
-                        <a href="/" class="flex items-center space-x-2">
-                            <svg class="w-10 h-10 {{ $textClass }}" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                {!! $icon !!}
-                            </svg>
-                            <span class="text-2xl font-bold {{ $textClass }}">MentorHub</span>
-                        </a>
+                    <div class="text-center mb-8">
+                        <h1 class="text-2xl font-bold {{ $textClass }}">{{ $title }}</h1>
                     </div>
                     
                     <div class="md:hidden text-center mb-6">
@@ -218,35 +213,7 @@
                         </div>
                         @endif
                 
-                <!-- Social Login -->
-                <div class="mt-6">
-                    <div class="relative">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-gray-300"></div>
-                        </div>
-                        <div class="relative flex justify-center text-sm">
-                            <span class="px-2 bg-white text-gray-500">
-                                {{ __('O continúa con') }}
-                            </span>
-                        </div>
-                    </div>
 
-                    <div class="mt-6 grid grid-cols-2 gap-3">
-                        <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 hover:border-{{ $primaryColor }}-500 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:text-{{ $primaryColor }}-600 hover:bg-gray-50 transition-colors">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032
-                                    s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2
-                                    C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
-                            </svg>
-                        </a>
-
-                        <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 hover:border-{{ $primaryColor }}-500 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:text-{{ $primaryColor }}-600 hover:bg-gray-50 transition-colors">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z"/>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
             </form>
         </div>
     </div>

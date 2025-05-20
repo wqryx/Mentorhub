@@ -18,18 +18,31 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'course',
+        'cycle',
+        'academic_year',
+        'identification_type',
+        'identification_number',
+        'birth_date',
+        'phone',
+        'address',
+        'emergency_contact',
+        'emergency_phone',
+        'photo',
+        'calendar_token',
+        'calendar_token_expires_at',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -46,23 +59,70 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'birth_date' => 'date',
         ];
     }
 
     /**
-     * The roles that belong to the user.
+     * Get all roles for the user.
      */
-    public function role()
+    public function roles(): BelongsToMany
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id')
+            ->withTimestamps();
     }
-    
+
+    /**
+     * Get the modules the user is enrolled in.
+     */
+    public function modules(): BelongsToMany
+    {
+        return $this->belongsToMany(Module::class, 'module_user', 'user_id', 'module_id')
+            ->withPivot('enrollment_date')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the tasks assigned to the user.
+     */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    /**
+     * Get the grades for the user.
+     */
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class);
+    }
+
+    /**
+     * Get the messages for the user.
+     */
+    public function messages(): HasMany
+    {
+        return $this->hasMany(Message::class);
+    }
+
+    /**
+     * Get the user's photo URL.
+     */
+    public function getPhotoUrlAttribute(): string
+    {
+        if ($this->photo) {
+            return asset('storage/photos/' . $this->photo);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+    }
+
     /**
      * Check if user has a specific role
      */
     public function hasRole(string $role): bool
     {
-        return $this->role->name === $role;
+        return $this->roles->contains('name', $role);
     }
     
     /**

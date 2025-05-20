@@ -70,13 +70,8 @@
             <!-- Formulario de registro -->
             <div class="w-full md:w-1/2 px-4 py-12 sm:px-6 lg:px-8">
                 <div class="max-w-md mx-auto">
-                    <div class="flex justify-center mb-8">
-                        <a href="/" class="flex items-center space-x-2">
-                            <svg class="w-10 h-10 {{ $textClass }}" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                {!! $icon !!}
-                            </svg>
-                            <span class="text-2xl font-bold {{ $textClass }}">MentorHub</span>
-                        </a>
+                    <div class="text-center mb-8">
+                        <h1 class="text-2xl font-bold {{ $textClass }}">{{ $title }}</h1>
                     </div>
                     
                     <div class="md:hidden text-center mb-6">
