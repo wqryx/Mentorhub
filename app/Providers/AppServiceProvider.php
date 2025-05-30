@@ -13,7 +13,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // No necesitamos un binding personalizado para Role
+        // Usamos la configuración estándar de Spatie
     }
 
     /**

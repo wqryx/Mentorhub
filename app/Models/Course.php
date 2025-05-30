@@ -2,143 +2,129 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
 {
-    use HasFactory;
-
+    use HasFactory, SoftDeletes, LogsActivity;
+    
     /**
-     * The attributes that are mass assignable.
+     * Nombre personalizado para los registros de actividad.
+     *
+     * @var string
+     */
+    protected static $activityLogName = 'Curso';
+    
+    /**
+     * Los atributos que son asignables en masa.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
-        'category_id',
         'title',
-        'slug',
         'description',
-        'learning_objectives',
-        'featured_image',
-        'promotional_video_url',
-        'price',
-        'is_featured',
-        'difficulty_level',
+        'image',
         'status',
-        'duration_minutes',
+        'price',
+        'duration',
+        'level',
+        'category_id',
+        'instructor_id',
+        'is_featured',
+        'is_premium',
+        'slug',
+        'meta_title',
+        'meta_description',
+        'meta_keywords'
     ];
-
+    
     /**
-     * The attributes that should be cast.
+     * Los atributos que deben ser convertidos a tipos nativos.
      *
-     * @var array<string, string>
+     * @var array
      */
     protected $casts = [
-        'price' => 'decimal:2',
         'is_featured' => 'boolean',
-        'duration_minutes' => 'integer',
+        'is_premium' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
-
+    
     /**
-     * Boot the model.
+     * Obtener la categoría asociada al curso.
      */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($course) {
-            if (! $course->slug) {
-                $course->slug = Str::slug($course->title);
-            }
-        });
-    }
-
-    /**
-     * Get the route key for the model.
-     */
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
-
-    /**
-     * Get the user that owns the course.
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Get the category that the course belongs to.
-     */
-    public function category(): BelongsTo
+    public function category()
     {
         return $this->belongsTo(Category::class);
     }
-
+    
     /**
-     * Get the modules for the course.
+     * Obtener el instructor asociado al curso.
      */
-    public function modules(): HasMany
+    public function instructor()
     {
-        return $this->hasMany(Module::class)->orderBy('order');
+        return $this->belongsTo(User::class, 'instructor_id');
     }
-
+    
     /**
-     * Get the tags that belong to the course.
+     * Obtener los módulos asociados al curso.
      */
-    public function tags(): BelongsToMany
+    public function modules()
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->hasMany(Module::class);
     }
-
+    
     /**
-     * Get the users enrolled in the course.
+     * Obtener los estudiantes inscritos en el curso.
      */
-    public function enrolledUsers(): BelongsToMany
+    public function students()
     {
-        return $this->belongsToMany(User::class)
-                    ->withPivot(['enrolled_at', 'completed_at', 'progress'])
-                    ->withTimestamps();
+        return $this->belongsToMany(User::class, 'course_user', 'course_id', 'user_id')
+            ->withPivot('progress', 'completed', 'enrolled_at', 'completed_at')
+            ->withTimestamps();
     }
-
+    
     /**
-     * Scope a query to only include published courses.
+     * Obtener las reseñas del curso.
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+    
+    /**
+     * Obtener el rating promedio del curso.
+     */
+    public function getAverageRatingAttribute()
+    {
+        return $this->reviews()->avg('rating') ?: 0;
+    }
+    
+    /**
+     * Scope para filtrar cursos destacados.
+     */
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
+    
+    /**
+     * Scope para filtrar cursos premium.
+     */
+    public function scopePremium($query)
+    {
+        return $query->where('is_premium', true);
+    }
+    
+    /**
+     * Scope para filtrar cursos publicados.
      */
     public function scopePublished($query)
     {
         return $query->where('status', 'published');
-    }
-
-    /**
-     * Scope a query to filter by category.
-     */
-    public function scopeCategory($query, $category)
-    {
-        return $query->where('category_id', $category);
-    }
-
-    /**
-     * Scope a query to filter by difficulty level.
-     */
-    public function scopeDifficultyLevel($query, $level)
-    {
-        return $query->where('difficulty_level', $level);
-    }
-
-    /**
-     * Scope a query to search by title or description.
-     */
-    public function scopeSearch($query, $search)
-    {
-        return $query->where('title', 'like', "%{$search}%")
-                     ->orWhere('description', 'like', "%{$search}%");
     }
 }

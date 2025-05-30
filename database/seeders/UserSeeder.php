@@ -5,9 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\Role;
-use App\Models\Student;
-use App\Models\Mentor;
+use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
@@ -16,56 +14,50 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Roles
-        $adminRole = Role::where('name', 'Admin')->first();
-        $mentorRole = Role::where('name', 'Mentor')->first();
-        $studentRole = Role::where('name', 'Estudiante')->first();
-        $guestRole = Role::where('name', 'Guest')->first();
+        // Crear roles si no existen
+        $adminRole = Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
+        $mentorRole = Role::firstOrCreate(['name' => 'Mentor', 'guard_name' => 'web']);
+        $studentRole = Role::firstOrCreate(['name' => 'Estudiante', 'guard_name' => 'web']);
+        
+        // Crear usuario Administrador
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@mentorhub.com'],
+            [
+                'name' => 'Administrador',
+                'email' => 'admin@mentorhub.com',
+                'password' => Hash::make('admin123'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $admin->syncRoles([$adminRole]);
 
-        // Administrador
-        $admin = User::create([
-            'name' => 'Juan Pérez',
-            'email' => 'admin@mentorhub.com',
-            'password' => Hash::make('admin123'),
-        ]);
-        $admin->roles()->attach($adminRole);
+        // Crear usuario Mentor
+        $mentor = User::firstOrCreate(
+            ['email' => 'mentor@mentorhub.com'],
+            [
+                'name' => 'Mentor Ejemplo',
+                'email' => 'mentor@mentorhub.com',
+                'password' => Hash::make('mentor123'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $mentor->syncRoles([$mentorRole]);
 
-        // Mentores
-        $mentor1 = User::create([
-            'name' => 'María García',
-            'email' => 'mentor1@mentorhub.com',
-            'password' => Hash::make('mentor123'),
-        ]);
-        $mentor1->roles()->attach($mentorRole);
-
-        $mentor2 = User::create([
-            'name' => 'Carlos Rodríguez',
-            'email' => 'mentor2@mentorhub.com',
-            'password' => Hash::make('mentor123'),
-        ]);
-        $mentor2->roles()->attach($mentorRole);
-
-        // Estudiantes
-        $student1 = User::create([
-            'name' => 'Ana Martínez',
-            'email' => 'student1@mentorhub.com',
-            'password' => Hash::make('student123'),
-        ]);
-        $student1->roles()->attach($studentRole);
-
-        $student2 = User::create([
-            'name' => 'Pedro Sánchez',
-            'email' => 'student2@mentorhub.com',
-            'password' => Hash::make('student123'),
-        ]);
-        $student2->roles()->attach($studentRole);
-
-        // Guest
-        $guest = User::create([
-            'name' => 'Invitado',
-            'email' => 'guest@mentorhub.com',
-            'password' => Hash::make('guest123'),
-        ]);
-        $guest->roles()->attach($guestRole);
+        // Crear usuario Estudiante
+        $student = User::firstOrCreate(
+            ['email' => 'estudiante@mentorhub.com'],
+            [
+                'name' => 'Estudiante Ejemplo',
+                'email' => 'estudiante@mentorhub.com',
+                'password' => Hash::make('estudiante123'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $student->syncRoles([$studentRole]);
+        
+        $this->command->info('Usuarios de prueba creados exitosamente!');
+        $this->command->info('Admin: admin@mentorhub.com / admin123');
+        $this->command->info('Mentor: mentor@mentorhub.com / mentor123');
+        $this->command->info('Estudiante: estudiante@mentorhub.com / estudiante123');
     }
 }

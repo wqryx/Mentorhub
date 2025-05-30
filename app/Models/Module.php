@@ -2,45 +2,108 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Module extends Model
 {
+    use HasFactory, SoftDeletes, LogsActivity;
+    
+    /**
+     * Nombre personalizado para los registros de actividad.
+     *
+     * @var string
+     */
+    protected static $activityLogName = 'Módulo';
+    
+    /**
+     * Los atributos que son asignables en masa.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'code',
-        'name',
+        'title',
         'description',
-        'credits',
-        'semester',
-        'progress',
-        'pending_tasks'
+        'order',
+        'course_id',
+        'status',
+        'is_free',
     ];
-
-    public function students()
+    
+    /**
+     * Los atributos que deben ser convertidos a tipos nativos.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_free' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
+    
+    /**
+     * Obtener el curso al que pertenece el módulo.
+     */
+    public function course()
     {
-        return $this->belongsToMany(User::class, 'module_user', 'module_id', 'user_id')
-            ->withPivot('enrollment_date')
-            ->withTimestamps();
+        return $this->belongsTo(Course::class);
     }
-
-    public function tasks()
+    
+    /**
+     * Obtener los tutoriales asociados al módulo.
+     */
+    public function tutorials()
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Tutorial::class)->orderBy('order');
     }
-
-    public function grades()
+    
+    /**
+     * Scope para ordenar los módulos por su orden.
+     */
+    public function scopeOrdered($query)
     {
-        return $this->hasMany(Grade::class);
+        return $query->orderBy('order');
     }
-
-    public function events()
+    
+    /**
+     * Scope para filtrar módulos activos.
+     */
+    public function scopeActive($query)
     {
-        return $this->hasMany(Event::class);
+        return $query->where('status', 'active');
     }
-
-    public function resources()
+    
+    /**
+     * Scope para filtrar módulos gratuitos.
+     */
+    public function scopeFree($query)
     {
-        return $this->belongsToMany(Resource::class, 'module_resource', 'module_id', 'resource_id')
-            ->withTimestamps();
+        return $query->where('is_free', true);
+    }
+    
+    /**
+     * Obtener el progreso del módulo para un usuario específico.
+     */
+    public function getProgressForUser($userId)
+    {
+        $tutorials = $this->tutorials;
+        
+        if ($tutorials->isEmpty()) {
+            return 0;
+        }
+        
+        $completedCount = 0;
+        
+        foreach ($tutorials as $tutorial) {
+            $isCompleted = $tutorial->isCompletedByUser($userId);
+            if ($isCompleted) {
+                $completedCount++;
+            }
+        }
+        
+        return ($completedCount / $tutorials->count()) * 100;
     }
 }

@@ -9,7 +9,10 @@ class GuestController extends Controller
 {
     public function loginAsGuest()
     {
-        // Redirigir al dashboard de invitado
-        return view('guest-dashboard');
+        // Crear un usuario temporal con rol de invitado
+        $user = Auth::loginUsingId(0); // Usamos ID 0 para el usuario invitado
+        
+        // Redirigir al dashboard
+        return redirect()->route('dashboard');
     }
 }

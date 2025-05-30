@@ -1,0 +1,119 @@
+@extends('admin.layouts.app')
+
+@section('title', 'Editar Notificación: ' . $notification->title)
+
+@section('content')
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold text-gray-900">Editar Notificación: {{ $notification->title }}</h1>
+        </div>
+
+        @if($errors->any())
+            <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                            Por favor, corrige los siguientes errores:
+                        </h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <ul class="list-disc pl-5 space-y-1">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <form action="{{ route('admin.notifications.update', $notification) }}" method="POST" class="space-y-6">
+            @csrf
+            @method('PUT')
+            
+            <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+                <div class="md:grid md:grid-cols-3 md:gap-6">
+                    <div class="md:col-span-1">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">Detalles de la Notificación</h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Esta información se mostrará a los usuarios de la plataforma.
+                        </p>
+                    </div>
+                    <div class="mt-5 md:mt-0 md:col-span-2 space-y-6">
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-700">Título de la Notificación</label>
+                            <input type="text" name="title" id="title" value="{{ old('title', $notification->title) }}" required class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        </div>
+
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700">Mensaje</label>
+                            <textarea id="message" name="message" rows="4" required class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md">{{ old('message', $notification->message) }}</textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                            <div class="sm:col-span-3">
+                                <label for="type" class="block text-sm font-medium text-gray-700">Tipo de Notificación</label>
+                                <select id="type" name="type" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    <option value="info" {{ old('type', $notification->type) == 'info' ? 'selected' : '' }}>Información</option>
+                                    <option value="success" {{ old('type', $notification->type) == 'success' ? 'selected' : '' }}>Éxito</option>
+                                    <option value="warning" {{ old('type', $notification->type) == 'warning' ? 'selected' : '' }}>Advertencia</option>
+                                    <option value="error" {{ old('type', $notification->type) == 'error' ? 'selected' : '' }}>Error</option>
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-3">
+                                <label for="expiry_date" class="block text-sm font-medium text-gray-700">Fecha de Expiración</label>
+                                <input type="datetime-local" name="expiry_date" id="expiry_date" 
+                                    value="{{ old('expiry_date', $notification->expiry_date ? $notification->expiry_date->format('Y-m-d\TH:i') : '') }}" 
+                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <p class="mt-1 text-xs text-gray-500">Opcional. Si no se especifica, la notificación no expirará.</p>
+                            </div>
+
+                            <div class="sm:col-span-6">
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="is_public" name="is_public" type="checkbox" value="1" 
+                                            {{ old('is_public', $notification->is_public) ? 'checked' : '' }} 
+                                            class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="is_public" class="font-medium text-gray-700">Notificación Pública</label>
+                                        <p class="text-gray-500">Si está marcado, todos los usuarios podrán ver esta notificación.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between">
+                <button type="button" onclick="if(confirm('¿Estás seguro de que deseas eliminar esta notificación?')) { document.getElementById('delete-form').submit(); }" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    <i class="fas fa-trash mr-2"></i> Eliminar Notificación
+                </button>
+                
+                <div class="space-x-3">
+                    <a href="{{ route('admin.notifications.index') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Actualizar Notificación
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Formulario oculto para eliminar -->
+        <form id="delete-form" action="{{ route('admin.notifications.destroy', $notification) }}" method="POST" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
+    </div>
+</div>
+@endsection

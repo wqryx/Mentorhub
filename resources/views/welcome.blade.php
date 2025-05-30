@@ -123,7 +123,7 @@
             <div class="flex justify-between items-center h-16">
                 <!-- Logo y nombre del proyecto -->
                 <div class="flex items-center">
-                    <a href="/" class="flex items-center">
+                    <a href="{{ route('welcome') }}" class="flex items-center">
                         <svg class="h-8 w-8 text-primary-color" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-11h2v6h-2zm0-4h2v2h-2z"/>
                         </svg>
@@ -138,21 +138,11 @@
                     <a href="#mentorias" class="nav-link text-gray-700 hover:text-primary-color font-medium">Mentorías</a>
                     <a href="#foros" class="nav-link text-gray-700 hover:text-primary-color font-medium">Foros</a>
                     <a href="#contacto" class="nav-link text-gray-700 hover:text-primary-color font-medium">Contacto</a>
-                    <a href="/admin/register" class="nav-link text-gray-700 hover:text-primary-color font-medium">Registro Admin</a>
                 </nav>
                 
                 <!-- Botones de inicio de sesión / registro -->
-                <div class="flex justify-between items-center h-16">
-                <div class="flex-shrink-0">
-                    <a href="{{ route('welcome') }}" class="flex items-center">
-                        <svg class="h-8 w-8 text-primary-color" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-                        </svg>
-                        <span class="ml-2 text-xl font-bold text-gray-800">MentorHub</span>
-                    </a>
-                </div>
                 <div class="hidden md:flex items-center space-x-4">
-                    <a href="{{ route('guest.login') }}" class="text-gray-600 hover:text-primary-color transition-colors">
+                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-primary-color transition-colors">
                         <svg class="h-5 w-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -183,9 +173,7 @@
             <!-- Menú móvil (expandible) -->
             <div id="mobileMenu" class="md:hidden hidden">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Iniciar Sesión</a>
-                    <a href="/admin/register" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Registro Admin</a>
-                    <a href="/admin/register" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Registro Admin</a>
+                    <a href="#inicio" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Inicio</a>
                     <a href="#cursos" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Tutoriales / Cursos</a>
                     <a href="#mentorias" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Mentorías</a>
                     <a href="#foros" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-color hover:bg-gray-50">Foros</a>
@@ -216,7 +204,7 @@
                         <a href="{{ route('register') }}" class="btn-primary bg-white text-primary-color hover:bg-gray-100">
                             Únete ahora
                         </a>
-                        <a href="/tutoriales" class="text-white border-2 border-white px-6 py-3 rounded-md font-medium hover:bg-white hover:bg-opacity-10 transition-all">
+                        <a href="{{ route('courses.index', ['free' => 'true']) }}" class="text-white border-2 border-white px-6 py-3 rounded-md font-medium hover:bg-white hover:bg-opacity-10 transition-all">
                             Explorar tutoriales gratuitos
                         </a>
                     </div>
@@ -267,7 +255,7 @@
                             <span>Aprendizaje a tu ritmo, accesible 24/7</span>
                         </li>
                     </ul>
-                    <a href="#" class="mt-6 inline-block btn-primary">Ver todos los cursos</a>
+                    <a href="{{ route('courses.index') }}" class="mt-6 inline-block btn-primary">Ver todos los cursos</a>
                 </div>
                 <div class="md:w-1/2">
                     <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80" alt="Tutoriales y cursos" class="rounded-lg shadow-xl">

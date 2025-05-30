@@ -2,122 +2,112 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Tutorial extends Model
 {
-    use HasFactory;
-
+    use HasFactory, SoftDeletes, LogsActivity;
+    
     /**
-     * The attributes that are mass assignable.
+     * Nombre personalizado para los registros de actividad.
+     *
+     * @var string
+     */
+    protected static $activityLogName = 'Tutorial';
+    
+    /**
+     * Los atributos que son asignables en masa.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
-        'category_id',
         'title',
-        'slug',
-        'excerpt',
-        'content',
-        'featured_image',
+        'description',
+        'order',
+        'module_id',
         'status',
-        'reading_time',
-        'is_premium',
+        'duration',
+        'is_free',
     ];
-
+    
     /**
-     * The attributes that should be cast.
+     * Los atributos que deben ser convertidos a tipos nativos.
      *
-     * @var array<string, string>
+     * @var array
      */
     protected $casts = [
-        'is_premium' => 'boolean',
-        'views' => 'integer',
-        'likes' => 'integer',
+        'is_free' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
-
+    
     /**
-     * Boot the model.
+     * Obtener el módulo al que pertenece el tutorial.
      */
-    protected static function boot()
+    public function module()
     {
-        parent::boot();
-
-        static::creating(function ($tutorial) {
-            if (! $tutorial->slug) {
-                $tutorial->slug = Str::slug($tutorial->title);
-            }
-        });
+        return $this->belongsTo(Module::class);
     }
-
+    
     /**
-     * Get the route key for the model.
+     * Obtener los contenidos asociados al tutorial.
      */
-    public function getRouteKeyName(): string
+    public function contents()
     {
-        return 'slug';
+        return $this->hasMany(Content::class)->orderBy('order');
     }
-
+    
     /**
-     * Get the user that owns the tutorial.
+     * Obtener los usuarios que han completado este tutorial.
      */
-    public function user(): BelongsTo
+    public function completedByUsers()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(User::class, 'tutorial_user', 'tutorial_id', 'user_id')
+            ->withPivot('completed_at')
+            ->withTimestamps();
     }
-
+    
     /**
-     * Get the category that the tutorial belongs to.
+     * Verificar si un usuario ha completado este tutorial.
      */
-    public function category(): BelongsTo
+    public function isCompletedByUser($userId)
     {
-        return $this->belongsTo(Category::class);
+        return $this->completedByUsers()->where('user_id', $userId)->exists();
     }
-
+    
     /**
-     * Get the tags that belong to the tutorial.
+     * Scope para ordenar los tutoriales por su orden.
      */
-    public function tags(): BelongsToMany
+    public function scopeOrdered($query)
     {
-        return $this->belongsToMany(Tag::class);
+        return $query->orderBy('order');
     }
-
+    
     /**
-     * Get the comments for the tutorial.
+     * Scope para filtrar tutoriales activos.
      */
-    public function comments(): HasMany
+    public function scopeActive($query)
     {
-        return $this->hasMany(TutorialComment::class);
+        return $query->where('status', 'active');
     }
-
+    
     /**
-     * Scope a query to only include published tutorials.
+     * Scope para filtrar tutoriales gratuitos.
      */
-    public function scopePublished($query)
+    public function scopeFree($query)
     {
-        return $query->where('status', 'published');
+        return $query->where('is_free', true);
     }
-
+    
     /**
-     * Scope a query to filter by category.
+     * Obtener el curso al que pertenece este tutorial (a través del módulo).
      */
-    public function scopeCategory($query, $category)
+    public function course()
     {
-        return $query->where('category_id', $category);
-    }
-
-    /**
-     * Scope a query to search by title or content.
-     */
-    public function scopeSearch($query, $search)
-    {
-        return $query->where('title', 'like', "%{$search}%")
-                     ->orWhere('content', 'like', "%{$search}%");
+        return $this->module->course;
     }
 }

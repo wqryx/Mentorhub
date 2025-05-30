@@ -2,18 +2,24 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasApiTokens, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, LogsActivity;
+    
+    /**
+     * Nombre personalizado para los registros de actividad.
+     *
+     * @var string
+     */
+    protected static $activityLogName = 'Usuario';
 
     /**
      * The attributes that are mass assignable.
@@ -24,19 +30,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'course',
-        'cycle',
-        'academic_year',
-        'identification_type',
-        'identification_number',
-        'birth_date',
-        'phone',
-        'address',
-        'emergency_contact',
-        'emergency_phone',
-        'photo',
-        'calendar_token',
-        'calendar_token_expires_at',
+        'role', // admin, mentor, student
     ];
 
     /**
@@ -50,110 +44,178 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'birth_date' => 'date',
-        ];
-    }
-
-    /**
-     * Get all roles for the user.
-     */
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id')
-            ->withTimestamps();
-    }
-
-    /**
-     * Get the modules the user is enrolled in.
-     */
-    public function modules(): BelongsToMany
-    {
-        return $this->belongsToMany(Module::class, 'module_user', 'user_id', 'module_id')
-            ->withPivot('enrollment_date')
-            ->withTimestamps();
-    }
-
-    /**
-     * Get the tasks assigned to the user.
-     */
-    public function tasks(): HasMany
-    {
-        return $this->hasMany(Task::class);
-    }
-
-    /**
-     * Get the grades for the user.
-     */
-    public function grades(): HasMany
-    {
-        return $this->hasMany(Grade::class);
-    }
-
-    /**
-     * Get the messages for the user.
-     */
-    public function messages(): HasMany
-    {
-        return $this->hasMany(Message::class);
-    }
-
-    /**
-     * Get the user's photo URL.
-     */
-    public function getPhotoUrlAttribute(): string
-    {
-        if ($this->photo) {
-            return asset('storage/photos/' . $this->photo);
-        }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     /**
      * Check if user has a specific role
      */
-    public function hasRole(string $role): bool
+    public function hasRole($role)
     {
-        return $this->roles->contains('name', $role);
+        return $this->role === $role;
     }
-    
+
     /**
      * Check if user is an admin
      */
-    public function isAdmin(): bool
+    public function isAdmin()
     {
-        return $this->hasRole('Admin');
+        return $this->role === 'admin';
     }
-    
+
     /**
      * Check if user is a mentor
      */
-    public function isMentor(): bool
+    public function isMentor()
     {
-        return $this->hasRole('Mentor');
+        return $this->role === 'mentor';
     }
-    
+
     /**
      * Check if user is a student
      */
-    public function isEstudiante(): bool
+    public function isStudent()
     {
-        return $this->hasRole('Estudiante');
+        return $this->role === 'student';
     }
     
     /**
-     * Check if user is a guest
+     * Obtiene las sesiones donde el usuario es mentor.
      */
-    public function isGuest(): bool
+    public function mentorSessions()
     {
-        return $this->hasRole('Guest');
+        return $this->hasMany(MentorshipSession::class, 'mentor_id');
+    }
+
+    /**
+     * Obtiene las sesiones donde el usuario es estudiante.
+     */
+    public function menteeSessions()
+    {
+        return $this->hasMany(MentorshipSession::class, 'mentee_id');
+    }
+
+    /**
+     * Obtiene las solicitudes de mentoría pendientes para el mentor.
+     */
+    public function mentorRequests()
+    {
+        return $this->mentorSessions()->where('status', 'pending');
+    }
+
+    /**
+     * Obtiene los estudiantes asociados con el mentor a través de sesiones.
+     */
+    public function menteeStudents()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            MentorshipSession::class,
+            'mentor_id',
+            'id',
+            'id',
+            'mentee_id'
+        )->distinct();
+    }
+
+    /**
+     * Obtiene los mentores asociados con el estudiante a través de sesiones.
+     */
+    public function mentors()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            MentorshipSession::class,
+            'mentee_id',
+            'id',
+            'id',
+            'mentor_id'
+        )->distinct();
+    }
+
+    /**
+     * Obtiene las reseñas recibidas por el usuario.
+     */
+    public function receivedReviews()
+    {
+        return $this->hasMany(MentorshipReview::class, 'target_id');
+    }
+
+    /**
+     * Obtiene las reseñas escritas por el usuario.
+     */
+    public function givenReviews()
+    {
+        return $this->hasMany(MentorshipReview::class, 'author_id');
+    }
+
+    /**
+     * Obtiene la calificación promedio del usuario como mentor.
+     */
+    public function getAverageMentorRatingAttribute()
+    {
+        $reviews = $this->receivedReviews()->where('is_mentor_review', false)->get();
+        if ($reviews->isEmpty()) {
+            return 0;
+        }
+        return $reviews->avg('rating');
+    }
+
+    /**
+     * Obtiene la calificación promedio del usuario como estudiante.
+     */
+    public function getAverageStudentRatingAttribute()
+    {
+        $reviews = $this->receivedReviews()->where('is_mentor_review', true)->get();
+        if ($reviews->isEmpty()) {
+            return 0;
+        }
+        return $reviews->avg('rating');
+    }
+
+    /**
+     * Obtiene la URL de la foto de perfil del usuario.
+     */
+    public function getProfilePhotoUrlAttribute()
+    {
+        // Si el usuario tiene una foto de perfil, devolver la URL
+        if (isset($this->profile) && $this->profile->photo_path) {
+            return asset('storage/' . $this->profile->photo_path);
+        }
+        
+        // Si no, devolver una imagen por defecto
+        return asset('img/default-avatar.png');
+    }
+    
+    /**
+     * Obtiene los mensajes enviados por el usuario.
+     */
+    public function sentMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+    
+    /**
+     * Obtiene los mensajes recibidos por el usuario.
+     */
+    public function receivedMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'recipient_id');
+    }
+    
+    /**
+     * Obtiene los mensajes no leídos del usuario.
+     */
+    public function unreadMessages()
+    {
+        return $this->receivedMessages()
+            ->where('read', false)
+            ->where('deleted_by_recipient', false);
     }
 }
