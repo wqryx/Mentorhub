@@ -69,7 +69,7 @@ class ResourceController extends Controller
             'other' => 'Otros'
         ];
         
-        return view('dashboard.mentor.resources', compact(
+        return view('mentor.resources', compact(
             'resources',
             'courses',
             'resourceTypes',
@@ -98,7 +98,7 @@ class ResourceController extends Controller
             'other' => 'Otros'
         ];
         
-        return view('dashboard.mentor.resources.create', compact('courses', 'resourceTypes'));
+        return view('mentor.resources.create', compact('courses', 'resourceTypes'));
     }
 
     /**
@@ -167,7 +167,7 @@ class ResourceController extends Controller
         // Incrementar contador de vistas
         $resource->incrementViewsCount();
         
-        return view('dashboard.mentor.resources.show', compact('resource'));
+        return view('mentor.resources.show', compact('resource'));
     }
 
     /**
@@ -195,7 +195,7 @@ class ResourceController extends Controller
             'other' => 'Otros'
         ];
         
-        return view('dashboard.mentor.resources.edit', compact('resource', 'courses', 'resourceTypes'));
+        return view('mentor.resources.edit', compact('resource', 'courses', 'resourceTypes'));
     }
 
     /**

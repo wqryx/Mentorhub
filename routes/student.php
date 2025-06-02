@@ -1,20 +1,23 @@
 <?php
 
-use App\Http\Controllers\StudentController;
+use App\Http\Controllers\Student\DashboardController;
 use App\Http\Controllers\Student\CalendarController;
 use App\Http\Controllers\Student\TaskController;
 use App\Http\Controllers\Student\MessageController;
+use App\Http\Controllers\Student\ProfileController;
+use App\Http\Controllers\Student\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas para estudiantes
-Route::middleware(['auth'])->prefix('student')->name('student.')->group(function () {
-    // Dashboard y rutas principales
-    Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
+    // Dashboard principal
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Rutas para cursos
-    Route::get('/courses', [StudentController::class, 'courses'])->name('courses');
-    Route::get('/courses/{id}', [StudentController::class, 'showCourse'])->name('courses.show');
-    Route::get('/courses/{course}/progress', [StudentController::class, 'courseProgress'])->name('course.progress');
+    Route::get('/courses', [DashboardController::class, 'courses'])->name('courses');
+    Route::get('/courses/{id}', [DashboardController::class, 'showCourse'])->name('courses.show');
+    Route::get('/courses/{course}/progress', [DashboardController::class, 'courseProgress'])->name('course.progress');
     
     // Rutas de calendario
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
@@ -24,12 +27,13 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     Route::get('/calendar/events', [CalendarController::class, 'getEvents'])->name('calendar.events');
     
     // Rutas de perfil
-    Route::get('/profile', [StudentController::class, 'profile'])->name('profile');
-    Route::patch('/profile', [StudentController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     
     // Rutas de notificaciones
-    Route::get('/notifications', [StudentController::class, 'notifications'])->name('notifications');
-    Route::post('/notifications/mark-all-read', [StudentController::class, 'markAllNotificationsAsRead'])->name('notifications.mark-all-read');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+    Route::get('/notifications/{notification}', [NotificationController::class, 'show'])->name('notifications.show');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     
     // Rutas de mensajes
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
@@ -50,8 +54,11 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     Route::get('/tasks/json', [TaskController::class, 'getTasks'])->name('tasks.json');
     
     // Rutas de calificaciones
-    Route::get('/grades', [StudentController::class, 'grades'])->name('grades');
+    Route::get('/grades', [DashboardController::class, 'grades'])->name('grades');
     
     // Rutas para configuración
-    Route::get('/settings', [StudentController::class, 'settings'])->name('settings');
+    Route::get('/settings', [DashboardController::class, 'settings'])->name('settings');
+    
+    // Rutas para mentor
+    Route::get('/mentor', [DashboardController::class, 'mentor'])->name('mentor');
 });

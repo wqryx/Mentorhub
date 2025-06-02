@@ -1,0 +1,439 @@
+/* Estilos para el dashboard principal de estudiantes - Utiliza las variables del tema global */
+
+/* Contenedor principal */
+.dashboard-container {
+    background-color: var(--bg-white);
+    border-radius: var(--border-radius);
+}
+
+/* Encabezado de sección */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-title {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-dark);
+    margin: 0;
+}
+
+/* Tarjeta de bienvenida */
+.welcome-card {
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+    color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.welcome-card-body {
+    padding: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-title {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: 0.5rem;
+}
+
+.welcome-text {
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+
+.welcome-icon {
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 4rem;
+    opacity: 0.3;
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.welcome-btn {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    margin-top: 1rem;
+    transition: var(--transition);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.welcome-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+/* Tarjetas de estadísticas */
+.stats-card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    height: 100%;
+    transition: var(--transition);
+    overflow: hidden;
+    border: none;
+    position: relative;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.stats-card-primary {
+    border-left: 4px solid var(--primary-500);
+}
+
+.stats-card-success {
+    border-left: 4px solid var(--success-500);
+}
+
+.stats-card-info {
+    border-left: 4px solid var(--info-500);
+}
+
+.stats-card-warning {
+    border-left: 4px solid var(--warning-500);
+}
+
+.stats-card-body {
+    padding: 1.25rem;
+}
+
+.stats-card-title {
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.stats-card-title-primary {
+    color: var(--primary-600);
+}
+
+.stats-card-title-success {
+    color: var(--success-600);
+}
+
+.stats-card-title-info {
+    color: var(--info-600);
+}
+
+.stats-card-title-warning {
+    color: var(--warning-600);
+}
+
+.stats-card-value {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-dark);
+    margin-bottom: 0;
+}
+
+.stats-card-icon {
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    color: var(--border-color);
+}
+
+/* Tarjetas de contenido */
+.content-card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color-light);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.content-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.content-card-header {
+    padding: 1rem 1.25rem;
+    background-color: var(--bg-white);
+    border-bottom: 1px solid var(--border-color-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content-card-title {
+    font-size: 1rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary-600);
+    margin: 0;
+}
+
+.content-card-body {
+    padding: 1.25rem;
+}
+
+/* Cursos en el dashboard */
+.course-card-dashboard {
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color-light);
+    transition: var(--transition);
+    height: 100%;
+}
+
+.course-card-dashboard:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.course-card-dashboard-img {
+    height: 140px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.course-card-dashboard-body {
+    padding: 1rem;
+}
+
+.course-card-dashboard-title {
+    font-size: 1rem;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.course-card-dashboard-progress {
+    margin-bottom: 0.75rem;
+}
+
+.course-card-dashboard-progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.course-card-dashboard-progress-bar {
+    height: 6px;
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius-pill);
+    overflow: hidden;
+}
+
+.course-card-dashboard-progress-fill {
+    height: 100%;
+    background-color: var(--success-500);
+    border-radius: var(--border-radius-pill);
+}
+
+.course-card-dashboard-footer {
+    padding: 0.75rem 1rem;
+    background-color: var(--bg-light);
+    border-top: 1px solid var(--border-color-light);
+}
+
+.course-card-dashboard-link {
+    color: var(--primary-600);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+}
+
+.course-card-dashboard-link:hover {
+    color: var(--primary-700);
+}
+
+/* Eventos en el dashboard */
+.event-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.event-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color-light);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.event-item:last-child {
+    border-bottom: none;
+}
+
+.event-date {
+    min-width: 50px;
+    text-align: center;
+    padding: 0.5rem;
+    background-color: var(--primary-50);
+    border-radius: var(--border-radius);
+    color: var(--primary-600);
+}
+
+.event-day {
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+}
+
+.event-month {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.event-content {
+    flex: 1;
+}
+
+.event-title {
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: 0.25rem;
+    color: var(--text-dark);
+}
+
+.event-info {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.event-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Tareas en el dashboard */
+.task-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.task-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.task-item:last-child {
+    border-bottom: none;
+}
+
+.task-checkbox-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.task-checkbox {
+    margin-top: 0.25rem;
+}
+
+.task-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.task-title {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-dark);
+}
+
+.task-due-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.task-priority {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-pill);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-semibold);
+}
+
+.task-priority-high {
+    background-color: var(--danger-100);
+    color: var(--danger-700);
+}
+
+.task-priority-medium {
+    background-color: var(--warning-100);
+    color: var(--warning-700);
+}
+
+.task-priority-low {
+    background-color: var(--success-100);
+    color: var(--success-700);
+}
+
+/* Estados vacíos */
+.empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.empty-state-icon {
+    font-size: 2.5rem;
+    color: var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.empty-state-text {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.empty-state-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-500);
+    color: white;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.empty-state-btn:hover {
+    background-color: var(--primary-600);
+    color: white;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .welcome-icon {
+        display: none;
+    }
+}

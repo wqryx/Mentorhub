@@ -1,0 +1,280 @@
+/* Estilos para la vista de tareas de estudiantes - Utiliza las variables del tema global */
+
+/* Contenedor de tareas */
+.task-container {
+    background-color: var(--bg-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Lista de tareas */
+.task-list {
+    border-radius: var(--border-radius);
+}
+
+.task-item {
+    border-left: 3px solid transparent;
+    transition: var(--transition);
+    padding: 1rem;
+}
+
+.task-item:hover {
+    background-color: var(--bg-light);
+}
+
+.task-item[data-priority="high"] {
+    border-left-color: var(--danger-500);
+}
+
+.task-item[data-priority="medium"] {
+    border-left-color: var(--warning-500);
+}
+
+.task-item[data-priority="low"] {
+    border-left-color: var(--success-500);
+}
+
+.task-item.completed-task {
+    background-color: var(--bg-light);
+    opacity: 0.7;
+}
+
+/* Checkbox personalizado */
+.task-checkbox {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-right: 0.75rem;
+    cursor: pointer;
+    accent-color: var(--primary-500);
+}
+
+.task-title {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-dark);
+}
+
+/* Badges de prioridad */
+.badge.bg-danger {
+    background-color: var(--danger-500) !important;
+}
+
+.badge.bg-warning {
+    background-color: var(--warning-500) !important;
+    color: var(--text-dark);
+}
+
+.badge.bg-success {
+    background-color: var(--success-500) !important;
+}
+
+/* Fecha de vencimiento */
+.due-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.due-date.soon {
+    color: var(--danger-600);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* Detalles de la tarea */
+.task-details {
+    padding-left: 2.2rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.task-description {
+    margin-bottom: 0.75rem;
+}
+
+/* Barra de progreso */
+.progress {
+    height: 0.5rem;
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius-pill);
+}
+
+.progress-bar {
+    background-color: var(--primary-500);
+    border-radius: var(--border-radius-pill);
+}
+
+/* Botones de acción */
+.task-actions .dropdown-toggle::after {
+    display: none;
+}
+
+.task-actions .dropdown-toggle {
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    padding: 0.25rem 0.5rem;
+}
+
+.task-actions .dropdown-toggle:hover {
+    color: var(--primary-600);
+}
+
+.task-actions .dropdown-menu {
+    min-width: 200px;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+.task-actions .dropdown-item {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius-sm);
+    transition: var(--transition);
+}
+
+.task-actions .dropdown-item:hover {
+    background-color: var(--primary-50);
+}
+
+.task-actions .dropdown-item i {
+    width: 1.25rem;
+    text-align: center;
+    margin-right: 0.5rem;
+}
+
+/* Filtros */
+.filter-container {
+    padding: 1rem;
+    background-color: var(--bg-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+}
+
+.form-select, .form-control {
+    border-color: var(--border-color);
+    border-radius: var(--border-radius);
+}
+
+.form-select:focus, .form-control:focus {
+    border-color: var(--primary-400);
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+}
+
+.input-group-text {
+    background-color: var(--bg-light);
+    border-color: var(--border-color);
+    color: var(--text-muted);
+}
+
+/* Botones de vista */
+.view-buttons .btn {
+    color: var(--text-muted);
+    background-color: transparent;
+    border: none;
+    padding: 0.25rem 0.5rem;
+}
+
+.view-buttons .btn:hover {
+    color: var(--primary-600);
+}
+
+.view-buttons .btn.active {
+    color: var(--primary-600);
+    background-color: var(--primary-50);
+    border-radius: var(--border-radius-sm);
+}
+
+/* Vista de tarjetas */
+.card-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.task-card {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    height: 100%;
+}
+
+.task-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.task-card-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-card[data-priority="high"] .task-card-header {
+    border-top: 3px solid var(--danger-500);
+}
+
+.task-card[data-priority="medium"] .task-card-header {
+    border-top: 3px solid var(--warning-500);
+}
+
+.task-card[data-priority="low"] .task-card-header {
+    border-top: 3px solid var(--success-500);
+}
+
+.task-card-body {
+    padding: 1rem;
+}
+
+.task-card-footer {
+    padding: 0.75rem 1rem;
+    background-color: var(--bg-light);
+    border-top: 1px solid var(--border-color-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Modal de nueva tarea */
+.task-modal-header {
+    background-color: var(--primary-500);
+    color: white;
+}
+
+.task-form-group {
+    margin-bottom: 1rem;
+}
+
+.task-form-group label {
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.task-item {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .card-view {
+        grid-template-columns: 1fr;
+    }
+    
+    .task-item {
+        padding: 0.75rem;
+    }
+    
+    .task-details {
+        padding-left: 1.8rem;
+    }
+}

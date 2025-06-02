@@ -1,0 +1,692 @@
+/* 
+ * MentorHub - Estilos para la sección de tareas del estudiante
+ * Este archivo contiene los estilos específicos para la vista de tareas del estudiante
+ */
+
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2980b9;
+    --accent-color: #f39c12;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f1c40f;
+    --info-color: #1abc9c;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --gray-color: #6c757d;
+    --gray-light-color: #e9ecef;
+    --border-radius: 0.25rem;
+    --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Estilos para el contenedor de tareas */
+.tasks-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+/* Estilos para la lista de tareas */
+.tasks-list {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    flex: 2;
+    min-width: 400px;
+}
+
+.tasks-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--gray-light-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tasks-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin: 0;
+}
+
+.tasks-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tasks-filter {
+    display: flex;
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid var(--gray-light-color);
+    background-color: var(--light-color);
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.task-filter-item {
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    margin-right: 0.5rem;
+}
+
+.task-filter-item:last-child {
+    margin-right: 0;
+}
+
+.task-filter-item.active {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.task-filter-item:not(.active) {
+    background-color: #fff;
+    color: var(--gray-color);
+}
+
+.task-filter-item:not(.active):hover {
+    background-color: var(--gray-light-color);
+    color: var(--dark-color);
+}
+
+.task-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.task-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--gray-light-color);
+    display: flex;
+    align-items: flex-start;
+    transition: background-color 0.2s ease;
+}
+
+.task-item:last-child {
+    border-bottom: none;
+}
+
+.task-item:hover {
+    background-color: var(--light-color);
+}
+
+.task-checkbox {
+    margin-right: 1rem;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.task-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.task-checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.task-checkbox input[type="checkbox"]:checked + .task-checkbox-custom {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.task-checkbox-custom::after {
+    content: "✓";
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.task-checkbox input[type="checkbox"]:checked + .task-checkbox-custom::after {
+    opacity: 1;
+}
+
+.task-content {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.25rem;
+}
+
+.task-title {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin: 0;
+    margin-bottom: 0.25rem;
+    transition: text-decoration 0.2s ease, color 0.2s ease;
+}
+
+.task-checkbox input[type="checkbox"]:checked ~ .task-content .task-title {
+    text-decoration: line-through;
+    color: var(--gray-color);
+}
+
+.task-due {
+    font-size: 0.75rem;
+    color: var(--gray-color);
+    white-space: nowrap;
+    margin-left: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.task-due i {
+    margin-right: 0.25rem;
+}
+
+.task-due.overdue {
+    color: var(--danger-color);
+}
+
+.task-due.today {
+    color: var(--warning-color);
+}
+
+.task-description {
+    font-size: 0.875rem;
+    color: var(--gray-color);
+    margin-bottom: 0.5rem;
+    transition: color 0.2s ease;
+}
+
+.task-checkbox input[type="checkbox"]:checked ~ .task-content .task-description {
+    color: var(--gray-color);
+    opacity: 0.7;
+}
+
+.task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.task-meta-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--gray-color);
+    background-color: var(--light-color);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+}
+
+.task-meta-item i {
+    margin-right: 0.25rem;
+}
+
+.task-priority {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-transform: uppercase;
+}
+
+.task-priority-high {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: var(--danger-color);
+}
+
+.task-priority-medium {
+    background-color: rgba(241, 196, 15, 0.1);
+    color: var(--warning-color);
+}
+
+.task-priority-low {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: var(--success-color);
+}
+
+.task-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.task-action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--light-color);
+    color: var(--gray-color);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.task-action-btn:hover {
+    background-color: var(--gray-light-color);
+    color: var(--dark-color);
+}
+
+.task-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid var(--gray-light-color);
+    background-color: var(--light-color);
+}
+
+.task-status {
+    font-size: 0.875rem;
+    color: var(--gray-color);
+}
+
+.task-pagination {
+    display: flex;
+    align-items: center;
+}
+
+.task-pagination-item {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--border-radius);
+    margin: 0 0.25rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.task-pagination-item.active {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.task-pagination-item:not(.active) {
+    background-color: #fff;
+    color: var(--gray-color);
+}
+
+.task-pagination-item:not(.active):hover {
+    background-color: var(--gray-light-color);
+    color: var(--dark-color);
+}
+
+.task-pagination-prev,
+.task-pagination-next {
+    background-color: #fff;
+    color: var(--gray-color);
+    border: 1px solid var(--gray-light-color);
+    border-radius: var(--border-radius);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.task-pagination-prev:hover,
+.task-pagination-next:hover {
+    background-color: var(--gray-light-color);
+    color: var(--dark-color);
+}
+
+.task-pagination-prev.disabled,
+.task-pagination-next.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Estilos para la barra lateral de tareas */
+.tasks-sidebar {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    flex: 1;
+    min-width: 300px;
+}
+
+.tasks-summary {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--gray-light-color);
+}
+
+.tasks-summary-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+}
+
+.tasks-summary-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.tasks-summary-stat {
+    background-color: var(--light-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    text-align: center;
+}
+
+.tasks-summary-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark-color);
+    margin-bottom: 0.25rem;
+}
+
+.tasks-summary-stat-label {
+    font-size: 0.75rem;
+    color: var(--gray-color);
+}
+
+.tasks-summary-progress {
+    margin-top: 1.5rem;
+}
+
+.tasks-summary-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.tasks-summary-progress-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.tasks-summary-progress-value {
+    font-size: 0.875rem;
+    color: var(--gray-color);
+}
+
+.tasks-summary-progress-bar {
+    height: 0.5rem;
+    background-color: var(--gray-light-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.tasks-summary-progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: var(--border-radius);
+}
+
+.tasks-categories {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--gray-light-color);
+}
+
+.tasks-categories-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+}
+
+.tasks-categories-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tasks-category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--gray-light-color);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.tasks-category-item:last-child {
+    border-bottom: none;
+}
+
+.tasks-category-item:hover {
+    color: var(--primary-color);
+}
+
+.tasks-category-name {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--dark-color);
+}
+
+.tasks-category-name i {
+    margin-right: 0.5rem;
+}
+
+.tasks-category-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: var(--gray-color);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+}
+
+.tasks-upcoming {
+    padding: 1.5rem;
+}
+
+.tasks-upcoming-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+}
+
+.tasks-upcoming-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tasks-upcoming-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--gray-light-color);
+}
+
+.tasks-upcoming-item:last-child {
+    border-bottom: none;
+}
+
+.tasks-upcoming-date {
+    min-width: 40px;
+    text-align: center;
+    margin-right: 0.75rem;
+}
+
+.tasks-upcoming-day {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.tasks-upcoming-month {
+    font-size: 0.75rem;
+    color: var(--gray-color);
+    text-transform: uppercase;
+}
+
+.tasks-upcoming-content {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.tasks-upcoming-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin: 0 0 0.25rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tasks-upcoming-meta {
+    font-size: 0.75rem;
+    color: var(--gray-color);
+    display: flex;
+    align-items: center;
+}
+
+.tasks-upcoming-meta i {
+    margin-right: 0.25rem;
+}
+
+/* Estilos para el formulario de tarea */
+.task-form {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.task-form-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 1.5rem;
+}
+
+.task-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.task-form-label {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.task-form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-light-color);
+    font-size: 0.875rem;
+}
+
+.task-form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.task-form-text {
+    font-size: 0.75rem;
+    color: var(--gray-color);
+    margin-top: 0.25rem;
+}
+
+.task-form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.task-form-check-input {
+    margin-right: 0.5rem;
+}
+
+.task-form-check-label {
+    font-size: 0.875rem;
+    color: var(--dark-color);
+}
+
+.task-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+/* Estilos para el estado vacío */
+.tasks-empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.tasks-empty-icon {
+    font-size: 3rem;
+    color: var(--gray-light-color);
+    margin-bottom: 1rem;
+}
+
+.tasks-empty-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.tasks-empty-text {
+    color: var(--gray-color);
+    margin-bottom: 1.5rem;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .tasks-container {
+        flex-direction: column;
+    }
+    
+    .tasks-list,
+    .tasks-sidebar {
+        min-width: 100%;
+    }
+    
+    .tasks-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .tasks-actions {
+        margin-top: 0.5rem;
+    }
+    
+    .task-filter-item {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .tasks-summary-stats {
+        grid-template-columns: 1fr;
+    }
+}

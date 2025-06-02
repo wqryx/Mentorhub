@@ -1,0 +1,523 @@
+/* 
+ * MentorHub - Estilos para la sección de configuración del estudiante
+ * Este archivo contiene los estilos específicos para la vista de configuración del estudiante
+ */
+
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2980b9;
+    --accent-color: #f39c12;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f1c40f;
+    --info-color: #1abc9c;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --gray-color: #6c757d;
+    --gray-light-color: #e9ecef;
+    --border-radius: 0.25rem;
+    --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Estilos para el contenedor de configuración */
+.settings-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+/* Estilos para la navegación de configuración */
+.settings-nav {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    flex: 1;
+    min-width: 250px;
+    max-width: 300px;
+}
+
+.settings-nav-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--gray-light-color);
+}
+
+.settings-nav-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin: 0;
+}
+
+.settings-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.settings-nav-item {
+    border-bottom: 1px solid var(--gray-light-color);
+}
+
+.settings-nav-item:last-child {
+    border-bottom: none;
+}
+
+.settings-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    color: var(--gray-color);
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.settings-nav-link:hover {
+    background-color: var(--light-color);
+    color: var(--dark-color);
+}
+
+.settings-nav-link.active {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: var(--primary-color);
+    border-left: 3px solid var(--primary-color);
+}
+
+.settings-nav-icon {
+    margin-right: 0.75rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* Estilos para el contenido de configuración */
+.settings-content {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    flex: 3;
+    min-width: 400px;
+}
+
+.settings-section {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--gray-light-color);
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+}
+
+.settings-section-header {
+    margin-bottom: 1.5rem;
+}
+
+.settings-section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.settings-section-description {
+    font-size: 0.875rem;
+    color: var(--gray-color);
+}
+
+/* Estilos para formularios de configuración */
+.settings-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.settings-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.settings-form-label {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.settings-form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-light-color);
+    font-size: 0.875rem;
+}
+
+.settings-form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.settings-form-text {
+    font-size: 0.75rem;
+    color: var(--gray-color);
+    margin-top: 0.25rem;
+}
+
+.settings-form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.settings-form-check:last-child {
+    margin-bottom: 0;
+}
+
+.settings-form-check-input {
+    margin-right: 0.5rem;
+}
+
+.settings-form-check-label {
+    font-size: 0.875rem;
+    color: var(--dark-color);
+}
+
+.settings-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+/* Estilos para configuración de perfil */
+.settings-profile-avatar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.settings-profile-avatar-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--gray-light-color);
+    margin-right: 1.5rem;
+}
+
+.settings-profile-avatar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Estilos para configuración de notificaciones */
+.settings-notification-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--gray-light-color);
+}
+
+.settings-notification-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.settings-notification-info {
+    flex-grow: 1;
+}
+
+.settings-notification-title {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.25rem;
+}
+
+.settings-notification-description {
+    font-size: 0.875rem;
+    color: var(--gray-color);
+}
+
+.settings-notification-toggle {
+    margin-left: 1.5rem;
+}
+
+/* Estilos para configuración de privacidad */
+.settings-privacy-level {
+    display: flex;
+    margin-bottom: 1.5rem;
+}
+
+.settings-privacy-option {
+    flex: 1;
+    text-align: center;
+    padding: 1rem;
+    border: 1px solid var(--gray-light-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.settings-privacy-option:first-child {
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+}
+
+.settings-privacy-option:last-child {
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+.settings-privacy-option.active {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-color: var(--primary-color);
+}
+
+.settings-privacy-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--gray-color);
+}
+
+.settings-privacy-option.active .settings-privacy-icon {
+    color: var(--primary-color);
+}
+
+.settings-privacy-title {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.25rem;
+}
+
+.settings-privacy-description {
+    font-size: 0.75rem;
+    color: var(--gray-color);
+}
+
+/* Estilos para configuración de seguridad */
+.settings-security-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--gray-light-color);
+}
+
+.settings-security-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.settings-security-info {
+    flex-grow: 1;
+}
+
+.settings-security-title {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.25rem;
+}
+
+.settings-security-description {
+    font-size: 0.875rem;
+    color: var(--gray-color);
+}
+
+.settings-security-status {
+    display: flex;
+    align-items: center;
+    margin-left: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.settings-security-status-enabled {
+    color: var(--success-color);
+}
+
+.settings-security-status-disabled {
+    color: var(--gray-color);
+}
+
+.settings-security-status i {
+    margin-right: 0.5rem;
+}
+
+/* Estilos para configuración de apariencia */
+.settings-theme-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.settings-theme-option {
+    border: 2px solid var(--gray-light-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.settings-theme-option.active {
+    border-color: var(--primary-color);
+}
+
+.settings-theme-preview {
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-theme-preview-header {
+    height: 20px;
+    background-color: var(--dark-color);
+}
+
+.settings-theme-preview-sidebar {
+    flex-grow: 1;
+    display: flex;
+}
+
+.settings-theme-preview-nav {
+    width: 30%;
+    background-color: var(--gray-color);
+}
+
+.settings-theme-preview-content {
+    width: 70%;
+    background-color: #fff;
+}
+
+.settings-theme-name {
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    border-top: 1px solid var(--gray-light-color);
+}
+
+.settings-theme-light .settings-theme-preview-header {
+    background-color: var(--primary-color);
+}
+
+.settings-theme-light .settings-theme-preview-nav {
+    background-color: #fff;
+}
+
+.settings-theme-light .settings-theme-preview-content {
+    background-color: var(--light-color);
+}
+
+.settings-theme-dark .settings-theme-preview-header {
+    background-color: var(--dark-color);
+}
+
+.settings-theme-dark .settings-theme-preview-nav {
+    background-color: #2d3436;
+}
+
+.settings-theme-dark .settings-theme-preview-content {
+    background-color: #1e272e;
+}
+
+.settings-font-size {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.settings-font-size-label {
+    margin-right: 1rem;
+    font-size: 0.875rem;
+    color: var(--gray-color);
+    min-width: 80px;
+}
+
+.settings-font-size-value {
+    margin-left: 1rem;
+    font-size: 0.875rem;
+    color: var(--dark-color);
+    min-width: 40px;
+    text-align: center;
+}
+
+.settings-font-size-slider {
+    flex-grow: 1;
+    height: 4px;
+    background-color: var(--gray-light-color);
+    border-radius: 2px;
+    position: relative;
+}
+
+.settings-font-size-slider-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+}
+
+.settings-font-size-slider-handle {
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 2px solid var(--primary-color);
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+/* Estilos para configuración de cuenta */
+.settings-account-danger {
+    background-color: rgba(231, 76, 60, 0.05);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.settings-account-danger-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--danger-color);
+    margin-bottom: 0.5rem;
+}
+
+.settings-account-danger-text {
+    font-size: 0.875rem;
+    color: var(--gray-color);
+    margin-bottom: 1rem;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .settings-container {
+        flex-direction: column;
+    }
+    
+    .settings-nav {
+        max-width: 100%;
+        min-width: 100%;
+    }
+    
+    .settings-content {
+        min-width: 100%;
+    }
+    
+    .settings-theme-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .settings-privacy-level {
+        flex-direction: column;
+    }
+    
+    .settings-privacy-option {
+        border-radius: 0;
+    }
+    
+    .settings-privacy-option:first-child {
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+    
+    .settings-privacy-option:last-child {
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+    }
+}

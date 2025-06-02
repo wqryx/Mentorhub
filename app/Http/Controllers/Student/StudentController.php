@@ -74,7 +74,7 @@ class StudentController extends Controller
             ->count()
         ];
         
-        return view('dashboard.student.index', compact(
+        return view('student.index', compact(
             'user', 'inProgressCourses', 'upcomingEvents', 'pendingTasks', 'stats'
         ));
     }
@@ -364,7 +364,7 @@ class StudentController extends Controller
                 return $history;
             });
         
-        return view('dashboard.student.course-progress', compact(
+        return view('student.courses.progress', compact(
             'course', 
             'enrollment', 
             'moduleCompletionCount', 
@@ -413,7 +413,7 @@ class StudentController extends Controller
     public function settings()
     {
         $user = Auth::user();
-        return view('dashboard.student.settings', compact('user'));
+        return view('student.profile.settings', compact('user'));
     }
     
     /**
@@ -426,7 +426,7 @@ class StudentController extends Controller
             ->with('course')
             ->get();
             
-        return view('dashboard.student.courses', [
+        return view('student.courses.index', [
             'enrollments' => $enrollments,
             'user' => $user
         ]);
@@ -442,7 +442,7 @@ class StudentController extends Controller
             ->with(['course', 'course.modules.tutorials'])
             ->get();
             
-        return view('dashboard.student.course-progress', [
+        return view('student.courses.progress', [
             'enrollments' => $enrollments,
             'user' => $user
         ]);
@@ -456,7 +456,7 @@ class StudentController extends Controller
         $user = Auth::user();
         $mentor = $user->mentor;
         
-        return view('dashboard.student.mentor', [
+        return view('student.mentor.index', [
             'mentor' => $mentor,
             'user' => $user
         ]);
@@ -469,7 +469,7 @@ class StudentController extends Controller
     {
         $user = Auth::user();
         
-        return view('dashboard.student.settings', [
+        return view('student.profile.settings', [
             'user' => $user
         ]);
     }
@@ -484,7 +484,7 @@ class StudentController extends Controller
             $query->where('user_id', $user->id);
         })->get();
         
-        return view('dashboard.student.calendar', [
+        return view('student.calendar.index', [
             'events' => $events,
             'user' => $user
         ]);
@@ -500,7 +500,7 @@ class StudentController extends Controller
             ->orderBy('due_date')
             ->get();
             
-        return view('dashboard.student.tasks', [
+        return view('student.tasks.index', [
             'tasks' => $tasks,
             'user' => $user
         ]);

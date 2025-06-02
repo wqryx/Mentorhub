@@ -41,7 +41,7 @@ class MentorshipSessionController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
             
-        return view('dashboard.mentor.mentorias', compact(
+        return view('mentor.mentorias', compact(
             'upcomingSessions',
             'pastSessions',
             'pendingRequests'
@@ -64,7 +64,7 @@ class MentorshipSessionController extends Controller
             ->where('mentor_id', Auth::id())
             ->pluck('name', 'id');
             
-        return view('dashboard.mentor.sessions.create', compact('mentees'));
+        return view('mentor.sessions.create', compact('mentees'));
     }
 
     /**
@@ -115,7 +115,7 @@ class MentorshipSessionController extends Controller
             ->where('mentor_id', Auth::id())
             ->findOrFail($id);
             
-        return view('dashboard.mentor.sessions.show', compact('session'));
+        return view('mentor.sessions.show', compact('session'));
     }
 
     /**
@@ -138,7 +138,7 @@ class MentorshipSessionController extends Controller
             ->where('mentor_id', Auth::id())
             ->pluck('name', 'id');
             
-        return view('dashboard.mentor.sessions.edit', compact('session', 'mentees'));
+        return view('mentor.sessions.edit', compact('session', 'mentees'));
     }
 
     /**

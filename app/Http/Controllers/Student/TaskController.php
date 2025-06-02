@@ -90,7 +90,7 @@ class TaskController extends Controller
                 ->count()
         ];
         
-        return view('dashboard.student.tasks', compact('tasks', 'courses', 'stats'));
+        return view('student.tasks.index', compact('tasks', 'courses', 'stats'));
     }
     
     /**

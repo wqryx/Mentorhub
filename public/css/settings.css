@@ -1,0 +1,286 @@
+/* Estilos para la configuración de estudiantes - Utiliza las variables del tema global */
+
+/* Contenedor principal */
+.settings-container {
+    background-color: var(--bg-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Menú de navegación lateral */
+.settings-nav {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.settings-nav-header {
+    background-color: var(--primary-500);
+    color: white;
+    padding: 1rem;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+.settings-nav-title {
+    margin: 0;
+    font-weight: var(--font-weight-semibold);
+}
+
+.settings-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.settings-nav-item {
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.settings-nav-item:last-child {
+    border-bottom: none;
+}
+
+.settings-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--text-dark);
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.settings-nav-link:hover {
+    background-color: var(--primary-50);
+    color: var(--primary-600);
+}
+
+.settings-nav-link.active {
+    background-color: var(--primary-500);
+    color: white;
+}
+
+.settings-nav-icon {
+    margin-right: 0.75rem;
+    width: 1.25rem;
+    text-align: center;
+}
+
+/* Secciones de contenido */
+.settings-content {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.settings-section {
+    margin-bottom: 1.5rem;
+}
+
+.settings-card {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.settings-card-header {
+    padding: 1rem;
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.settings-card-title {
+    margin: 0;
+    color: var(--primary-600);
+    font-weight: var(--font-weight-semibold);
+}
+
+.settings-card-body {
+    padding: 1.5rem;
+}
+
+/* Formularios */
+.settings-form-group {
+    margin-bottom: 1.25rem;
+}
+
+.settings-form-label {
+    font-weight: var(--font-weight-medium);
+    margin-bottom: 0.5rem;
+    display: block;
+    color: var(--text-dark);
+}
+
+.settings-form-control {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+    transition: var(--transition);
+}
+
+.settings-form-control:focus {
+    border-color: var(--primary-400);
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25);
+    outline: none;
+}
+
+.settings-form-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Switches personalizados */
+.settings-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.settings-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.settings-switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    transition: var(--transition);
+    border-radius: 34px;
+}
+
+.settings-switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: var(--transition);
+    border-radius: 50%;
+}
+
+.settings-switch input:checked + .settings-switch-slider {
+    background-color: var(--primary-500);
+}
+
+.settings-switch input:focus + .settings-switch-slider {
+    box-shadow: 0 0 1px var(--primary-500);
+}
+
+.settings-switch input:checked + .settings-switch-slider:before {
+    transform: translateX(26px);
+}
+
+/* Lista de dispositivos */
+.device-list {
+    margin-bottom: 1rem;
+}
+
+.device-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    margin-bottom: 0.75rem;
+    transition: var(--transition);
+}
+
+.device-item:hover {
+    background-color: var(--bg-light);
+}
+
+.device-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.device-name {
+    font-weight: var(--font-weight-medium);
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.device-icon {
+    margin-right: 0.5rem;
+    color: var(--primary-500);
+}
+
+.device-details {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.device-status {
+    padding: 0.35rem 0.65rem;
+    border-radius: var(--border-radius-pill);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-semibold);
+}
+
+.device-status-active {
+    background-color: var(--success-500);
+    color: white;
+}
+
+/* Botones */
+.settings-btn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+    cursor: pointer;
+}
+
+.settings-btn-primary {
+    background-color: var(--primary-500);
+    color: white;
+}
+
+.settings-btn-primary:hover {
+    background-color: var(--primary-600);
+}
+
+.settings-btn-outline-danger {
+    background-color: transparent;
+    color: var(--danger-500);
+    border: 1px solid var(--danger-500);
+}
+
+.settings-btn-outline-danger:hover {
+    background-color: var(--danger-50);
+}
+
+.settings-btn-danger {
+    background-color: var(--danger-500);
+    color: white;
+}
+
+.settings-btn-danger:hover {
+    background-color: var(--danger-600);
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .settings-nav {
+        margin-bottom: 1.5rem;
+    }
+}

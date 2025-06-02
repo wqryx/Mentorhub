@@ -106,7 +106,7 @@ class CalendarController extends Controller
                 ->count()
         ];
         
-        return view('dashboard.student.calendar', compact('calendarEvents', 'stats'));
+        return view('student.calendar.index', compact('calendarEvents', 'stats'));
     }
     
     /**

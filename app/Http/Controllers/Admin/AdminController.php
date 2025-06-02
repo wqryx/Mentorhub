@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Course;
 use App\Models\Event;
-use App\Models\User;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Models\Activity;
 use App\Models\Message;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -59,8 +62,16 @@ class AdminController extends Controller
         // Obtener información de sesiones
         $activeSessions = 1; // Como solo estamos en una sesión, mostramos 1
         
-        // Pasar el usuario y las sesiones a la vista
-        return view('admin.dashboard', compact('user', 'activeSessions'));
+        // Pasar todos los datos recopilados a la vista
+        return view('admin.dashboard', compact(
+            'user', 
+            'activeSessions', 
+            'stats', 
+            'recent_users', 
+            'upcoming_events', 
+            'recent_messages', 
+            'recent_activities'
+        ));
     }
     
     /**
@@ -108,123 +119,17 @@ class AdminController extends Controller
         return round((($currentCount - $lastCount) / $lastCount) * 100);
     }
     
-    /**
-     * Mostrar la lista de usuarios
-     */
-    public function users()
-    {
-        $users = User::with('roles')->paginate(10);
-        return view('admin.users.index', compact('users'));
-    }
+    // El método users() ha sido eliminado para evitar duplicación con UserController
     
-    /**
-     * Mostrar el formulario para crear un usuario
-     */
-    public function createUser()
-    {
-        $roles = Role::all();
-        return view('admin.users.create', compact('roles'));
-    }
+    // El método createUser() ha sido eliminado para evitar duplicación con UserController
     
-    /**
-     * Guardar un nuevo usuario
-     */
-    public function storeUser(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role_id' => 'required|exists:roles,id',
-        ]);
-        
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->save();
-        
-        // Asignar rol
-        $user->roles()->attach($request->role_id);
-        
-        // Registrar actividad
-        Activity::create([
-            'type' => 'create',
-            'user_id' => Auth::id(),
-            'description' => 'Creó el usuario <strong>' . $user->name . '</strong>'
-        ]);
-        
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Usuario creado correctamente');
-    }
+    // El método storeUser() ha sido eliminado para evitar duplicación con UserController
     
-    /**
-     * Mostrar el formulario para editar un usuario
-     */
-    public function editUser($id)
-    {
-        $user = User::with('roles')->findOrFail($id);
-        $roles = Role::all();
-        return view('admin.users.edit', compact('user', 'roles'));
-    }
+    // El método editUser() ha sido eliminado para evitar duplicación con UserController
     
-    /**
-     * Actualizar un usuario
-     */
-    public function updateUser(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-        
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'role_id' => 'required|exists:roles,id',
-        ]);
-        
-        $user->name = $request->name;
-        $user->email = $request->email;
-        
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-        
-        $user->save();
-        
-        // Actualizar rol
-        $user->roles()->sync([$request->role_id]);
-        
-        // Registrar actividad
-        Activity::create([
-            'type' => 'update',
-            'user_id' => Auth::id(),
-            'description' => 'Actualizó el usuario <strong>' . $user->name . '</strong>'
-        ]);
-        
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Usuario actualizado correctamente');
-    }
+    // El método updateUser() ha sido eliminado para evitar duplicación con UserController
     
-    /**
-     * Eliminar un usuario
-     */
-    public function destroyUser($id)
-    {
-        $user = User::findOrFail($id);
-        $userName = $user->name;
-        
-        $user->delete();
-        
-        // Registrar actividad
-        Activity::create([
-            'type' => 'delete',
-            'user_id' => Auth::id(),
-            'description' => 'Eliminó el usuario <strong>' . $userName . '</strong>'
-        ]);
-        
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Usuario eliminado correctamente');
-    }
+    // El método destroyUser() ha sido eliminado para evitar duplicación con UserController
     
     /**
      * Mostrar la lista de cursos
@@ -234,6 +139,101 @@ class AdminController extends Controller
         $courses = Course::with('teacher')->paginate(10);
         return view('admin.courses.index', compact('courses'));
     }
+
+    /**
+     * Mostrar el formulario para crear un nuevo curso
+     */
+    public function createCourse()
+    {
+        $mentors = User::role('mentor')->get();
+        return view('admin.courses.create', compact('mentors'));
+    }
+
+    /**
+     * Almacenar un nuevo curso en la base de datos
+     */
+    public function storeCourse(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'teacher_id' => 'required|exists:users,id',
+            'price' => 'nullable|numeric|min:0',
+            'duration' => 'nullable|integer|min:1',
+            'is_active' => 'boolean',
+            'image' => 'nullable|image|max:2048',
+        ]);
+        
+        $course = new Course($validated);
+        
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('courses', 'public');
+            $course->image = $imagePath;
+        }
+        
+        $course->save();
+        
+        return redirect()->route('admin.courses.index')
+            ->with('success', 'Curso creado correctamente');
+    }
+
+    /**
+     * Mostrar el formulario para editar un curso
+     */
+    public function editCourse(Course $course)
+    {
+        $mentors = User::role('mentor')->get();
+        return view('admin.courses.edit', compact('course', 'mentors'));
+    }
+
+    /**
+     * Actualizar un curso en la base de datos
+     */
+    public function updateCourse(Request $request, Course $course)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'teacher_id' => 'required|exists:users,id',
+            'price' => 'nullable|numeric|min:0',
+            'duration' => 'nullable|integer|min:1',
+            'is_active' => 'boolean',
+            'image' => 'nullable|image|max:2048',
+        ]);
+        
+        $course->fill($validated);
+        
+        if ($request->hasFile('image')) {
+            // Eliminar imagen anterior si existe
+            if ($course->image) {
+                Storage::disk('public')->delete($course->image);
+            }
+            
+            $imagePath = $request->file('image')->store('courses', 'public');
+            $course->image = $imagePath;
+        }
+        
+        $course->save();
+        
+        return redirect()->route('admin.courses.index')
+            ->with('success', 'Curso actualizado correctamente');
+    }
+
+    /**
+     * Eliminar un curso de la base de datos
+     */
+    public function destroyCourse(Course $course)
+    {
+        // Eliminar imagen si existe
+        if ($course->image) {
+            Storage::disk('public')->delete($course->image);
+        }
+        
+        $course->delete();
+        
+        return redirect()->route('admin.courses.index')
+            ->with('success', 'Curso eliminado correctamente');
+    }
     
     /**
      * Mostrar la lista de eventos
@@ -242,6 +242,107 @@ class AdminController extends Controller
     {
         $events = Event::with('creator')->paginate(10);
         return view('admin.events.index', compact('events'));
+    }
+
+    /**
+     * Mostrar el formulario para crear un nuevo evento
+     */
+    public function createEvent()
+    {
+        $mentors = User::role('mentor')->get();
+        return view('admin.events.create', compact('mentors'));
+    }
+
+    /**
+     * Almacenar un nuevo evento en la base de datos
+     */
+    public function storeEvent(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'location' => 'required|string|max:255',
+            'capacity' => 'nullable|integer|min:1',
+            'type' => 'required|string|in:workshop,webinar,conference,mentorship',
+            'creator_id' => 'required|exists:users,id',
+            'is_online' => 'boolean',
+            'image' => 'nullable|image|max:2048',
+        ]);
+        
+        $event = new Event($validated);
+        
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('events', 'public');
+            $event->image = $imagePath;
+        }
+        
+        $event->save();
+        
+        return redirect()->route('admin.events.index')
+            ->with('success', 'Evento creado correctamente');
+    }
+
+    /**
+     * Mostrar el formulario para editar un evento
+     */
+    public function editEvent(Event $event)
+    {
+        $mentors = User::role('mentor')->get();
+        return view('admin.events.edit', compact('event', 'mentors'));
+    }
+
+    /**
+     * Actualizar un evento en la base de datos
+     */
+    public function updateEvent(Request $request, Event $event)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'location' => 'required|string|max:255',
+            'capacity' => 'nullable|integer|min:1',
+            'type' => 'required|string|in:workshop,webinar,conference,mentorship',
+            'creator_id' => 'required|exists:users,id',
+            'is_online' => 'boolean',
+            'image' => 'nullable|image|max:2048',
+        ]);
+        
+        $event->fill($validated);
+        
+        if ($request->hasFile('image')) {
+            // Eliminar imagen anterior si existe
+            if ($event->image) {
+                Storage::disk('public')->delete($event->image);
+            }
+            
+            $imagePath = $request->file('image')->store('events', 'public');
+            $event->image = $imagePath;
+        }
+        
+        $event->save();
+        
+        return redirect()->route('admin.events.index')
+            ->with('success', 'Evento actualizado correctamente');
+    }
+
+    /**
+     * Eliminar un evento de la base de datos
+     */
+    public function destroyEvent(Event $event)
+    {
+        // Eliminar imagen si existe
+        if ($event->image) {
+            Storage::disk('public')->delete($event->image);
+        }
+        
+        $event->delete();
+        
+        return redirect()->route('admin.events.index')
+            ->with('success', 'Evento eliminado correctamente');
     }
     
     /**
@@ -267,7 +368,10 @@ class AdminController extends Controller
      */
     public function settings()
     {
-        return view('admin.settings.index');
+        // Obtener todas las configuraciones del sistema
+        $settings = Setting::pluck('value', 'key')->toArray();
+        
+        return view('admin.settings.index', compact('settings'));
     }
     
     /**
@@ -275,16 +379,62 @@ class AdminController extends Controller
      */
     public function updateSettings(Request $request)
     {
-        $request->validate([
-            'app_name' => 'required|string|max:255',
-            'app_description' => 'nullable|string',
-            'contact_email' => 'required|email',
-            'logo' => 'nullable|image|max:1024',
-            'favicon' => 'nullable|image|max:1024',
-        ]);
+        // Validar según la sección que se está actualizando
+        $section = $request->input('section', 'general');
         
-        // Actualizar configuraciones
-        // Aquí se podría utilizar la tabla settings o un archivo .env
+        switch ($section) {
+            case 'general':
+                $validated = $request->validate([
+                    'site_name' => 'required|string|max:255',
+                    'site_description' => 'nullable|string',
+                    'contact_email' => 'required|email',
+                    'footer_text' => 'nullable|string',
+                ]);
+                break;
+                
+            case 'email':
+                $validated = $request->validate([
+                    'mail_driver' => 'required|string',
+                    'mail_host' => 'required|string',
+                    'mail_port' => 'required|numeric',
+                    'mail_username' => 'nullable|string',
+                    'mail_password' => 'nullable|string',
+                    'mail_encryption' => 'nullable|string',
+                ]);
+                break;
+                
+            case 'registration':
+                $validated = $request->validate([
+                    'enable_registration' => 'nullable|boolean',
+                    'email_verification' => 'nullable|boolean',
+                    'default_role' => 'required|string',
+                    'password_min_length' => 'required|numeric|min:6|max:20',
+                ]);
+                break;
+                
+            case 'activity':
+                $validated = $request->validate([
+                    'enable_activity_log' => 'nullable|boolean',
+                    'log_retention_days' => 'required|numeric|min:1|max:365',
+                    'log_login_attempts' => 'nullable|boolean',
+                    'log_admin_actions' => 'nullable|boolean',
+                ]);
+                break;
+                
+            default:
+                return redirect()->route('admin.settings.index')
+                    ->with('error', 'Sección de configuración no válida');
+        }
+        
+        // Actualizar cada configuración en la base de datos
+        foreach ($validated as $key => $value) {
+            // Si es un checkbox y no está marcado, el valor no viene en la solicitud
+            if (in_array($key, ['enable_registration', 'email_verification', 'enable_activity_log', 'log_login_attempts', 'log_admin_actions'])) {
+                $value = $request->has($key) ? '1' : '0';
+            }
+            
+            Setting::set($key, $value, null, $section);
+        }
         
         return redirect()->route('admin.settings.index')
             ->with('success', 'Configuración actualizada correctamente');

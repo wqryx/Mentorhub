@@ -54,7 +54,10 @@ class Kernel extends HttpKernel
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         
-        // Registro de actividad
-        'log.activity' => \App\Http\Middleware\LogActivity::class,
+        // Registro de actividad (middleware anterior con problemas)
+        // 'log.activity' => \App\Http\Middleware\LogActivity::class,
+        
+        // Nuevo middleware de registro de actividad
+        'activity.logger' => \App\Http\Middleware\ActivityLogger::class,
     ];
 }

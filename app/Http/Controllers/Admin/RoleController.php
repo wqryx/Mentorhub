@@ -30,7 +30,7 @@ class RoleController extends Controller
         }
         
         $roles = $query->paginate(15);
-        return view('dashboard.admin.roles.index', compact('roles'));
+        return view('admin.roles.index', compact('roles'));
     }
 
     /**
@@ -39,7 +39,7 @@ class RoleController extends Controller
     public function create()
     {
         $permissions = Permission::all()->groupBy('group');
-        return view('dashboard.admin.roles.create', compact('permissions'));
+        return view('admin.roles.create', compact('permissions'));
     }
 
     /**
@@ -89,7 +89,7 @@ class RoleController extends Controller
         $permissions = Permission::all()->groupBy('group');
         $rolePermissions = $role->permissions->pluck('id')->toArray();
         
-        return view('dashboard.admin.roles.edit', compact('role', 'permissions', 'rolePermissions'));
+        return view('admin.roles.edit', compact('role', 'permissions', 'rolePermissions'));
     }
 
     /**
@@ -164,7 +164,7 @@ class RoleController extends Controller
         // Obtener el ID del rol a resaltar si se proporciona
         $highlightRoleId = $request->query('highlight');
         
-        return view('dashboard.admin.roles.permissions', compact('permissions', 'roles', 'highlightRoleId'));
+        return view('admin.roles.permissions', compact('permissions', 'roles', 'highlightRoleId'));
     }
     
     /**

@@ -1,4 +1,6 @@
-<x-guest-layout>
+@extends('layouts.guest')
+
+@section('content')
     <div class="flex min-h-screen w-full">
         <!-- Panel lateral izquierdo (azul) -->
         <div class="hidden md:block md:w-2/5 bg-blue-600 relative">
@@ -117,4 +119,4 @@
             color: #1e40af;
         }
     </style>
-</x-guest-layout>
+@endsection

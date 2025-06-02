@@ -1,0 +1,198 @@
+/* Estilos para la vista de mensajes del administrador - Utiliza las variables del tema global */
+
+/* Tabla de mensajes */
+.table-responsive {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.table-bordered {
+    border: 1px solid var(--border-color-light);
+}
+
+.table-bordered th {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    font-weight: var(--font-weight-semibold);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.table-bordered td {
+    vertical-align: middle;
+    color: var(--text-dark);
+}
+
+/* Badges de estado */
+.badge.bg-success {
+    background-color: var(--success-500) !important;
+}
+
+.badge.bg-warning {
+    background-color: var(--warning-500) !important;
+    color: var(--text-dark);
+}
+
+/* Botones de acción */
+.btn-group .btn {
+    margin-right: 0.25rem;
+    border-radius: var(--border-radius) !important;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+.btn-info {
+    background-color: var(--info-500);
+    border-color: var(--info-500);
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: var(--info-600);
+    border-color: var(--info-600);
+}
+
+.btn-danger {
+    background-color: var(--danger-500);
+    border-color: var(--danger-500);
+}
+
+.btn-danger:hover {
+    background-color: var(--danger-600);
+    border-color: var(--danger-600);
+}
+
+/* Card de mensajes */
+.card.shadow {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md) !important;
+}
+
+.card-header {
+    background-color: var(--bg-white);
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.card-header h6.font-weight-bold {
+    color: var(--primary-600);
+    font-weight: var(--font-weight-semibold) !important;
+}
+
+/* Paginación */
+.pagination {
+    margin-bottom: 0;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-500);
+    border-color: var(--primary-500);
+}
+
+.pagination .page-link {
+    color: var(--primary-600);
+}
+
+.pagination .page-link:hover {
+    background-color: var(--bg-light);
+}
+
+/* Modal de mensaje */
+.modal-content {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    background-color: var(--bg-white);
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.modal-header .modal-title {
+    color: var(--primary-600);
+    font-weight: var(--font-weight-semibold);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-body strong {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-dark);
+}
+
+.modal-body .bg-light {
+    background-color: var(--bg-light) !important;
+    border: 1px solid var(--border-color-light);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color-light);
+    background-color: var(--bg-light);
+}
+
+/* Formulario de mensaje */
+.form-label {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-dark);
+}
+
+.form-control, .form-select {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 0.75rem;
+    color: var(--text-dark);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-400);
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+}
+
+textarea.form-control {
+    min-height: 120px;
+}
+
+/* Alerta de éxito */
+.alert-success {
+    background-color: var(--success-100);
+    border-color: var(--success-200);
+    color: var(--success-700);
+    border-radius: var(--border-radius);
+}
+
+/* Botones principales */
+.btn-primary {
+    background-color: var(--primary-500);
+    border-color: var(--primary-500);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-600);
+    border-color: var(--primary-600);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-500);
+    border-color: var(--secondary-500);
+}
+
+.btn-secondary:hover {
+    background-color: var(--secondary-600);
+    border-color: var(--secondary-600);
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}

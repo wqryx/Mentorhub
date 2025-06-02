@@ -1,4 +1,6 @@
-<x-guest-layout>
+@extends('layouts.guest')
+
+@section('content')
     @php
     // Determinar el tipo de usuario desde la URL
     $userType = request()->query('type', 'default');
@@ -180,4 +182,4 @@
                             </div>
                         </div>
     </form>
-</x-guest-layout>
+@endsection

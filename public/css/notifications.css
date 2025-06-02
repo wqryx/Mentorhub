@@ -1,0 +1,161 @@
+/* Estilos para la vista de notificaciones - Utiliza las variables del tema global */
+
+/* Contenedor principal */
+.notification-detail {
+    padding: 0.5rem;
+}
+
+/* Encabezado de notificación */
+.notification-header {
+    margin-bottom: 1.5rem;
+}
+
+.notification-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--bg-light);
+}
+
+.notification-icon i {
+    color: var(--primary-500);
+}
+
+.notification-icon i.text-primary {
+    color: var(--primary-500);
+}
+
+.notification-icon i.text-success {
+    color: var(--success-500);
+}
+
+.notification-icon i.text-warning {
+    color: var(--warning-500);
+}
+
+.notification-icon i.text-info {
+    color: var(--info-500);
+}
+
+.notification-icon i.text-danger {
+    color: var(--danger-500);
+}
+
+/* Contenido de notificación */
+.notification-content {
+    margin-bottom: 1.5rem;
+}
+
+.notification-content .card {
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.notification-content .card-body {
+    padding: 1.25rem;
+}
+
+/* Acciones de notificación */
+.notification-action {
+    margin-bottom: 1.5rem;
+}
+
+.notification-action .btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--border-radius);
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition);
+}
+
+.notification-action .btn-primary {
+    background-color: var(--primary-500);
+    border-color: var(--primary-500);
+}
+
+.notification-action .btn-primary:hover {
+    background-color: var(--primary-600);
+    border-color: var(--primary-600);
+}
+
+/* Datos adicionales */
+.notification-additional-data {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color-light);
+}
+
+.notification-additional-data h6 {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.notification-additional-data .table {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.notification-additional-data .table th {
+    background-color: var(--bg-light);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-dark);
+}
+
+/* Lista de notificaciones */
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color-light);
+    transition: var(--transition);
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item:hover {
+    background-color: var(--bg-light);
+}
+
+.notification-item.unread {
+    background-color: rgba(var(--primary-rgb), 0.05);
+    border-left: 3px solid var(--primary-500);
+}
+
+/* Estados vacíos */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.empty-state-text {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .notification-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .notification-icon i {
+        font-size: 1.5rem !important;
+    }
+}

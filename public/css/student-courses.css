@@ -1,0 +1,408 @@
+/* 
+ * MentorHub - Estilos para la sección de cursos del estudiante
+ * Este archivo contiene los estilos específicos para la vista de cursos del estudiante
+ */
+
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2980b9;
+    --accent-color: #f39c12;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f1c40f;
+    --info-color: #1abc9c;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --gray-color: #6c757d;
+    --gray-light-color: #e9ecef;
+    --border-radius: 0.25rem;
+    --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Estilos para tarjetas de cursos */
+.course-card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: #fff;
+    border: 1px solid var(--gray-light-color);
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.course-card-img {
+    height: 180px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.course-card-body {
+    padding: 1.25rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--dark-color);
+}
+
+.course-card-instructor {
+    font-size: 0.875rem;
+    color: var(--gray-color);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.course-card-instructor i {
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+}
+
+.course-card-description {
+    font-size: 0.875rem;
+    color: var(--gray-color);
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.course-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-light-color);
+}
+
+.course-card-meta {
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--gray-color);
+}
+
+.course-card-meta-item {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+}
+
+.course-card-meta-item i {
+    margin-right: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.course-card-price {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.course-card-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+}
+
+.course-card-badge-featured {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.course-card-badge-new {
+    background-color: var(--success-color);
+    color: #fff;
+}
+
+.course-card-badge-premium {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+/* Estilos para progreso del curso */
+.course-progress-container {
+    margin-bottom: 1rem;
+}
+
+.course-progress-bar {
+    height: 0.5rem;
+    background-color: var(--gray-light-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.course-progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: var(--border-radius);
+}
+
+.course-progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--gray-color);
+    margin-top: 0.25rem;
+}
+
+/* Estilos para filtros de cursos */
+.course-filters {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.course-filters-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+}
+
+.course-filter-group {
+    margin-bottom: 1rem;
+}
+
+.course-filter-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--dark-color);
+}
+
+/* Estilos para la vista detallada del curso */
+.course-detail-header {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.course-detail-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--dark-color);
+}
+
+.course-detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.course-detail-meta-item {
+    display: flex;
+    align-items: center;
+    margin-right: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--gray-color);
+}
+
+.course-detail-meta-item i {
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+}
+
+.course-detail-description {
+    margin-bottom: 1.5rem;
+    color: var(--gray-color);
+}
+
+.course-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Estilos para módulos del curso */
+.course-modules {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.course-module {
+    border-bottom: 1px solid var(--gray-light-color);
+}
+
+.course-module:last-child {
+    border-bottom: none;
+}
+
+.course-module-header {
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--light-color);
+}
+
+.course-module-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.course-module-title i {
+    margin-right: 0.75rem;
+    color: var(--primary-color);
+    transition: transform 0.3s ease;
+}
+
+.course-module-header.collapsed .course-module-title i {
+    transform: rotate(-90deg);
+}
+
+.course-module-meta {
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--gray-color);
+}
+
+.course-module-meta-item {
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+}
+
+.course-module-meta-item i {
+    margin-right: 0.25rem;
+}
+
+.course-module-content {
+    padding: 0;
+    background-color: #fff;
+}
+
+.course-tutorial-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.course-tutorial-item {
+    padding: 0.75rem 1.5rem 0.75rem 3rem;
+    border-bottom: 1px solid var(--gray-light-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.course-tutorial-item:last-child {
+    border-bottom: none;
+}
+
+.course-tutorial-link {
+    color: var(--dark-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.course-tutorial-link:hover {
+    color: var(--primary-color);
+}
+
+.course-tutorial-link i {
+    margin-right: 0.75rem;
+    color: var(--primary-color);
+}
+
+.course-tutorial-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+}
+
+.course-tutorial-status-completed {
+    background-color: var(--success-color);
+    color: #fff;
+}
+
+.course-tutorial-status-locked {
+    background-color: var(--gray-color);
+    color: #fff;
+}
+
+/* Estilos para la vista de progreso del curso */
+.course-progress-overview {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.course-progress-stats {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.course-progress-stat {
+    flex: 1;
+    min-width: 150px;
+    padding: 1rem;
+    text-align: center;
+    border-right: 1px solid var(--gray-light-color);
+}
+
+.course-progress-stat:last-child {
+    border-right: none;
+}
+
+.course-progress-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.course-progress-stat-label {
+    font-size: 0.875rem;
+    color: var(--gray-color);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .course-progress-stat {
+        flex: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--gray-light-color);
+    }
+    
+    .course-progress-stat:last-child {
+        border-bottom: none;
+    }
+    
+    .course-detail-meta-item {
+        margin-right: 1rem;
+    }
+}

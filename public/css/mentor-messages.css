@@ -1,0 +1,220 @@
+/* Estilos para la vista de mensajes del mentor - Utiliza las variables del tema global */
+
+/* Tabla de mensajes */
+.table-hover tbody tr:hover {
+    background-color: var(--bg-light);
+    cursor: pointer;
+}
+
+.table-active {
+    background-color: rgba(var(--primary-rgb), 0.05) !important;
+}
+
+/* Indicador de mensaje no leído */
+.text-primary .fa-circle {
+    color: var(--primary-500);
+}
+
+/* Contenido del mensaje */
+.message-content {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.message-subject {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-dark);
+    margin-bottom: 0.25rem;
+}
+
+.message-preview {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Avatar del remitente */
+.sender-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.sender-name {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-dark);
+}
+
+.sender-role {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Acciones de mensaje */
+.message-actions .dropdown-toggle::after {
+    display: none;
+}
+
+.message-actions .dropdown-toggle {
+    padding: 0.25rem 0.5rem;
+    background-color: transparent;
+    border: none;
+}
+
+.message-actions .dropdown-toggle:hover {
+    background-color: var(--bg-light);
+}
+
+.message-actions .dropdown-menu {
+    min-width: 200px;
+    padding: 0.5rem 0;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color-light);
+}
+
+.message-actions .dropdown-item {
+    padding: 0.5rem 1rem;
+    color: var(--text-dark);
+}
+
+.message-actions .dropdown-item:hover {
+    background-color: var(--bg-light);
+}
+
+.message-actions .dropdown-item.text-danger:hover {
+    background-color: var(--danger-50);
+}
+
+/* Pestañas de navegación */
+.nav-tabs .nav-link {
+    color: var(--text-muted);
+    border: none;
+    padding: 0.75rem 1rem;
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition);
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--primary-600);
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary-600);
+    background-color: transparent;
+    border-bottom: 2px solid var(--primary-500);
+}
+
+.nav-tabs .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Vista detallada del mensaje */
+.message-detail-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.message-detail-subject {
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.message-detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.message-detail-body {
+    padding: 1.5rem;
+    background-color: var(--bg-white);
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.message-detail-content {
+    line-height: 1.6;
+    color: var(--text-dark);
+}
+
+/* Formulario de nuevo mensaje */
+.message-form-card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color-light);
+    overflow: hidden;
+}
+
+.message-form-header {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-white);
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.message-form-title {
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary-600);
+    margin: 0;
+}
+
+.message-form-body {
+    padding: 1.5rem;
+    background-color: var(--bg-white);
+}
+
+.message-form-footer {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-light);
+    border-top: 1px solid var(--border-color-light);
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Estados vacíos */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.empty-state-text {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .message-detail-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .message-actions .dropdown-menu {
+        position: fixed;
+        top: auto;
+        right: 0;
+        left: 0;
+        width: 100%;
+        border-radius: 0;
+        margin: 0;
+        bottom: 0;
+        transform: none !important;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+}

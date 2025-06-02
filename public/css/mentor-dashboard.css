@@ -1,0 +1,168 @@
+/* Estilos para el Dashboard del Mentor */
+
+:root {
+    /* Variables de color del tema */
+    --primary-color: #4e73df;
+    --primary-color-hover: #2e59d9;
+    --secondary-color: #858796;
+    --success-color: #1cc88a;
+    --info-color: #36b9cc;
+    --warning-color: #f6c23e;
+    --danger-color: #e74a3b;
+    --light-color: #f8f9fc;
+    --dark-color: #5a5c69;
+    
+    /* Variables de sombras */
+    --card-shadow: 0 .15rem 1.75rem 0 rgba(58, 59, 69, .15);
+    --dropdown-shadow: 0 .15rem 1.75rem 0 rgba(58, 59, 69, .15);
+    
+    /* Variables de bordes */
+    --border-radius: 0.35rem;
+    --border-width: 1px;
+    --border-color: #e3e6f0;
+}
+
+/* Estilos para las tarjetas de estadísticas */
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+
+.card-header {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: #f8f9fc;
+    border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.card-body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+}
+
+.shadow {
+    box-shadow: var(--card-shadow) !important;
+}
+
+/* Estilos para los bordes de colores en las tarjetas */
+.border-left-primary {
+    border-left: 0.25rem solid var(--primary-color) !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid var(--success-color) !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid var(--info-color) !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid var(--warning-color) !important;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid var(--danger-color) !important;
+}
+
+/* Estilos para textos de colores */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-success {
+    color: var(--success-color) !important;
+}
+
+.text-info {
+    color: var(--info-color) !important;
+}
+
+.text-warning {
+    color: var(--warning-color) !important;
+}
+
+.text-danger {
+    color: var(--danger-color) !important;
+}
+
+/* Estilos para el calendario */
+#mentorCalendar {
+    min-height: 400px;
+}
+
+.fc-event {
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    border: none;
+    padding: 2px 5px;
+}
+
+.fc-event-title {
+    font-weight: 500;
+}
+
+/* Estilos para las listas de sesiones y solicitudes */
+.list-group-item {
+    border-left: 0;
+    border-right: 0;
+    padding: 1rem 1.25rem;
+    transition: background-color 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: rgba(78, 115, 223, 0.05);
+}
+
+.list-group-item-action {
+    color: #6e707e;
+}
+
+.list-group-item-action:hover {
+    color: #2e59d9;
+}
+
+/* Estilos para botones */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-color-hover);
+    border-color: var(--primary-color-hover);
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+/* Estilos para modales */
+.modal-header.bg-warning {
+    background-color: var(--warning-color) !important;
+}
+
+/* Estilos para los íconos en las tarjetas */
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+/* Estilos para la barra de progreso */
+.progress {
+    height: 0.5rem;
+    background-color: #eaecf4;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: var(--info-color);
+}

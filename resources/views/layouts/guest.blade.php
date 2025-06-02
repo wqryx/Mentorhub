@@ -25,6 +25,8 @@
         <script src="{{ asset('js/app.js') }}" defer></script>
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        {{ $slot }}
+        <div class="min-h-screen flex flex-col bg-gray-100">
+            @yield('content')
+        </div>
     </body>
 </html>

@@ -18,7 +18,7 @@ class ActivityLogService
      * @param array|null $properties Propiedades adicionales para registrar
      * @return \App\Models\ActivityLog
      */
-    public static function log(string $action, string $description, ?Model $model = null, ?array $properties = null): ActivityLog
+    public function log(string $action, string $description, ?Model $model = null, ?array $properties = null): ActivityLog
     {
         $userId = Auth::id();
         
@@ -50,12 +50,12 @@ class ActivityLogService
      * @param array|null $properties Propiedades adicionales
      * @return \App\Models\ActivityLog
      */
-    public static function logCreated(Model $model, ?string $description = null, ?array $properties = null): ActivityLog
+    public function logCreated(Model $model, ?string $description = null, ?array $properties = null): ActivityLog
     {
         $modelName = class_basename($model);
         $description = $description ?? "Se ha creado {$modelName} #{$model->getKey()}";
         
-        return self::log('created', $description, $model, $properties);
+        return $this->log('created', $description, $model, $properties);
     }
     
     /**
@@ -66,7 +66,7 @@ class ActivityLogService
      * @param array|null $properties Propiedades adicionales
      * @return \App\Models\ActivityLog
      */
-    public static function logUpdated(Model $model, ?string $description = null, ?array $properties = null): ActivityLog
+    public function logUpdated(Model $model, ?string $description = null, ?array $properties = null): ActivityLog
     {
         $modelName = class_basename($model);
         $description = $description ?? "Se ha actualizado {$modelName} #{$model->getKey()}";
@@ -79,7 +79,7 @@ class ActivityLogService
             ];
         }
         
-        return self::log('updated', $description, $model, $properties);
+        return $this->log('updated', $description, $model, $properties);
     }
     
     /**
@@ -90,12 +90,12 @@ class ActivityLogService
      * @param array|null $properties Propiedades adicionales
      * @return \App\Models\ActivityLog
      */
-    public static function logDeleted(Model $model, ?string $description = null, ?array $properties = null): ActivityLog
+    public function logDeleted(Model $model, ?string $description = null, ?array $properties = null): ActivityLog
     {
         $modelName = class_basename($model);
         $description = $description ?? "Se ha eliminado {$modelName} #{$model->getKey()}";
         
-        return self::log('deleted', $description, $model, $properties);
+        return $this->log('deleted', $description, $model, $properties);
     }
     
     /**
@@ -104,9 +104,9 @@ class ActivityLogService
      * @param \App\Models\User $user El usuario que inició sesión
      * @return \App\Models\ActivityLog
      */
-    public static function logLogin($user): ActivityLog
+    public function logLogin($user): ActivityLog
     {
-        return self::log(
+        return $this->log(
             'login',
             "El usuario {$user->name} ha iniciado sesión",
             $user
@@ -119,9 +119,9 @@ class ActivityLogService
      * @param \App\Models\User $user El usuario que cerró sesión
      * @return \App\Models\ActivityLog
      */
-    public static function logLogout($user): ActivityLog
+    public function logLogout($user): ActivityLog
     {
-        return self::log(
+        return $this->log(
             'logout',
             "El usuario {$user->name} ha cerrado sesión",
             $user

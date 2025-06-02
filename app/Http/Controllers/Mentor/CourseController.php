@@ -28,7 +28,7 @@ class CourseController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
             
-        return view('dashboard.mentor.my_courses', compact('courses'));
+        return view('mentor.my_courses', compact('courses'));
     }
 
     /**
@@ -40,7 +40,7 @@ class CourseController extends Controller
     {
         $specialities = Speciality::pluck('name', 'id');
         
-        return view('dashboard.mentor.courses.create', compact('specialities'));
+        return view('mentor.courses.create', compact('specialities'));
     }
 
     /**
@@ -110,7 +110,7 @@ class CourseController extends Controller
             ->withCount('students')
             ->findOrFail($id);
             
-        return view('dashboard.mentor.courses.show', compact('course'));
+        return view('mentor.courses.show', compact('course'));
     }
 
     /**
@@ -127,7 +127,7 @@ class CourseController extends Controller
             
         $specialities = Speciality::pluck('name', 'id');
         
-        return view('dashboard.mentor.courses.edit', compact('course', 'specialities'));
+        return view('mentor.courses.edit', compact('course', 'specialities'));
     }
 
     /**
@@ -233,7 +233,7 @@ class CourseController extends Controller
             ->orderBy('pivot_progress', 'desc')
             ->paginate(20);
             
-        return view('dashboard.mentor.courses.students', compact('course', 'students'));
+        return view('mentor.courses.students', compact('course', 'students'));
     }
     
     /**
@@ -273,7 +273,7 @@ class CourseController extends Controller
             ->take(5)
             ->get();
             
-        return view('dashboard.mentor.courses.statistics', compact(
+        return view('mentor.courses.statistics', compact(
             'course', 
             'completionRate', 
             'averageProgress', 

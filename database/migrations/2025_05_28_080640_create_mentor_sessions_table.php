@@ -21,9 +21,9 @@ return new class extends Migration
             $table->enum('type', ['individual', 'group'])->default('individual');
             $table->enum('format', ['video', 'audio', 'chat', 'in-person'])->default('video');
             $table->enum('status', ['requested', 'scheduled', 'confirmed', 'completed', 'cancelled', 'no-show'])->default('requested');
-            $table->timestamp('requested_at');
-            $table->timestamp('start_time'); // Hora de inicio programada
-            $table->timestamp('end_time'); // Hora de finalización programada
+            $table->timestamp('requested_at')->useCurrent();
+            $table->dateTime('start_time')->nullable(); // Hora de inicio programada
+            $table->dateTime('end_time')->nullable(); // Hora de finalización programada
             $table->integer('duration_minutes')->default(60); // Duración en minutos
             $table->string('meeting_link')->nullable(); // Enlace a la sesión (Zoom, Meet, etc.)
             $table->text('student_goals')->nullable(); // Objetivos del estudiante para la sesión

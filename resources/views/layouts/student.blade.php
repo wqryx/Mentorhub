@@ -15,18 +15,19 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     @stack('styles')
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
-<body class="font-sans antialiased bg-light">
+<body class="font-sans antialiased bg-light" style="font-family: var(--font-family);">
     <div class="dashboard-container">
         <!-- Sidebar -->
         <nav id="sidebar" class="sidebar">
             <div class="sidebar-header">
-                <a href="{{ route('dashboard') }}">
+                <a href="{{ route('student.index') }}">
                     <img src="{{ asset('images/logo.png') }}" alt="MentorHub" class="sidebar-logo">
                 </a>
                 <button type="button" id="sidebarCollapse" class="btn d-md-none">
@@ -52,8 +53,8 @@
             </div>
 
             <ul class="list-unstyled sidebar-menu">
-                <li class="{{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
-                    <a href="{{ route('student.dashboard') }}">
+                <li class="{{ request()->routeIs('student.index') || request()->routeIs('student.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('student.index') }}">
                         <i class="fas fa-home"></i> Inicio
                     </a>
                 </li>

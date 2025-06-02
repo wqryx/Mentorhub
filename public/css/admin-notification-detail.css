@@ -1,0 +1,252 @@
+/* Estilos para la vista detallada de notificaciones del administrador - Utiliza las variables del tema global */
+
+/* Contenedor principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Encabezado */
+.flex.justify-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-dark);
+}
+
+/* Botón de volver */
+.inline-flex.items-center {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius);
+    font-weight: var(--font-weight-semibold);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: var(--transition);
+}
+
+.bg-gray-600 {
+    background-color: var(--secondary-600);
+    color: white;
+}
+
+.bg-gray-600:hover {
+    background-color: var(--secondary-700);
+}
+
+.bg-blue-600 {
+    background-color: var(--primary-600);
+    color: white;
+}
+
+.bg-blue-600:hover {
+    background-color: var(--primary-700);
+}
+
+.bg-green-600 {
+    background-color: var(--success-600);
+    color: white;
+}
+
+.bg-green-600:hover {
+    background-color: var(--success-700);
+}
+
+.bg-red-600 {
+    background-color: var(--danger-600);
+    color: white;
+}
+
+.bg-red-600:hover {
+    background-color: var(--danger-700);
+}
+
+.mr-2 {
+    margin-right: 0.5rem;
+}
+
+/* Tarjeta de notificación */
+.bg-white.shadow-md {
+    background-color: var(--bg-white);
+    box-shadow: var(--shadow-md);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    padding: 1.5rem;
+}
+
+/* Encabezado de notificación */
+.border-b {
+    border-bottom: 1px solid var(--border-color-light);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.text-xl {
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-dark);
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.text-gray-600 {
+    color: var(--text-muted);
+}
+
+.text-gray-500 {
+    color: var(--text-light);
+}
+
+.mt-1 {
+    margin-top: 0.25rem;
+}
+
+.font-medium {
+    font-weight: var(--font-weight-medium);
+}
+
+/* Badges de tipo */
+.px-2.py-1 {
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+}
+
+.bg-blue-100 {
+    background-color: var(--info-100);
+}
+
+.text-blue-800 {
+    color: var(--info-800);
+}
+
+.bg-green-100 {
+    background-color: var(--success-100);
+}
+
+.text-green-800 {
+    color: var(--success-800);
+}
+
+.bg-yellow-100 {
+    background-color: var(--warning-100);
+}
+
+.text-yellow-800 {
+    color: var(--warning-800);
+}
+
+.bg-red-100 {
+    background-color: var(--danger-100);
+}
+
+.text-red-800 {
+    color: var(--danger-800);
+}
+
+/* Contenido de la notificación */
+.prose {
+    max-width: none;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    color: var(--text-dark);
+}
+
+/* Información de envío */
+.border-t {
+    border-top: 1px solid var(--border-color-light);
+    padding-top: 1rem;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.grid {
+    display: grid;
+}
+
+.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gap-4 {
+    gap: 1rem;
+}
+
+/* Estados de notificación */
+.text-green-600 {
+    color: var(--success-600);
+}
+
+.text-yellow-600 {
+    color: var(--warning-600);
+}
+
+/* Lista de destinatarios */
+.max-h-40 {
+    max-height: 10rem;
+}
+
+.overflow-y-auto {
+    overflow-y: auto;
+}
+
+.list-disc {
+    list-style-type: disc;
+}
+
+.pl-5 {
+    padding-left: 1.25rem;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+}
+
+/* Acciones de notificación */
+.mt-6 {
+    margin-top: 1.5rem;
+}
+
+.space-x-2 > * + * {
+    margin-left: 0.5rem;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .flex.justify-between {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .mt-6.flex.justify-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .flex.space-x-2 {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

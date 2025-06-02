@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Services\ActivityLogService;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\App;
 
 class LogSuccessfulLogin
 {
@@ -20,6 +21,11 @@ class LogSuccessfulLogin
      */
     public function handle(Login $event): void
     {
-        ActivityLogService::logLogin($event->user);
+        try {
+            $service = App::make('activity.logger');
+            $service->logLogin($event->user);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error al registrar login: ' . $e->getMessage());
+        }
     }
 }

@@ -1,6 +1,10 @@
-@extends('admin.layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Gestión de Notificaciones')
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin-notifications.css') }}">
+@endpush
 
 @section('content')
 <div class="container mx-auto px-4 sm:px-6 lg:px-8">

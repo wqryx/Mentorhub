@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\ActivityLogService;
+use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\Response;
 
 class LogActivity
@@ -40,16 +40,22 @@ class LogActivity
 
         // Registrar la actividad
         if ($user && $action && $description) {
-            ActivityLogService::log(
-                $action,
-                $description,
-                null,
-                [
-                    'route' => $path,
-                    'method' => $method,
-                    'ip' => $request->ip(),
-                ]
-            );
+            try {
+                $service = App::make('activity.logger');
+                $service->log(
+                    $action,
+                    $description,
+                    null,
+                    [
+                        'route' => $path,
+                        'method' => $method,
+                        'ip' => $request->ip(),
+                    ]
+                );
+            } catch (\Exception $e) {
+                // Log error pero no interrumpir la ejecución
+                \Illuminate\Support\Facades\Log::error('Error al registrar actividad: ' . $e->getMessage());
+            }
         }
 
         return $response;

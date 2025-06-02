@@ -47,7 +47,7 @@ class DashboardController extends Controller
             ->where('read', false)
             ->count();
             
-        return view('dashboard.mentor.index', compact(
+        return view('mentor.index', compact(
             'upcomingSessions', 
             'pendingRequests', 
             'totalStudents', 
@@ -69,7 +69,7 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
             
-        return view('dashboard.mentor.my_courses', compact('courses'));
+        return view('mentor.my_courses', compact('courses'));
     }
     
     /**
@@ -84,7 +84,7 @@ class DashboardController extends Controller
             $query->where('mentor_id', $mentor->id);
         })->paginate(10);
         
-        return view('dashboard.mentor.students', compact('students'));
+        return view('mentor.students', compact('students'));
     }
     
     /**
@@ -105,7 +105,7 @@ class DashboardController extends Controller
             ->where('read', false)
             ->update(['read' => true]);
             
-        return view('dashboard.mentor.messages', compact('messages'));
+        return view('mentor.messages', compact('messages'));
     }
     
     /**
@@ -116,7 +116,7 @@ class DashboardController extends Controller
     public function profile()
     {
         $mentor = Auth::user();
-        return view('dashboard.mentor.profile', compact('mentor'));
+        return view('mentor.profile', compact('mentor'));
     }
     
     /**
@@ -131,7 +131,7 @@ class DashboardController extends Controller
             ->where('status', '!=', 'cancelled')
             ->get();
             
-        return view('dashboard.mentor.calendar', compact('sessions'));
+        return view('mentor.calendar', compact('sessions'));
     }
     
     /**
@@ -144,7 +144,7 @@ class DashboardController extends Controller
         $mentor = Auth::user();
         $resources = $mentor->resources()->paginate(10);
         
-        return view('dashboard.mentor.resources', compact('resources'));
+        return view('mentor.resources', compact('resources'));
     }
     
     /**
@@ -172,7 +172,7 @@ class DashboardController extends Controller
             ->orderBy('start_time', 'desc')
             ->paginate(5, ['*'], 'past');
             
-        return view('dashboard.mentor.mentorias', compact(
+        return view('mentor.mentorias', compact(
             'upcomingSessions', 
             'pendingRequests', 
             'pastSessions'

@@ -44,7 +44,7 @@ class MentorController extends Controller
                 ->count() / max($user->mentorSessions()->count(), 1) * 100
         ];
         
-        return view('dashboard.mentor.index', compact('upcomingSessions', 'pendingRequests', 'stats'));
+        return view('mentor.index', compact('upcomingSessions', 'pendingRequests', 'stats'));
     }
     
     /**
@@ -55,7 +55,7 @@ class MentorController extends Controller
         $user = Auth::user();
         $specialties = $user->specialties ?? [];
         
-        return view('dashboard.mentor.profile', compact('user', 'specialties'));
+        return view('mentor.profile', compact('user', 'specialties'));
     }
     
     /**
@@ -127,7 +127,7 @@ class MentorController extends Controller
             }])
             ->paginate(10);
             
-        return view('dashboard.mentor.students.index', compact('students'));
+        return view('mentor.students.index', compact('students'));
     }
     
     /**
@@ -146,7 +146,7 @@ class MentorController extends Controller
             ->orderBy('scheduled_at', 'desc')
             ->paginate(10);
             
-        return view('dashboard.mentor.students.show', compact('student', 'sessions'));
+        return view('mentor.students.show', compact('student', 'sessions'));
     }
     
     /**
@@ -180,7 +180,7 @@ class MentorController extends Controller
                 ];
             });
             
-        return view('dashboard.mentor.calendar', compact('events'));
+        return view('mentor.calendar', compact('events'));
     }
     
     /**
@@ -193,7 +193,7 @@ class MentorController extends Controller
             ->latest()
             ->paginate(10);
             
-        return view('dashboard.mentor.resources.index', compact('resources'));
+        return view('mentor.resources.index', compact('resources'));
     }
     
     /**
@@ -205,7 +205,7 @@ class MentorController extends Controller
             ->latest()
             ->paginate(15);
             
-        return view('dashboard.mentor.notifications', compact('notifications'));
+        return view('mentor.notifications', compact('notifications'));
     }
     
     /**
@@ -220,6 +220,6 @@ class MentorController extends Controller
             ->latest('updated_at')
             ->paginate(10);
             
-        return view('dashboard.mentor.messages', compact('conversations'));
+        return view('mentor.messages', compact('conversations'));
     }
 }

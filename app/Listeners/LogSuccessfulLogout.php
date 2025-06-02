@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Services\ActivityLogService;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\Facades\App;
 
 class LogSuccessfulLogout
 {
@@ -21,7 +22,12 @@ class LogSuccessfulLogout
     public function handle(Logout $event): void
     {
         if ($event->user) {
-            ActivityLogService::logLogout($event->user);
+            try {
+                $service = App::make('activity.logger');
+                $service->logLogout($event->user);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error al registrar logout: ' . $e->getMessage());
+            }
         }
     }
 }

@@ -2,121 +2,171 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class MentorshipSession extends Model
 {
     use HasFactory;
 
     /**
-     * Los atributos que son asignables en masa.
+     * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<string>
      */
     protected $fillable = [
-        'mentor_id',
-        'mentee_id',
-        'course_id',
+        'mentor_profile_id',
+        'student_id',
         'title',
         'description',
+        'goals',
         'scheduled_at',
-        'duration',
-        'meeting_url',
+        'duration_minutes',
         'status',
-        'mentor_notes',
-        'mentee_notes',
         'cancellation_reason',
-        'proposed_time'
+        'meeting_link',
+        'price',
+        'is_paid',
     ];
 
     /**
-     * Los atributos que deben convertirse a tipos nativos.
+     * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'scheduled_at' => 'datetime',
-        'proposed_time' => 'datetime',
+        'duration_minutes' => 'integer',
+        'price' => 'decimal:2',
+        'is_paid' => 'boolean',
     ];
 
     /**
-     * Obtiene el mentor asociado con la sesión.
+     * Get the mentor profile that owns the session.
      */
-    public function mentor()
+    public function mentorProfile(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'mentor_id');
+        return $this->belongsTo(MentorProfile::class);
     }
 
     /**
-     * Obtiene el estudiante asociado con la sesión.
+     * Get the student that owns the session.
      */
-    public function mentee()
+    public function student(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'mentee_id');
+        return $this->belongsTo(User::class, 'student_id');
     }
 
     /**
-     * Obtiene el curso asociado con la sesión.
+     * Get the review associated with the session.
      */
-    public function course()
+    public function review(): HasOne
     {
-        return $this->belongsTo(Course::class);
+        return $this->hasOne(MentorshipReview::class);
     }
 
     /**
-     * Obtiene las reseñas asociadas con la sesión.
-     */
-    public function reviews()
-    {
-        return $this->hasMany(MentorshipReview::class, 'session_id');
-    }
-
-    /**
-     * Scope para obtener sesiones programadas.
-     */
-    public function scopeScheduled($query)
-    {
-        return $query->where('status', 'scheduled');
-    }
-
-    /**
-     * Scope para obtener sesiones completadas.
-     */
-    public function scopeCompleted($query)
-    {
-        return $query->where('status', 'completed');
-    }
-
-    /**
-     * Scope para obtener sesiones canceladas.
-     */
-    public function scopeCancelled($query)
-    {
-        return $query->where('status', 'cancelled');
-    }
-
-    /**
-     * Scope para obtener sesiones pendientes.
-     */
-    public function scopePending($query)
-    {
-        return $query->where('status', 'pending');
-    }
-
-    /**
-     * Scope para obtener sesiones futuras.
+     * Scope a query to only include upcoming sessions.
      */
     public function scopeUpcoming($query)
     {
-        return $query->where('scheduled_at', '>=', now());
+        return $query->where('scheduled_at', '>', Carbon::now())
+                     ->where('status', 'confirmed');
     }
 
     /**
-     * Scope para obtener sesiones pasadas.
+     * Scope a query to only include past sessions.
      */
     public function scopePast($query)
     {
-        return $query->where('scheduled_at', '<', now());
+        return $query->where(function ($query) {
+            $query->where('scheduled_at', '<', Carbon::now())
+                  ->orWhere('status', 'completed');
+        });
+    }
+
+    /**
+     * Scope a query to only include sessions with a specific status.
+     */
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Scope a query to only include sessions for a specific mentor.
+     */
+    public function scopeForMentor($query, $mentorProfileId)
+    {
+        return $query->where('mentor_profile_id', $mentorProfileId);
+    }
+
+    /**
+     * Scope a query to only include sessions for a specific student.
+     */
+    public function scopeForStudent($query, $studentId)
+    {
+        return $query->where('student_id', $studentId);
+    }
+
+    /**
+     * Check if the session can be cancelled.
+     */
+    public function canBeCancelled(): bool
+    {
+        // Can only cancel confirmed sessions that haven't happened yet
+        return $this->status === 'confirmed' && $this->scheduled_at > Carbon::now();
+    }
+
+    /**
+     * Check if the session can be rescheduled.
+     */
+    public function canBeRescheduled(): bool
+    {
+        // Can only reschedule confirmed or pending sessions that haven't happened yet
+        return in_array($this->status, ['confirmed', 'pending']) && $this->scheduled_at > Carbon::now();
+    }
+
+    /**
+     * Check if the session is completed.
+     */
+    public function isCompleted(): bool
+    {
+        return $this->status === 'completed';
+    }
+
+    /**
+     * Check if the session is cancelled.
+     */
+    public function isCancelled(): bool
+    {
+        return $this->status === 'cancelled';
+    }
+
+    /**
+     * Check if the session has a review.
+     */
+    public function hasReview(): bool
+    {
+        return $this->review()->exists();
+    }
+
+    /**
+     * Format the scheduled date and time.
+     */
+    public function getFormattedScheduledAtAttribute(): string
+    {
+        return $this->scheduled_at->format('Y-m-d H:i');
+    }
+
+    /**
+     * Get the end time of the session.
+     */
+    public function getEndTimeAttribute(): Carbon
+    {
+        return $this->scheduled_at->copy()->addMinutes($this->duration_minutes);
     }
 }

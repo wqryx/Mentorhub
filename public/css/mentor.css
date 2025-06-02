@@ -1,0 +1,239 @@
+/* MentorHub - Estilos específicos para la vista de Mentor */
+
+/* Importar variables globales del tema */
+@import url('theme.css');
+
+/* Estilos para la sección de perfil del mentor */
+.mentor-profile-card {
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  border: none;
+  transition: all var(--transition-normal) var(--transition-timing);
+  margin-bottom: var(--spacing-6);
+}
+
+.mentor-profile-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.mentor-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+}
+
+.mentor-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-primary-100);
+}
+
+.mentor-info {
+  flex: 1;
+}
+
+.mentor-name {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-neutral-800);
+  margin-bottom: var(--spacing-1);
+}
+
+.mentor-email {
+  color: var(--color-neutral-600);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-2);
+}
+
+.mentor-bio {
+  color: var(--color-neutral-700);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+
+/* Estilos para las especialidades */
+.specialties-section {
+  padding: var(--spacing-4);
+  border-top: 1px solid var(--color-neutral-200);
+}
+
+.section-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-800);
+  margin-bottom: var(--spacing-3);
+}
+
+.specialty-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.specialty-tag {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-800);
+  border-radius: var(--border-radius-full);
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Estilos para la sección de contacto */
+.contact-section {
+  padding: var(--spacing-4);
+  border-top: 1px solid var(--color-neutral-200);
+}
+
+.contact-item {
+  margin-bottom: var(--spacing-2);
+}
+
+.contact-label {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-700);
+}
+
+.contact-value {
+  color: var(--color-neutral-800);
+}
+
+.contact-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast) var(--transition-timing);
+}
+
+.contact-link:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+/* Estilos para la próxima sesión */
+.next-session-section {
+  padding: var(--spacing-4);
+  border-top: 1px solid var(--color-neutral-200);
+}
+
+.session-card {
+  background-color: var(--color-primary-50);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-4);
+}
+
+.session-title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-800);
+  margin-bottom: var(--spacing-1);
+}
+
+.session-date {
+  color: var(--color-neutral-600);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-2);
+}
+
+.session-description {
+  color: var(--color-neutral-700);
+  margin-bottom: var(--spacing-3);
+}
+
+.calendar-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.calendar-link:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+/* Estilos para el formulario de mensaje */
+.message-card {
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  border: none;
+}
+
+.message-form {
+  padding: var(--spacing-4);
+}
+
+.form-group {
+  margin-bottom: var(--spacing-4);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-700);
+  margin-bottom: var(--spacing-1);
+}
+
+.form-control {
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  transition: border-color var(--transition-fast) var(--transition-timing), 
+              box-shadow var(--transition-fast) var(--transition-timing);
+}
+
+.form-control:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+  outline: none;
+}
+
+textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Estilos para la alerta de no mentor */
+.no-mentor-alert {
+  background-color: var(--color-warning-50);
+  border-left: 4px solid var(--color-warning);
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+}
+
+.alert-icon {
+  color: var(--color-warning);
+  flex-shrink: 0;
+}
+
+.alert-content {
+  color: var(--color-neutral-800);
+  font-size: var(--font-size-base);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .mentor-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .specialty-tags {
+    justify-content: center;
+  }
+}

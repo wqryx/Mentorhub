@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Services\ActivityLogService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\App;
 
 class ActivityHelper
 {
@@ -20,7 +21,8 @@ class ActivityHelper
     public static function log($action, $description, $model = null, $properties = null)
     {
         try {
-            return ActivityLogService::log($action, $description, $model, $properties);
+            $service = App::make('activity.logger');
+            return $service->log($action, $description, $model, $properties);
         } catch (\Exception $e) {
             \Log::error('Error al registrar actividad: ' . $e->getMessage(), [
                 'exception' => $e,
@@ -44,7 +46,8 @@ class ActivityHelper
     public static function logCreated(Model $model, $description = null, $properties = null)
     {
         try {
-            return ActivityLogService::logCreated($model, $description, $properties);
+            $service = App::make('activity.logger');
+            return $service->logCreated($model, $description, $properties);
         } catch (\Exception $e) {
             \Log::error('Error al registrar actividad de creación: ' . $e->getMessage(), [
                 'exception' => $e,
@@ -68,7 +71,8 @@ class ActivityHelper
     public static function logUpdated(Model $model, $description = null, $properties = null)
     {
         try {
-            return ActivityLogService::logUpdated($model, $description, $properties);
+            $service = App::make('activity.logger');
+            return $service->logUpdated($model, $description, $properties);
         } catch (\Exception $e) {
             \Log::error('Error al registrar actividad de actualización: ' . $e->getMessage(), [
                 'exception' => $e,
@@ -92,7 +96,8 @@ class ActivityHelper
     public static function logDeleted(Model $model, $description = null, $properties = null)
     {
         try {
-            return ActivityLogService::logDeleted($model, $description, $properties);
+            $service = App::make('activity.logger');
+            return $service->logDeleted($model, $description, $properties);
         } catch (\Exception $e) {
             \Log::error('Error al registrar actividad de eliminación: ' . $e->getMessage(), [
                 'exception' => $e,
@@ -116,7 +121,8 @@ class ActivityHelper
     public static function logCustom($action, $description, $properties = null)
     {
         try {
-            return ActivityLogService::log($action, $description, null, $properties);
+            $service = App::make('activity.logger');
+            return $service->log($action, $description, null, $properties);
         } catch (\Exception $e) {
             \Log::error('Error al registrar actividad personalizada: ' . $e->getMessage(), [
                 'exception' => $e,

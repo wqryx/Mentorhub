@@ -56,7 +56,7 @@ class ActivityLogController extends Controller
             ->orderBy('action')
             ->pluck('action');
         
-        return view('dashboard.admin.activity_logs.index', compact('logs', 'users', 'actions'));
+        return view('admin.activity_logs.index', compact('logs', 'users', 'actions'));
     }
     
     /**
@@ -69,7 +69,7 @@ class ActivityLogController extends Controller
     {
         $log = ActivityLog::with('user')->findOrFail($id);
         
-        return view('dashboard.admin.activity_logs.show', compact('log'));
+        return view('admin.activity_logs.show', compact('log'));
     }
     
     /**
@@ -178,7 +178,7 @@ class ActivityLogController extends Controller
             ->with('user:id,name')
             ->get();
         
-        return view('dashboard.admin.activity_logs.analytics', compact(
+        return view('admin.activity_logs.analytics', compact(
             'stats',
             'dates',
             'activityByAction',

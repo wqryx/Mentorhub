@@ -66,7 +66,7 @@ class MessageController extends Controller
             'sentMessages' => Message::where('sender_id', $user->id)->count()
         ];
         
-        return view('dashboard.student.messages', compact('messages', 'mentors', 'admins', 'stats'));
+        return view('student.messages.index', compact('messages', 'mentors', 'admins', 'stats'));
     }
     
     /**
@@ -106,7 +106,7 @@ class MessageController extends Controller
             ->get()
             ->reverse();
         
-        return view('dashboard.student.message-detail', compact('message', 'conversation'));
+        return view('student.messages.show', compact('message', 'conversation'));
     }
     
     /**
@@ -125,7 +125,7 @@ class MessageController extends Controller
         // Combinar destinatarios
         $recipients = $mentors->concat($admins);
         
-        return view('dashboard.student.message-create', compact('recipients'));
+        return view('student.messages.create', compact('recipients'));
     }
     
     /**

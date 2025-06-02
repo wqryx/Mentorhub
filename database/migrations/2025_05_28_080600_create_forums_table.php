@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('icon')->nullable(); // Icono para el foro
-            $table->foreignId('parent_id')->nullable()->constrained('forums')->onDelete('cascade'); // Para subcategorías
+            $table->unsignedBigInteger('parent_id')->nullable(); // Para subcategorías
             $table->foreignId('course_id')->nullable()->constrained()->onDelete('cascade'); // Para foros específicos de un curso
             $table->boolean('is_active')->default(true);
             $table->boolean('is_private')->default(false); // Si solo ciertos roles pueden ver
@@ -25,6 +25,14 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
             $table->softDeletes();
+        });
+        
+        // Añadir la clave foránea auto-referencial después de crear la tabla
+        Schema::table('forums', function (Blueprint $table) {
+            $table->foreign('parent_id')
+                  ->references('id')
+                  ->on('forums')
+                  ->onDelete('cascade');
         });
     }
 

@@ -49,7 +49,7 @@ class UserController extends Controller
         $users = $query->paginate(15);
         $roles = Role::all();
         
-        return view('dashboard.admin.users.index', compact('users', 'roles'));
+        return view('admin.users.index', compact('users', 'roles'));
     }
 
     /**
