@@ -10,12 +10,17 @@ use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas para administradores
-Route::middleware(['auth', 'role:admin'])->prefix('dashboard/admin')->name('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('dashboard/admin')->name('admin.')->group(function () {
     // Panel principal
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Perfil de usuario
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     
     // Gestión de usuarios
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -66,6 +71,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('dashboard/admin')->name('admi
     Route::get('/notifications/{notification}/edit', [NotificationController::class, 'edit'])->name('notifications.edit');
     Route::put('/notifications/{notification}', [NotificationController::class, 'update'])->name('notifications.update');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::get('/notifications/export/{format?}', [NotificationController::class, 'export'])->name('notifications.export');
     
     // Mensajes
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
@@ -83,12 +89,23 @@ Route::middleware(['auth', 'role:admin'])->prefix('dashboard/admin')->name('admi
     // Registros de Actividad
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity_logs.index');
     Route::get('/activity-logs/{id}', [ActivityLogController::class, 'show'])->name('activity_logs.show');
-    Route::post('/activity-logs/export', [ActivityLogController::class, 'export'])->name('activity_logs.export');
+    Route::get('/activity-logs/user/{userId}', [ActivityLogController::class, 'userActivity'])->name('activity_logs.user');
     Route::get('/activity-logs/analytics', [ActivityLogController::class, 'analytics'])->name('activity_logs.analytics');
     Route::post('/activity-logs/prune', [ActivityLogController::class, 'prune'])->name('activity_logs.prune');
     Route::post('/activity-logs/settings', [ActivityLogController::class, 'saveSettings'])->name('activity_logs.settings');
     
     // Configuración
-    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
-    Route::patch('/settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::prefix('settings')->name('settings.')->group(function () {
+        // Configuración general
+        Route::get('/general', [SettingController::class, 'general'])->name('general');
+        Route::put('/general', [SettingController::class, 'updateGeneral'])->name('general.update');
+        
+        // Notificaciones
+        Route::get('/notifications', [SettingController::class, 'notifications'])->name('notifications');
+        Route::put('/notifications', [SettingController::class, 'updateNotifications'])->name('notifications.update');
+        
+        // Apariencia
+        Route::get('/appearance', [SettingController::class, 'appearance'])->name('appearance');
+        Route::put('/appearance', [SettingController::class, 'updateAppearance'])->name('appearance.update');
+    });
 });

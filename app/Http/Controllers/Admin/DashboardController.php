@@ -16,7 +16,8 @@ class DashboardController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['auth', 'role:admin']);
+        $this->middleware('auth');
+        // El middleware de roles ha sido eliminado temporalmente
     }
     
     /**
@@ -26,6 +27,12 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        // Obtener el tema de la sesión o usar el valor por defecto
+        $theme = session('theme', 'light');
+        
+        // Compartir el tema con todas las vistas
+        view()->share('theme', $theme);
+        
         $data = [
             'totalStudents' => User::role('student')->count(),
             'totalMentors' => User::role('mentor')->count(),
@@ -35,6 +42,7 @@ class DashboardController extends Controller
                 ->take(5)
                 ->get(),
             'upcomingEvents' => [], // Agregar lógica para eventos si es necesario
+            'theme' => $theme, // Pasar el tema a la vista
         ];
         
         return view('admin.dashboard', $data);

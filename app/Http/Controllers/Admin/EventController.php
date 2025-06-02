@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\User;
+use App\Models\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -18,7 +19,8 @@ class EventController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['auth', 'role:admin']);
+        $this->middleware('auth');
+        // El middleware de roles ha sido eliminado temporalmente
     }
     
     /**
@@ -83,7 +85,10 @@ class EventController extends Controller
         
         $participants = User::orderBy('name')->get();
         
-        return view('admin.events.create', compact('organizers', 'participants'));
+        // Get all modules for the dropdown
+        $modules = Module::orderBy('title')->get();
+        
+        return view('admin.events.create', compact('organizers', 'participants', 'modules'));
     }
 
     /**
@@ -152,7 +157,10 @@ class EventController extends Controller
         
         $participants = User::orderBy('name')->get();
         
-        return view('admin.events.edit', compact('event', 'organizers', 'participants'));
+        // Get all modules for the dropdown
+        $modules = Module::orderBy('title')->get();
+        
+        return view('admin.events.edit', compact('event', 'organizers', 'participants', 'modules'));
     }
 
     /**

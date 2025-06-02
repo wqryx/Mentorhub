@@ -21,26 +21,30 @@
     <div class="min-h-screen flex">
         <!-- Sidebar -->
         <div class="hidden md:flex md:flex-shrink-0">
-            <div class="flex flex-col w-64 bg-indigo-700">
-                <div class="flex items-center justify-center h-16 px-4 bg-indigo-800">
+            <div class="flex flex-col w-64 bg-blue-600">
+                <div class="flex items-center justify-center h-16 px-4 bg-blue-700">
                     <a href="{{ route('admin.dashboard') }}" class="text-white text-xl font-bold">MentorHub</a>
                 </div>
                 <nav class="flex-1 px-2 py-4">
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2 text-white hover:bg-indigo-600 rounded-md mb-1">
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2 text-white hover:bg-blue-700 rounded-md mb-1 transition-colors duration-200">
                         <i class="fas fa-tachometer-alt mr-3"></i>
                         Dashboard
                     </a>
-                    <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-indigo-600 rounded-md mb-1">
+                    <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-blue-700 rounded-md mb-1 transition-colors duration-200">
                         <i class="fas fa-users mr-3"></i>
                         Usuarios
                     </a>
-                    <a href="{{ route('admin.courses.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-indigo-600 rounded-md mb-1">
+                    <a href="{{ route('admin.courses.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-blue-700 rounded-md mb-1 transition-colors duration-200">
                         <i class="fas fa-book mr-3"></i>
                         Cursos
                     </a>
-                    <a href="{{ route('admin.events.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-indigo-600 rounded-md mb-1">
+                    <a href="{{ route('admin.events.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-blue-700 rounded-md mb-1 transition-colors duration-200">
                         <i class="far fa-calendar-alt mr-3"></i>
                         Eventos
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-blue-700 rounded-md mb-1 transition-colors duration-200">
+                        <i class="fas fa-bell mr-3"></i>
+                        Notificaciones
                     </a>
                 </nav>
             </div>
@@ -51,11 +55,28 @@
             <!-- Top navbar -->
             <header class="bg-white shadow-sm">
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-                    <div class="flex items-center">
+                    <div class="flex items-center space-x-1">
                         <button class="md:hidden text-gray-500 hover:text-gray-600 focus:outline-none">
                             <i class="fas fa-bars"></i>
                         </button>
-                        <h1 class="ml-4 text-lg font-medium text-gray-900">@yield('title')</h1>
+                        <nav class="hidden md:flex space-x-1" aria-label="Navegación principal">
+                            <a href="{{ route('admin.dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('admin.dashboard') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                                <i class="fas fa-tachometer-alt mr-1"></i> Tablero
+                            </a>
+                            <a href="{{ route('admin.users.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('admin.users.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                                <i class="fas fa-users mr-1"></i> Usuarios
+                            </a>
+                            <a href="{{ route('admin.courses.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('admin.courses.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                                <i class="fas fa-book mr-1"></i> Cursos
+                            </a>
+                            <a href="{{ route('admin.events.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('admin.events.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                                <i class="far fa-calendar-alt mr-1"></i> Eventos
+                            </a>
+                            <a href="{{ route('admin.notifications.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('admin.notifications.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                                <i class="far fa-newspaper mr-1"></i> Noticias
+                            </a>
+                        </nav>
+                        <h1 class="ml-4 text-lg font-medium text-gray-900 md:hidden">@yield('title')</h1>
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="relative ml-3" x-data="{ open: false }">
@@ -85,10 +106,10 @@
                                         <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</p>
                                     </div>
                                     <div class="py-1">
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                                        <a href="{{ route('admin.profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
                                             <i class="fas fa-user mr-2 text-gray-500"></i> Mi perfil
                                         </a>
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                                        <a href="{{ route('admin.settings.general') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
                                             <i class="fas fa-cog mr-2 text-gray-500"></i> Configuración
                                         </a>
                                     </div>

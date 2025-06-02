@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\UsersExport;
 
 class UserController extends Controller
 {
@@ -200,9 +202,21 @@ class UserController extends Controller
         $user->update(['is_active' => !$user->is_active]);
         
         return response()->json([
-            'success' => true,
+            'status' => 'success',
             'is_active' => $user->is_active,
             'message' => 'Estado actualizado correctamente'
         ]);
+    }
+
+    /**
+     * Export users to CSV
+     *
+     * @param string $format The format to export to (currently only csv is supported)
+     * @return \Illuminate\Http\Response
+     */
+    public function export($format = 'csv')
+    {
+        $export = new UsersExport();
+        return $export->toCsv();
     }
 }

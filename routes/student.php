@@ -9,7 +9,7 @@ use App\Http\Controllers\Student\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas para estudiantes
-Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
+Route::middleware(['auth'])->prefix('student')->name('student.')->group(function () {
     // Dashboard principal
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

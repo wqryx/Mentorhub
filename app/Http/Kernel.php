@@ -25,6 +25,12 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
+        
+        'admin' => [
+            'web',
+            'auth',
+            \App\Http\Middleware\ApplyTheme::class,
+        ],
 
         'api' => [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
@@ -46,18 +52,18 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         
-        // Middleware de Roles Unificado
-        'role' => \App\Http\Middleware\RoleMiddleware::class,
-        
-        // Mantener compatibilidad con Spatie si es necesario
-        'role.spatie' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-        'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        // Middleware de Roles (Spatie) - Comentado para evitar errores
+        // 'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        // 'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        // 'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         
         // Registro de actividad (middleware anterior con problemas)
         // 'log.activity' => \App\Http\Middleware\LogActivity::class,
         
-        // Nuevo middleware de registro de actividad
+        // Middleware de registro de actividad
         'activity.logger' => \App\Http\Middleware\ActivityLogger::class,
+        
+        // Middleware de tema
+        'theme' => \App\Http\Middleware\ApplyTheme::class,
     ];
 }

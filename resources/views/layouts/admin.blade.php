@@ -21,10 +21,26 @@
     <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin-theme.css') }}">
 
     @stack('styles')
 </head>
-<body>
+<body data-theme="{{ session('theme', 'light') }}" id="theme-container" class="theme-{{ session('theme', 'light') }}">
+    <!-- Theme styles -->
+    <style>
+        :root {
+            --theme-primary: {{ session('theme', 'light') === 'dark' ? '#5a7bfc' : '#4361ee' }};
+            --theme-bg: {{ session('theme', 'light') === 'dark' ? '#1a1a1a' : '#ffffff' }};
+            --theme-text: {{ session('theme', 'light') === 'dark' ? '#f8f9fa' : '#212529' }};
+            --theme-border: {{ session('theme', 'light') === 'dark' ? '#495057' : '#dee2e6' }};
+        }
+        
+        body {
+            background-color: var(--theme-bg);
+            color: var(--theme-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+    </style>
     <div class="wrapper">
         <!-- Sidebar -->
         <nav id="sidebar" class="sidebar js-sidebar">
@@ -171,23 +187,26 @@
                             </div>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
-                                <i class="fas fa-cog align-middle"></i>
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{{ Auth::user()->profile_photo_url }}" class="avatar img-fluid rounded-circle me-1" alt="{{ Auth::user()->name }}" />
+                                <span class="text-dark d-none d-sm-inline">{{ Auth::user()->name }}</span>
                             </a>
-                            <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
-                                <img src="{{ Auth::user()->profile_photo_url }}" class="avatar img-fluid rounded-circle me-1" alt="{{ Auth::user()->name }}" /> <span class="text-dark">{{ Auth::user()->name }}</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Perfil</a>
-                                <a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Configuración</a>
-                                <div class="dropdown-divider"></div>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="fas fa-power-off me-2"></i> Cerrar Sesión
-                                    </button>
-                                </form>
-                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('admin.settings.appearance') }}">
+                                        <i class="fas fa-paint-brush me-2"></i> Configuración de Tema
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-power-off me-2"></i> Cerrar Sesión
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -234,6 +253,112 @@
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Theme Script -->
+    <script>
+        // Apply saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const sessionTheme = '{{ session('theme', 'system') }}';
+            
+            // Determine which theme to use (saved > session > system)
+            let theme = savedTheme || sessionTheme;
+            
+            // If theme is set to 'system', use the system preference
+            if (theme === 'system') {
+                theme = systemTheme;
+            }
+            
+            // Apply the theme
+            applyTheme(theme);
+            updateThemeSwitcher(theme);
+            
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (sessionTheme === 'system' || (!savedTheme && sessionTheme === 'system')) {
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    applyTheme(newTheme);
+                }
+            });
+        });
+        
+        // Apply theme to the page
+        function applyTheme(theme) {
+            // Remove all theme classes
+            document.body.classList.remove('theme-light', 'theme-dark');
+            
+            // Add the selected theme class
+            document.body.classList.add(`theme-${theme}`);
+            document.body.setAttribute('data-theme', theme);
+            
+            // Update theme in session via AJAX if it's different from the current session
+            const currentTheme = '{{ session('theme', 'system') }}';
+            if (theme !== currentTheme && theme !== 'system') {
+                updateThemeOnServer(theme);
+            }
+            
+            // Update theme switcher UI
+            updateThemeSwitcher(theme);
+        }
+        
+        // Update theme on the server via AJAX
+        function updateThemeOnServer(theme) {
+            fetch('{{ route('admin.settings.appearance.update') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    theme: theme,
+                    _token: '{{ csrf_token() }}',
+                    _method: 'PUT'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Theme updated successfully');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating theme:', error);
+            });
+        }
+        
+        // Update theme switcher UI
+        function updateThemeSwitcher(theme) {
+            // Remove active class from all theme options
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            
+            // Add active class to the current theme option
+            const currentTheme = theme === 'system' ? 'system' : theme;
+            const activeOption = document.querySelector(`.theme-option[data-theme="${currentTheme}"]`);
+            if (activeOption) {
+                activeOption.classList.add('active');
+            }
+        }
+        
+        // Function to change theme
+        function setTheme(theme) {
+            // Save to localStorage for immediate feedback on next page load
+            localStorage.setItem('theme', theme);
+            
+            // If theme is set to 'system', use the system preference
+            if (theme === 'system') {
+                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                applyTheme(systemTheme);
+            } else {
+                applyTheme(theme);
+            }
+        }
+    </script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>

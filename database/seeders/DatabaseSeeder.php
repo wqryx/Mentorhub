@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             // Usar nuestros seeders personalizados
             BasicRolesAndPermissionsSeeder::class,
             SettingsSeeder::class,
+            CourseSeeder::class,
+            ModuleSeeder::class,
         ]);
     }
 }

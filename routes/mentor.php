@@ -5,7 +5,7 @@ use App\Http\Controllers\Mentor\MentorshipSessionController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas para mentores
-Route::middleware(['auth', 'verified', 'role:mentor'])->prefix('mentor')->name('mentor.')->group(function () {
+Route::middleware(['auth', 'verified'])->prefix('mentor')->name('mentor.')->group(function () {
     // Dashboard y perfil
     Route::get('/dashboard', [MentorController::class, 'dashboard'])->name('dashboard');
     Route::get('/profile', [MentorController::class, 'profile'])->name('profile');

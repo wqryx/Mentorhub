@@ -27,7 +27,10 @@ class Event extends Model
         'status',
         'type',
         'capacity',
-        'image'
+        'image',
+        'module_id',
+        'organizer_id',
+        'max_participants'
     ];
 
     /**
@@ -89,5 +92,29 @@ class Event extends Model
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
+    }
+    
+    /**
+     * Get the module that this event belongs to.
+     */
+    public function module()
+    {
+        return $this->belongsTo(Module::class);
+    }
+    
+    /**
+     * Get the organizer of the event.
+     */
+    public function organizer()
+    {
+        return $this->belongsTo(User::class, 'organizer_id');
+    }
+    
+    /**
+     * Get the participants of the event.
+     */
+    public function participants()
+    {
+        return $this->belongsToMany(User::class, 'event_user', 'event_id', 'user_id');
     }
 }

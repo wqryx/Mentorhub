@@ -154,6 +154,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\ActivityLogServiceProvider::class,
+        App\Providers\SettingsServiceProvider::class,
         \Spatie\Permission\PermissionServiceProvider::class,
     ],
 

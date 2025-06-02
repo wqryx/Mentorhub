@@ -1,18 +1,19 @@
-@extends('layouts.admin')
+@extends('admin.layouts.app')
 
 @section('title', 'Gestión de Notificaciones')
-
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/admin-notifications.css') }}">
-@endpush
 
 @section('content')
 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold text-gray-900">Gestión de Notificaciones</h1>
-        <a href="{{ route('admin.notifications.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-800 disabled:opacity-25 transition">
-            <i class="fas fa-plus mr-2"></i> Nueva Notificación
-        </a>
+        <div class="flex space-x-2">
+            <a href="{{ route('admin.notifications.export', ['format' => 'excel']) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-file-excel mr-2"></i> Exportar
+            </a>
+            <a href="{{ route('admin.notifications.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-plus mr-2"></i> Nueva Notificación
+            </a>
+        </div>
     </div>
 
     @if(session('success'))
@@ -31,72 +32,149 @@
         </div>
     @endif
 
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <!-- Filtros -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Filtros</h3>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+            <form id="notificationFilterForm" action="{{ route('admin.notifications.index') }}" method="GET" class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                    <div>
+                        <label for="search" class="block text-sm font-medium text-gray-700">Buscar</label>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Título, mensaje...">
+                    </div>
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-gray-700">Tipo</label>
+                        <select id="type" name="type" class="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="">Todos los tipos</option>
+                            <option value="info" {{ request('type') == 'info' ? 'selected' : '' }}>Informativa</option>
+                            <option value="success" {{ request('type') == 'success' ? 'selected' : '' }}>Éxito</option>
+                            <option value="warning" {{ request('type') == 'warning' ? 'selected' : '' }}>Advertencia</option>
+                            <option value="error" {{ request('type') == 'error' ? 'selected' : '' }}>Error</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700">Estado</label>
+                        <select id="status" name="status" class="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="">Todos</option>
+                            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Pública</option>
+                            <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Privada</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-search mr-2"></i> Filtrar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de notificaciones -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notificación</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
                         <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($notifications as $notification)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $notification->title }}</div>
-                                <div class="text-sm text-gray-500">{{ Str::limit($notification->message, 50) }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @php
-                                    $typeColors = [
-                                        'info' => 'bg-blue-100 text-blue-800',
-                                        'success' => 'bg-green-100 text-green-800',
-                                        'warning' => 'bg-yellow-100 text-yellow-800',
-                                        'error' => 'bg-red-100 text-red-800',
-                                    ];
-                                @endphp
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $typeColors[$notification->type] ?? 'bg-gray-100 text-gray-800' }}">
-                                    {{ ucfirst($notification->type) }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $notification->created_at->format('d/m/Y H:i') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $notification->is_public ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                                    {{ $notification->is_public ? 'Pública' : 'Privada' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="{{ route('admin.notifications.edit', $notification) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                    <i class="fas fa-edit"></i> Editar
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full {{ $notification->type === 'info' ? 'bg-blue-100 text-blue-600' : ($notification->type === 'success' ? 'bg-green-100 text-green-600' : ($notification->type === 'warning' ? 'bg-yellow-100 text-yellow-600' : 'bg-red-100 text-red-600')) }}">
+                                    @if($notification->type === 'info')
+                                        <i class="fas fa-info-circle"></i>
+                                    @elseif($notification->type === 'success')
+                                        <i class="fas fa-check-circle"></i>
+                                    @elseif($notification->type === 'warning')
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    @else
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    @endif
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ $notification->title }}</div>
+                                    <div class="text-sm text-gray-500">{{ Str::limit($notification->message, 50) }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @php
+                                $typeColors = [
+                                    'info' => 'bg-blue-100 text-blue-800',
+                                    'success' => 'bg-green-100 text-green-800',
+                                    'warning' => 'bg-yellow-100 text-yellow-800',
+                                    'error' => 'bg-red-100 text-red-800',
+                                ];
+                            @endphp
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $typeColors[$notification->type] ?? 'bg-gray-100 text-gray-800' }}">
+                                {{ ucfirst($notification->type) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $notification->is_public ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                {{ $notification->is_public ? 'Pública' : 'Privada' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ $notification->created_at->diffForHumans() }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex justify-end space-x-2">
+                                <a href="{{ route('admin.notifications.edit', $notification) }}" class="text-indigo-600 hover:text-indigo-900" title="Editar">
+                                    <i class="fas fa-edit"></i>
                                 </a>
-                                <form action="{{ route('admin.notifications.destroy', $notification) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta notificación?');">
+                                <form action="{{ route('admin.notifications.destroy', $notification) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta notificación?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">
-                                        <i class="fas fa-trash"></i> Eliminar
+                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
-                            </td>
-                        </tr>
+                            </div>
+                        </td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                No hay notificaciones registradas.
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                            No se encontraron notificaciones
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-            {{ $notifications->links() }}
-        </div>
+        @if($notifications->hasPages())
+            <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-gray-700">
+                        Mostrando {{ $notifications->firstItem() ?? 0 }} a {{ $notifications->lastItem() ?? 0 }} de {{ $notifications->total() }} registros
+                    </div>
+                    {{ $notifications->withQueryString()->links() }}
+                </div>
+            </div>
+        @endif
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    // Inicializar tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
 @endsection

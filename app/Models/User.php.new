@@ -67,25 +67,6 @@ class User extends Authenticatable
     ];
     
     /**
-     * Get the URL to the user's profile photo.
-     *
-     * @return string
-     */
-    public function getProfilePhotoUrlAttribute()
-    {
-        if ($this->profile_photo_path) {
-            return asset('storage/'.$this->profile_photo_path);
-        }
-        
-        // Default avatar if no photo is set
-        $name = trim(collect(explode(' ', $this->name))->map(function ($segment) {
-            return mb_substr($segment, 0, 1);
-        })->join(' '));
-        
-        return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=7F9CF5&background=EBF4FF';
-    }
-
-    /**
      * Check if user has a specific role
      */
     public function hasRole($role)
@@ -211,7 +192,25 @@ class User extends Authenticatable
         return $reviews->avg('rating');
     }
 
-
+    /**
+     * Get the URL to the user's profile photo.
+     *
+     * @return string
+     */
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->profile_photo_path) {
+            return asset('storage/'.$this->profile_photo_path);
+        }
+        
+        // Default avatar if no photo is set
+        $name = trim(collect(explode(' ', $this->name))->map(function ($segment) {
+            return mb_substr($segment, 0, 1);
+        })->join(' '));
+        
+        return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=7F9CF5&background=EBF4FF';
+    }
+    
     /**
      * Obtiene los mensajes enviados por el usuario.
      */
@@ -238,4 +237,3 @@ class User extends Authenticatable
             ->where('deleted_by_recipient', false);
     }
 }
-

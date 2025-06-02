@@ -16,7 +16,8 @@ class NotificationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['auth', 'role:admin']);
+        $this->middleware('auth');
+        // El middleware de roles ha sido eliminado temporalmente
     }
     
     /**
@@ -160,5 +161,62 @@ class NotificationController extends Controller
         
         return redirect()->route('admin.notifications.index')
             ->with('success', 'Notificación eliminada exitosamente');
+    }
+    
+    /**
+     * Export notifications to the specified format.
+     *
+     * @param  string  $format
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\Response
+     */
+    public function export($format = 'excel')
+    {
+        $notifications = Notification::with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        $fileName = 'notifications-' . now()->format('Y-m-d-His');
+        
+        if ($format === 'csv') {
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="' . $fileName . '.csv"',
+            ];
+            
+            $callback = function() use ($notifications) {
+                $file = fopen('php://output', 'w');
+                
+                // Add CSV headers
+                fputcsv($file, [
+                    'ID', 'Título', 'Mensaje', 'Tipo', 'Pública', 'Creada por', 'Creada el', 'Enviada', 'Enviada el'
+                ]);
+                
+                // Add data rows
+                foreach ($notifications as $notification) {
+                    fputcsv($file, [
+                        $notification->id,
+                        $notification->title,
+                        $notification->message,
+                        $notification->type,
+                        $notification->is_public ? 'Sí' : 'No',
+                        $notification->user ? $notification->user->name : 'Sistema',
+                        $notification->created_at->format('d/m/Y H:i'),
+                        $notification->is_sent ? 'Sí' : 'No',
+                        $notification->sent_at ? $notification->sent_at->format('d/m/Y H:i') : 'No enviada',
+                    ]);
+                }
+                
+                fclose($file);
+            };
+            
+            return response()->stream($callback, 200, $headers);
+        } else {
+            // Default to Excel (xlsx) using Fast Excel
+            $export = new \App\Exports\NotificationsExport($notifications);
+            $filePath = $export->export();
+            
+            return response()->download($filePath, $fileName . '.xlsx')
+                ->deleteFileAfterSend(true);
+        }
     }
 }

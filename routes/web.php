@@ -50,33 +50,51 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    // NOTA: Las rutas de administrador han sido movidas a routes/admin.php para evitar duplicación
-    // Las siguientes rutas están comentadas porque estaban causando conflictos con las definidas en routes/admin.php
-    /*
-    Route::prefix('dashboard/admin')->name('admin.')->middleware(['role:admin'])->group(function () {
-        // Panel Resumen
+    // Rutas de administración
+    Route::prefix('dashboard/admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+        // Dashboard principal
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
         
-        // Gestión de Cursos
-        Route::get('/courses', [AdminCourseController::class, 'index'])->name('courses.index');
+        // Rutas de usuarios
+        Route::resource('users', AdminUserController::class);
         
-        // Gestión de Usuarios
-        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        // Rutas de cursos
+        Route::resource('courses', AdminCourseController::class);
         
-        // Eventos y Calendario
-        Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
+        // Rutas de eventos
+        Route::resource('events', AdminEventController::class);
         
-        // Comunicaciones
-        Route::get('/notifications', [AdminNotificationController::class, 'index'])->name('notifications.index');
-        Route::get('/messages', [AdminMessageController::class, 'index'])->name('messages.index');
+        // Rutas de notificaciones
+        Route::resource('notifications', AdminNotificationController::class);
+        Route::post('notifications/{notification}/send', [AdminNotificationController::class, 'sendNotification'])->name('notifications.send');
+        Route::get('notifications/export/{format?}', [AdminNotificationController::class, 'export'])->name('notifications.export');
         
-        // Configuración
-        Route::get('/settings', [AdminSettingController::class, 'index'])->name('settings.index');
+        // Rutas de mensajes
+        Route::resource('messages', AdminMessageController::class);
+        
+        // Rutas de configuración
+        Route::prefix('settings')->name('settings.')->group(function () {
+            // Configuración general
+            Route::get('general', [\App\Http\Controllers\Admin\SettingsController::class, 'general'])->name('general');
+            Route::put('general', [\App\Http\Controllers\Admin\SettingsController::class, 'updateGeneral'])->name('general.update');
+            
+            // Configuración de notificaciones
+            Route::get('notifications', [\App\Http\Controllers\Admin\SettingsController::class, 'notifications'])->name('notifications');
+            Route::put('notifications', [\App\Http\Controllers\Admin\SettingsController::class, 'updateNotifications'])->name('notifications.update');
+            
+            // Configuración de apariencia
+            Route::get('appearance', [\App\Http\Controllers\Admin\SettingsController::class, 'appearance'])->name('appearance');
+            Route::put('appearance', [\App\Http\Controllers\Admin\SettingsController::class, 'updateAppearance'])->name('appearance.update');
+            Route::post('appearance', [\App\Http\Controllers\Admin\SettingsController::class, 'updateAppearance'])->name('appearance.update.ajax');
+            
+            // Test de configuración
+            Route::get('test', [\App\Http\Controllers\Admin\SettingsController::class, 'testSettings'])->name('test');
+            Route::post('test', [\App\Http\Controllers\Admin\SettingsController::class, 'updateTestSetting'])->name('test.update');
+        });
     });
-    */
-    
+
     // Rutas de mentor
-    Route::prefix('dashboard/mentor')->name('mentor.')->middleware(['role:mentor'])->group(function () {
+    Route::prefix('dashboard/mentor')->name('mentor.')->middleware(['auth'])->group(function () {
         // Dashboard principal
         Route::get('/', [MentorDashboardController::class, 'index'])->name('dashboard');
         
@@ -138,5 +156,28 @@ Route::middleware(['auth'])->group(function () {
     // Aquí solo mantenemos la redirección al dashboard de estudiante
 });
 
+// Rutas de administración
+require __DIR__.'/admin.php';
+
 // Rutas de cursos, módulos, tutoriales y contenidos
 require __DIR__.'/course.php';
+
+// Test route for settings
+Route::get('/test-settings', function() {
+    // Test setting helper function
+    $siteName = setting('site_name', 'Default Site Name');
+    
+    // Set a test setting
+    setting(['test_key' => 'test_value']);
+    $testValue = setting('test_key', 'default_value');
+    
+    // Test blade directive
+    $bladeDirective = app('blade.compiler')->compileString("@setting('site_name')");
+    
+    return [
+        'site_name' => $siteName,
+        'test_key' => $testValue,
+        'blade_directive' => $bladeDirective,
+        'all_settings' => app('settings')->all()
+    ];
+})->name('test.settings');

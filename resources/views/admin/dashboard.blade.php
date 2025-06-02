@@ -213,16 +213,69 @@
                     <a href="{{ route('admin.users.index') }}" class="py-2 text-sm font-medium">Usuarios</a>
                     <a href="{{ route('admin.courses.index') }}" class="py-2 text-sm font-medium">Cursos</a>
                     <a href="{{ route('admin.events.index') }}" class="py-2 text-sm font-medium">Eventos</a>
-                    <a href="{{ route('admin.notifications.index') }}" class="py-2 text-sm font-medium">Noticias</a>
+                    <a href="{{ route('admin.notifications.index') }}" class="py-2 text-sm font-medium">Notificaciones</a>
                 </div>
             </div>
             
-            <!-- Lado derecho con búsqueda y configuración -->
-            <div class="flex items-center space-x-4">
-                <a href="#" class="py-2 text-sm font-medium">Reportes</a>
-                <button class="p-1 rounded-full focus:outline-none hover:bg-blue-600 transition-colors duration-200">
-                    <i class="fas fa-cog text-white"></i>
-                </button>
+            <!-- Lado derecho con configuración -->
+            <div class="relative flex items-center">
+                <div x-data="{ open: false }" class="relative">
+                    <button 
+                        @click="open = !open" 
+                        @click.away="open = false"
+                        class="flex items-center focus:outline-none"
+                    >
+                        <div class="relative h-10 w-10">
+                            <img class="h-10 w-10 rounded-full object-cover border-2 border-white" 
+                                 src="{{ Auth::user()->photo_url }}" 
+                                 alt="{{ Auth::user()->name }}"
+                                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}'">
+                            <span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-blue-600"></span>
+                        </div>
+                    </button>
+                    
+                    <!-- Dropdown menu -->
+                    <div 
+                        x-show="open" 
+                        x-transition:enter="transition ease-out duration-100" 
+                        x-transition:enter-start="transform opacity-0 scale-95" 
+                        x-transition:enter-end="transform opacity-100 scale-100" 
+                        x-transition:leave="transition ease-in duration-75" 
+                        x-transition:leave-start="transform opacity-100 scale-100" 
+                        x-transition:leave-end="transform opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl overflow-visible z-50 border border-gray-200"
+                        style="display: none;"
+                        @click.away="open = false"
+                    >
+                        <div class="py-1">
+                            <!-- Administrar Usuarios -->
+                            <a href="{{ route('admin.users.index') }}" 
+                               class="flex items-center px-4 py-3 text-base font-semibold text-gray-800 hover:bg-blue-50 transition-colors duration-200">
+                                <i class="fas fa-users-cog mr-3 text-blue-600 w-5 text-center"></i>
+                                <span>Administrar Usuarios</span>
+                            </a>
+                            
+                            <!-- Mi Perfil -->
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <a href="{{ route('admin.profile.edit') }}" 
+                               class="flex items-center px-4 py-3 text-base font-semibold text-gray-800 hover:bg-blue-50 transition-colors duration-200">
+                                <i class="fas fa-user-edit mr-3 text-blue-600 w-5 text-center"></i>
+                                <span>Mi Perfil</span>
+                            </a>
+                            
+                            <!-- Cerrar Sesión -->
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <form method="POST" action="{{ route('logout') }}" class="w-full">
+                                @csrf
+                                <button type="submit" 
+                                        class="w-full flex items-center px-4 py-3 text-base font-semibold text-red-600 hover:bg-red-50 transition-colors duration-200">
+                                    <i class="fas fa-sign-out-alt mr-3 w-5 text-center"></i>
+                                    <span>Cerrar Sesión</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </nav>
 
@@ -493,8 +546,15 @@
         </div>
     </div>
     
+    <!-- Alpine.js y scripts necesarios -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <!-- Script para las funcionalidades interactivas -->
     <script>
+        document.addEventListener('alpine:init', () => {
+            // Aquí puedes inicializar cualquier dato global de Alpine si es necesario
+        });
+        
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle para menú móvil (si se implementa)
             const mobileMenuButton = document.getElementById('mobile-menu-button');

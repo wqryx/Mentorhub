@@ -1,172 +1,188 @@
-@extends('layouts.admin')
+@extends('admin.layouts.app')
 
 @section('title', 'Gestión de Usuarios')
 
 @section('content')
-<div class="container-fluid">
-    <!-- Encabezado -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Gestión de Usuarios</h1>
-        <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i> Nuevo Usuario
-        </a>
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold text-gray-900">Gestión de Usuarios</h1>
+        <div class="flex space-x-2">
+            <a href="{{ route('admin.users.export', ['format' => 'csv']) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-file-csv mr-2"></i> Exportar CSV
+            </a>
+            <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-plus mr-2"></i> Nuevo Usuario
+            </a>
+        </div>
     </div>
 
-    <!-- Filtros -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Filtros</h6>
+    @if(session('success'))
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+            <div class="flex">
+                <div class="py-1">
+                    <svg class="fill-current h-6 w-6 text-green-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="font-bold">¡Éxito!</p>
+                    <p>{{ session('success') }}</p>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <form id="userFilterForm" action="{{ route('admin.users.index') }}" method="GET">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label for="search" class="form-label">Buscar</label>
-                            <input type="text" class="form-control" id="search" name="search" placeholder="Nombre, email..." value="{{ request('search') }}">
-                        </div>
+    @endif
+
+    <!-- Filtros -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Filtros</h3>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+            <form id="userFilterForm" action="{{ route('admin.users.index') }}" method="GET" class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                    <div>
+                        <label for="search" class="block text-sm font-medium text-gray-700">Buscar</label>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Nombre, email...">
                     </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            <label for="role" class="form-label">Rol</label>
-                            <select class="form-select" id="role" name="role">
-                                <option value="">Todos los roles</option>
-                                @foreach($roles as $role)
-                                    <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>{{ ucfirst($role->name) }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div>
+                        <label for="role" class="block text-sm font-medium text-gray-700">Rol</label>
+                        <select id="role" name="role" class="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="">Todos los roles</option>
+                            @foreach($roles as $role)
+                                <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>{{ ucfirst($role->name) }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Estado</label>
-                            <select class="form-select" id="status" name="status">
-                                <option value="">Todos</option>
-                                <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Activo</option>
-                                <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inactivo</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700">Estado</label>
+                        <select id="status" name="status" class="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="">Todos</option>
+                            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Activo</option>
+                            <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inactivo</option>
+                        </select>
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <div class="d-grid gap-2 w-100">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search me-1"></i> Filtrar
-                            </button>
-                        </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-search mr-2"></i> Filtrar
+                        </button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <div class="flex justify-between items-center mb-6">
 
     <!-- Tabla de usuarios -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Lista de Usuarios</h6>
-            <div class="dropdown">
-                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-download me-1"></i> Exportar
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" href="{{ route('admin.users.export', ['format' => 'excel']) }}"><i class="fas fa-file-excel me-2"></i>Excel</a></li>
-                    <li><a class="dropdown-item" href="{{ route('admin.users.export', ['format' => 'pdf']) }}"><i class="fas fa-file-pdf me-2"></i>PDF</a></li>
-                    <li><a class="dropdown-item" href="{{ route('admin.users.export', ['format' => 'csv']) }}"><i class="fas fa-file-csv me-2"></i>CSV</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="usersTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Rol</th>
-                            <th>Estado</th>
-                            <th>Último Acceso</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($users as $user)
-                        <tr>
-                            <td>{{ $user->id }}</td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <img src="{{ $user->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=7F9CF5&background=EBF4FF' }}" class="rounded-circle me-2" width="32" height="32" alt="{{ $user->name }}">
-                                    {{ $user->name }}
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Último Acceso</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($users as $user)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="{{ $user->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=7F9CF5&background=EBF4FF' }}" alt="{{ $user->name }}">
                                 </div>
-                            </td>
-                            <td>{{ $user->email }}</td>
-                            <td>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                    <div class="text-sm text-gray-500">ID: {{ $user->id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ $user->email }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex flex-wrap gap-1">
                                 @foreach($user->roles as $role)
-                                    <span class="badge bg-primary">{{ $role->name }}</span>
+                                    @php
+                                        $roleColors = [
+                                            'admin' => 'bg-purple-100 text-purple-800',
+                                            'mentor' => 'bg-blue-100 text-blue-800',
+                                            'student' => 'bg-green-100 text-green-800',
+                                        ];
+                                        $roleColor = $roleColors[$role->name] ?? 'bg-gray-100 text-gray-800';
+                                    @endphp
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $roleColor }}">
+                                        {{ ucfirst($role->name) }}
+                                    </span>
                                 @endforeach
-                            </td>
-                            <td>
-                                @if($user->is_active)
-                                    <span class="badge bg-success">Activo</span>
-                                @else
-                                    <span class="badge bg-danger">Inactivo</span>
-                                @endif
-                            </td>
-                            <td>{{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Nunca' }}</td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="7" class="text-center py-3">
-                                <p class="text-muted mb-0">No se encontraron usuarios</p>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            <!-- Paginación -->
-            @if($users->hasPages())
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <div class="text-muted">
-                    Mostrando {{ $users->firstItem() ?? 0 }} a {{ $users->lastItem() ?? 0 }} de {{ $users->total() }} registros
-                </div>
-                {{ $users->withQueryString()->links() }}
-            </div>
-            @endif
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if($user->is_active)
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    Activo
+                                </span>
+                            @else
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    Inactivo
+                                </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Nunca' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex justify-end space-x-2">
+                                <a href="{{ route('admin.users.show', $user) }}" class="text-blue-600 hover:text-blue-900" title="Ver">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ route('admin.users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                            No se encontraron usuarios
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
+        @if($users->hasPages())
+            <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-gray-700">
+                        Mostrando {{ $users->firstItem() ?? 0 }} a {{ $users->lastItem() ?? 0 }} de {{ $users->total() }} registros
+                    </div>
+                    {{ $users->withQueryString()->links() }}
+                </div>
+            </div>
+        @endif
     </div>
 </div>
-
 @endsection
 
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Inicializar tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     });
 </script>
 @endsection
