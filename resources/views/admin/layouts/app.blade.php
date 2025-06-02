@@ -73,7 +73,7 @@
                                 <i class="far fa-calendar-alt mr-1"></i> Eventos
                             </a>
                             <a href="{{ route('admin.notifications.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('admin.notifications.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                                <i class="far fa-newspaper mr-1"></i> Noticias
+                                <i class="far fa-bell mr-1"></i> Notificaciones
                             </a>
                         </nav>
                         <h1 class="ml-4 text-lg font-medium text-gray-900 md:hidden">@yield('title')</h1>
