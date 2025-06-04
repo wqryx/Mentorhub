@@ -64,32 +64,98 @@ return new class extends Migration
             
             // Asegurar que el índice único para user_id y course_id exista correctamente
             if (Schema::hasColumn('enrollments', 'user_id') && Schema::hasColumn('enrollments', 'course_id')) {
-                // Primero, intentar eliminar el índice si existe, para evitar el error de duplicado al crearlo
+                // Nombres por defecto de las claves foráneas de Laravel y el índice único
+                $userFkName = 'enrollments_user_id_foreign';
+                $courseFkName = 'enrollments_course_id_foreign';
+                $uniqueIndexName = 'enrollments_user_id_course_id_unique';
+
+                // 1. Intentar eliminar las claves foráneas
+                // Es importante eliminar las claves foráneas ANTES de intentar eliminar el índice único que podrían estar utilizando.
                 try {
-                    $table->dropUnique('enrollments_user_id_course_id_unique');
-                    Log::info("Dropped existing index 'enrollments_user_id_course_id_unique' before re-creating.");
+                    $table->dropForeign($userFkName);
+                    Log::info("Dropped foreign key '$userFkName' on 'enrollments' table.");
+                } catch (\Exception $e) {
+                    // No es crítico si no existe, podría haber sido eliminada antes o no existir.
+                    Log::info("Could not drop foreign key '$userFkName' on 'enrollments' table (it might not exist or another issue occurred): " . $e->getMessage());
+                }
+                try {
+                    $table->dropForeign($courseFkName);
+                    Log::info("Dropped foreign key '$courseFkName' on 'enrollments' table.");
+                } catch (\Exception $e) {
+                    Log::info("Could not drop foreign key '$courseFkName' on 'enrollments' table (it might not exist or another issue occurred): " . $e->getMessage());
+                }
+
+                // 2. Intentar eliminar el índice único
+                try {
+                    $table->dropUnique($uniqueIndexName);
+                    Log::info("Dropped unique index '$uniqueIndexName' on 'enrollments' table.");
                 } catch (\Illuminate\Database\QueryException $e) {
-                    // MySQL error code 1091: Can't DROP INDEX; check that it exists
+                    // Código de error 1091 para MySQL significa "Can't DROP INDEX ...; check that it exists"
                     if (isset($e->errorInfo[1]) && $e->errorInfo[1] == 1091) {
-                        Log::info("Index 'enrollments_user_id_course_id_unique' did not exist, no need to drop.");
+                        Log::info("Unique index '$uniqueIndexName' on 'enrollments' table did not exist or could not be dropped: " . $e->getMessage());
                     } else {
-                        // Si es otro error, relanzar
-                        throw $e;
+                        // Para otros errores, registrar una advertencia pero no necesariamente relanzar,
+                        // para permitir que el script intente recrear el índice.
+                        Log::warning("Failed to drop unique index '$uniqueIndexName' on 'enrollments' table: " . $e->getMessage());
                     }
                 }
 
-                // Ahora, crear el índice
+                // 3. Crear el índice único
                 try {
-                    $table->unique(['user_id', 'course_id'], 'enrollments_user_id_course_id_unique');
-                    Log::info("Successfully created index 'enrollments_user_id_course_id_unique'.");
+                    $table->unique(['user_id', 'course_id'], $uniqueIndexName);
+                    Log::info("Successfully created unique index '$uniqueIndexName' on 'enrollments' table.");
                 } catch (\Illuminate\Database\QueryException $e) {
-                    // MySQL error code 1061: Duplicate key name
-                    // Esto no debería ocurrir si el dropUnique anterior funcionó, pero lo mantenemos por si acaso
+                    // Código de error 1061 para MySQL significa "Duplicate key name"
                     if (isset($e->errorInfo[1]) && $e->errorInfo[1] == 1061) {
-                        Log::warning("Attempted to create index 'enrollments_user_id_course_id_unique' but it still seems to exist despite drop attempt.");
+                        Log::warning("Attempted to create unique index '$uniqueIndexName' on 'enrollments' table but it seems to exist or there was an issue: " . $e->getMessage());
                     } else {
-                        throw $e;
+                        Log::error("Failed to create unique index '$uniqueIndexName' on 'enrollments' table: " . $e->getMessage());
+                        throw $e; // Relanzar si es un error inesperado y crítico
                     }
+                }
+
+                // 4. Re-agregar las claves foráneas
+                // Esto es crucial para mantener la integridad referencial.
+                // Asegurarse de que las columnas (user_id, course_id) y las tablas referenciadas (users, courses) existan.
+                try {
+                    // Solo añadir si no existe ya (podría no haber sido eliminada si el dropForeign falló por no existencia)
+                    // Para verificar, usamos el Schema Manager de Doctrine que Laravel usa internamente.
+                    $schemaManager = Schema::getConnection()->getDoctrineSchemaManager();
+                    $foreignKeys = $schemaManager->listTableForeignKeys('enrollments');
+                    $userFkExists = false;
+                    foreach ($foreignKeys as $fk) {
+                        if ($fk->getName() === $userFkName || (count($fk->getLocalColumns()) == 1 && $fk->getLocalColumns()[0] == 'user_id')) {
+                            $userFkExists = true;
+                            break;
+                        }
+                    }
+                    if (!$userFkExists) {
+                        $table->foreign('user_id', $userFkName)->references('id')->on('users')->onDelete('cascade');
+                        Log::info("Re-added foreign key '$userFkName' on 'enrollments' table.");
+                    } else {
+                        Log::info("Foreign key for user_id ('$userFkName' or similar) already exists or was not dropped, skipping re-add.");
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Failed to re-add foreign key '$userFkName' on 'enrollments' table: " . $e->getMessage());
+                }
+                try {
+                    $schemaManager = Schema::getConnection()->getDoctrineSchemaManager(); // Re-obtener por si acaso
+                    $foreignKeys = $schemaManager->listTableForeignKeys('enrollments');
+                    $courseFkExists = false;
+                    foreach ($foreignKeys as $fk) {
+                        if ($fk->getName() === $courseFkName || (count($fk->getLocalColumns()) == 1 && $fk->getLocalColumns()[0] == 'course_id')) {
+                            $courseFkExists = true;
+                            break;
+                        }
+                    }
+                    if (!$courseFkExists) {
+                        $table->foreign('course_id', $courseFkName)->references('id')->on('courses')->onDelete('cascade');
+                        Log::info("Re-added foreign key '$courseFkName' on 'enrollments' table.");
+                    } else {
+                        Log::info("Foreign key for course_id ('$courseFkName' or similar) already exists or was not dropped, skipping re-add.");
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Failed to re-add foreign key '$courseFkName' on 'enrollments' table: " . $e->getMessage());
                 }
             }
             

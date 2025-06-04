@@ -14,15 +14,7 @@ return new class extends Migration
         if (!Schema::hasTable('categories')) {
             Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('slug')->unique();
-            $table->foreignId('parent_id')->nullable()->constrained('categories')->onDelete('cascade');
-            $table->string('icon')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->integer('order')->default(0);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
     }

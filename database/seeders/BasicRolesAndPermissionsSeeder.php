@@ -28,7 +28,7 @@ class BasicRolesAndPermissionsSeeder extends Seeder
         ];
         
         foreach ($roles as $role) {
-            if (!DB::table('roles')->where('name', $role['name'])->exists()) {
+            if (!DB::table('roles')->where('name', $role['name'])->where('guard_name', $role['guard_name'])->exists()) {
                 DB::table('roles')->insert($role);
             }
         }

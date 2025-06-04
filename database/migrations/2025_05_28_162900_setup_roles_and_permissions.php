@@ -103,41 +103,42 @@ return new class extends Migration
 
     private function insertRolesAndPermissions()
     {
-        // Insertar roles
-        $adminRoleId = DB::table('roles')->insertGetId([
-            'name' => 'Admin',
-            'guard_name' => 'web',
-            'description' => 'Administrador del sistema con acceso completo',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Roles a crear/verificar
+        $rolesData = [
+            ['name' => 'Admin', 'description' => 'Administrador del sistema con acceso completo'],
+            ['name' => 'Mentor', 'description' => 'Mentor que puede guiar a estudiantes'],
+            ['name' => 'Estudiante', 'description' => 'Estudiante que puede inscribirse en cursos'],
+            ['name' => 'Guest', 'description' => 'Usuario invitado con acceso limitado'],
+        ];
 
-        $mentorRoleId = DB::table('roles')->insertGetId([
-            'name' => 'Mentor',
-            'guard_name' => 'web',
-            'description' => 'Mentor/Profesor que puede crear cursos y evaluar estudiantes',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $roleIds = [];
 
-        $studentRoleId = DB::table('roles')->insertGetId([
-            'name' => 'Estudiante',
-            'guard_name' => 'web',
-            'description' => 'Estudiante que puede inscribirse en cursos',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        foreach ($rolesData as $roleDef) {
+            $role = DB::table('roles')
+                        ->where('name', $roleDef['name'])
+                        ->where('guard_name', 'web')
+                        ->first();
 
-        $guestRoleId = DB::table('roles')->insertGetId([
-            'name' => 'Guest',
-            'guard_name' => 'web',
-            'description' => 'Usuario invitado con acceso limitado',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            if ($role) {
+                $roleIds[$roleDef['name']] = $role->id;
+            } else {
+                $roleIds[$roleDef['name']] = DB::table('roles')->insertGetId([
+                    'name' => $roleDef['name'],
+                    'guard_name' => 'web',
+                    'description' => $roleDef['description'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+        
+        $adminRoleId = $roleIds['Admin'] ?? null;
+        $mentorRoleId = $roleIds['Mentor'] ?? null;
+        $studentRoleId = $roleIds['Estudiante'] ?? null;
+        // $guestRoleId = $roleIds['Guest'] ?? null; // Guest role ID not used later for permissions
 
         // Insertar permisos básicos
-        $permissions = [
+        $permissionsData = [
             // Permisos de administración
             ['name' => 'view admin dashboard', 'description' => 'Ver el panel de administración'],
             ['name' => 'manage users', 'description' => 'Gestionar usuarios'],
@@ -163,59 +164,87 @@ return new class extends Migration
             ['name' => 'submit assignments', 'description' => 'Enviar tareas'],
         ];
 
-        $permissionIds = [];
-        foreach ($permissions as $permission) {
-            $id = DB::table('permissions')->insertGetId([
-                'name' => $permission['name'],
-                'guard_name' => 'web',
-                'description' => $permission['description'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-            $permissionIds[$permission['name']] = $id;
-        }
-
-        // Asignar permisos al rol Admin (todos los permisos)
-        foreach ($permissionIds as $permissionId) {
-            DB::table('role_has_permissions')->insert([
-                'permission_id' => $permissionId,
-                'role_id' => $adminRoleId
-            ]);
-        }
-
-        // Asignar permisos al rol Mentor
-        $mentorPermissions = [
-            'view courses',
-            'create courses',
-            'edit courses',
-            'mentor students',
-            'schedule sessions',
-            'manage content'
-        ];
-
-        foreach ($mentorPermissions as $permissionName) {
-            if (isset($permissionIds[$permissionName])) {
-                DB::table('role_has_permissions')->insert([
-                    'permission_id' => $permissionIds[$permissionName],
-                    'role_id' => $mentorRoleId
+        $permissionIds = []; // This will store 'permission_name' => id
+        foreach ($permissionsData as $permDef) {
+            $permission = DB::table('permissions')
+                                ->where('name', $permDef['name'])
+                                ->where('guard_name', 'web')
+                                ->first();
+            if ($permission) {
+                $permissionIds[$permDef['name']] = $permission->id;
+            } else {
+                $permissionIds[$permDef['name']] = DB::table('permissions')->insertGetId([
+                    'name' => $permDef['name'],
+                    'guard_name' => 'web',
+                    'description' => $permDef['description'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             }
         }
 
-        // Asignar permisos al rol Estudiante
-        $studentPermissions = [
-            'view courses',
-            'enroll courses',
-            'access premium content',
-            'submit assignments'
-        ];
+        // Asignar permisos al rol Admin (todos los permisos)
+        if ($adminRoleId) {
+            foreach ($permissionIds as $permissionName => $permissionId) {
+                if (!DB::table('role_has_permissions')
+                        ->where('permission_id', $permissionId)
+                        ->where('role_id', $adminRoleId)
+                        ->exists()) {
+                    DB::table('role_has_permissions')->insert([
+                        'permission_id' => $permissionId,
+                        'role_id' => $adminRoleId
+                    ]);
+                }
+            }
+        }
 
-        foreach ($studentPermissions as $permissionName) {
-            if (isset($permissionIds[$permissionName])) {
-                DB::table('role_has_permissions')->insert([
-                    'permission_id' => $permissionIds[$permissionName],
-                    'role_id' => $studentRoleId
-                ]);
+        // Asignar permisos al rol Mentor
+        if ($mentorRoleId) {
+            $mentorPermissionNames = [
+                'view courses',
+                'create courses',
+                'edit courses',
+                'mentor students',
+                'schedule sessions',
+                'manage content'
+            ];
+
+            foreach ($mentorPermissionNames as $permissionName) {
+                if (isset($permissionIds[$permissionName])) {
+                    if (!DB::table('role_has_permissions')
+                            ->where('permission_id', $permissionIds[$permissionName])
+                            ->where('role_id', $mentorRoleId)
+                            ->exists()) {
+                        DB::table('role_has_permissions')->insert([
+                            'permission_id' => $permissionIds[$permissionName],
+                            'role_id' => $mentorRoleId
+                        ]);
+                    }
+                }
+            }
+        }
+
+        // Asignar permisos al rol Estudiante
+        if ($studentRoleId) {
+            $studentPermissionNames = [
+                'view courses',
+                'enroll courses',
+                'access premium content',
+                'submit assignments'
+            ];
+
+            foreach ($studentPermissionNames as $permissionName) {
+                if (isset($permissionIds[$permissionName])) {
+                     if (!DB::table('role_has_permissions')
+                            ->where('permission_id', $permissionIds[$permissionName])
+                            ->where('role_id', $studentRoleId)
+                            ->exists()) {
+                        DB::table('role_has_permissions')->insert([
+                            'permission_id' => $permissionIds[$permissionName],
+                            'role_id' => $studentRoleId
+                        ]);
+                    }
+                }
             }
         }
     }
