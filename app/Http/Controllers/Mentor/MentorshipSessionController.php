@@ -79,17 +79,54 @@ class MentorshipSessionController extends Controller
      */
     public function create()
     {
-        $students = User::whereHas('roles', function($query) {
+        $mentorId = Auth::id();
+
+        // 1. Obtener IDs de los cursos activos del mentor
+        $mentorCourseIds = \App\Models\Course::where('teacher_id', $mentorId)
+            ->where('is_active', true)
+            ->pluck('id');
+
+        // 2. Obtener estudiantes que ya han tenido sesiones con el mentor
+        $studentsFromSessions = User::whereHas('roles', function($query) {
                 $query->where('name', 'student');
             })
-            ->whereIn('id', function($query) {
+            ->whereIn('id', function($query) use ($mentorId) {
                 $query->select('student_id')
                       ->from('mentor_sessions')
-                      ->where('mentor_id', Auth::id());
+                      ->where('mentor_id', $mentorId);
             })
-            ->pluck('name', 'id');
+            ->with('profile')
+            ->get();
+
+        // 3. Obtener estudiantes inscritos en los cursos activos del mentor
+        $studentsFromEnrollments = collect(); // Inicializar como colección vacía
+        if ($mentorCourseIds->isNotEmpty()) {
+            $studentsFromEnrollments = User::whereHas('roles', function($query) {
+                    $query->where('name', 'student');
+                })
+                ->whereHas('enrollments', function($enrollmentQuery) use ($mentorCourseIds) {
+                    $enrollmentQuery->whereIn('course_id', $mentorCourseIds);
+                })
+                ->with('profile')
+                ->get();
+        }
+
+        // 4. Combinar, eliminar duplicados y formatear para el desplegable
+        $allPotentialMentees = $studentsFromSessions->merge($studentsFromEnrollments)->unique('id');
+
+        $mentees = $allPotentialMentees->mapWithKeys(function($user) {
+            // Intentar obtener el nombre de usuario del perfil, si no, el email, y como último recurso un texto genérico
+            $identifier = $user->profile->username ?? $user->email ?? 'ID: ' . $user->id;
+            return [$user->id => $user->name . ' (' . $identifier . ')'];
+        });
+
+        // Obtener cursos activos del mentor
+        $courses = \App\Models\Course::where('teacher_id', Auth::id())
+            ->where('is_active', true)
+            ->pluck('name', 'id')
+            ->prepend('-- Selecciona un curso (opcional) --', '');
             
-        return view('mentor.mentorias.create', compact('students'));
+        return view('mentor.mentorias.create', compact('mentees', 'courses'));
     }
 
     /**
@@ -120,8 +157,11 @@ class MentorshipSessionController extends Controller
         // Set default values
         $validated['mentor_id'] = Auth::id();
         $validated['status'] = 'scheduled';
+        
+        // Asegurarse de que duration_minutes sea un entero
+        $durationMinutes = (int)$validated['duration_minutes'];
         $validated['end_time'] = Carbon::parse($validated['start_time'])
-            ->addMinutes($validated['duration_minutes']);
+            ->addMinutes($durationMinutes);
         
         // Create the session
         $session = MentorshipSession::create($validated);

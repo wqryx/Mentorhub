@@ -42,18 +42,11 @@
                         <i class="fas fa-user-graduate mr-3"></i>
                         Estudiantes
                     </a>
-                    <a href="{{ route('mentor.calendar') }}" class="flex items-center px-4 py-2 text-white hover:bg-blue-700 rounded-md mb-1 transition-colors duration-200">
-                        <i class="far fa-calendar-alt mr-3"></i>
-                        Calendario
+                    <a href="{{ route('mentor.courses.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-blue-700 rounded-md mb-1 transition-colors duration-200">
+                        <i class="fas fa-book-open mr-3"></i>
+                        Cursos
                     </a>
-                    <a href="{{ route('mentor.resources') }}" class="flex items-center px-4 py-2 text-white hover:bg-blue-700 rounded-md mb-1 transition-colors duration-200">
-                        <i class="fas fa-book mr-3"></i>
-                        Recursos
-                    </a>
-                    <a href="{{ route('mentor.notifications') }}" class="flex items-center px-4 py-2 text-white hover:bg-blue-700 rounded-md mb-1 transition-colors duration-200">
-                        <i class="fas fa-bell mr-3"></i>
-                        Notificaciones
-                    </a>
+                    
                 </nav>
             </div>
         </div>
@@ -79,6 +72,9 @@
                             </a>
                             <a href="{{ route('mentor.students') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('mentor.students*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
                                 <i class="fas fa-user-graduate mr-1"></i> Estudiantes
+                            </a>
+                            <a href="{{ route('mentor.courses.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('mentor.courses.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                                <i class="fas fa-book-open mr-1"></i> Cursos
                             </a>
                         </nav>
                         <h1 class="ml-4 text-lg font-medium text-gray-900 md:hidden">@yield('title')</h1>

@@ -257,5 +257,13 @@ class User extends Authenticatable
             ->where('read', false)
             ->where('deleted_by_recipient', false);
     }
+
+    /**
+     * Obtiene las inscripciones del usuario a cursos.
+     */
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class, 'user_id');
+    }
 }
 

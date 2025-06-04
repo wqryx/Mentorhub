@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             SettingsSeeder::class,
             CourseSeeder::class,
             ModuleSeeder::class,
+            EnrollmentSeeder::class,
+            ProfileSeeder::class, // Asegurarse de que esto venga después de UserSeeder si se usa
         ]);
     }
 }

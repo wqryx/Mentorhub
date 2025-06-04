@@ -14,11 +14,17 @@ return new class extends Migration
         Schema::table('mentor_sessions', function (Blueprint $table) {
             // Add new columns if they don't exist
             if (!Schema::hasColumn('mentor_sessions', 'type')) {
-                $table->string('type')->default('one_time')->after('meeting_link');
+                $table->enum('type', ['one_time', 'recurring'])->default('one_time')->after('meeting_link');
+            } else {
+                // Si la columna ya existe, modificarla para que tenga los valores correctos
+                $table->enum('type', ['one_time', 'recurring'])->default('one_time')->change();
             }
             
             if (!Schema::hasColumn('mentor_sessions', 'format')) {
-                $table->string('format')->default('video_call')->after('type');
+                $table->enum('format', ['video_call', 'phone_call', 'in_person'])->default('video_call')->after('type');
+            } else {
+                // Si la columna ya existe, modificarla para que tenga los valores correctos
+                $table->enum('format', ['video_call', 'phone_call', 'in_person'])->default('video_call')->change();
             }
             
             if (!Schema::hasColumn('mentor_sessions', 'student_goals')) {

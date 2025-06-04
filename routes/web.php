@@ -99,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Rutas de gestión de cursos para el mentor
     Route::middleware(['auth'])->prefix('mentor/courses')->name('mentor.courses.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Mentor\CourseController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Mentor\CourseController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Mentor\CourseController::class, 'store'])->name('store');
         Route::get('/{id}', [\App\Http\Controllers\Mentor\CourseController::class, 'show'])->name('show');

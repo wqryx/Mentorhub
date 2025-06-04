@@ -164,7 +164,7 @@
 
                 <!-- Nav Item - Estudiantes -->
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('mentor.students.*') ? 'active' : '' }}" href="{{ route('mentor.students.index') }}">
+                    <a class="nav-link {{ request()->routeIs('mentor.students.*') ? 'active' : '' }}" href="{{ route('mentor.students') }}">
                         <i class="fas fa-fw fa-user-graduate"></i>
                         <span>Mis Estudiantes</span>
                     </a>
@@ -180,7 +180,7 @@
 
                 <!-- Nav Item - Recursos -->
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('mentor.resources.*') ? 'active' : '' }}" href="{{ route('mentor.resources.index') }}">
+                    <a class="nav-link {{ request()->routeIs('mentor.resources.*') ? 'active' : '' }}" href="{{ route('mentor.resources') }}">
                         <i class="fas fa-fw fa-book"></i>
                         <span>Recursos</span>
                     </a>

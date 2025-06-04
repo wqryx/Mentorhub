@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('course_histories', function (Blueprint $table) {
+        if (!Schema::hasTable('course_histories')) {
+            Schema::create('course_histories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
@@ -26,7 +27,8 @@ return new class extends Migration
             
             // Asegurar que un usuario solo tenga un registro por contenido
             $table->unique(['user_id', 'course_id', 'module_id', 'tutorial_id', 'content_id']);
-        });
+            });
+        }
     }
 
     /**

@@ -115,16 +115,57 @@ class MentorController extends Controller
      */
     public function students()
     {
-        $user = Auth::user();
-        $students = $user->menteeStudents()
+        $mentor = Auth::user();
+        $mentorId = $mentor->id;
+
+        // 1. Obtener IDs de los cursos activos del mentor
+        $mentorCourseIds = Course::where('teacher_id', $mentorId)
+            ->where('is_active', true)
+            ->pluck('id');
+
+        // 2. Obtener estudiantes que ya han tenido sesiones con el mentor
+        // Usamos una consulta directa para facilitar la combinación y evitar problemas con withCount en la unión
+        $studentsFromSessions = User::whereHas('roles', function($query) {
+                $query->where('name', 'student');
+            })
+            ->whereHas('menteeSessions', function ($query) use ($mentorId) {
+                $query->where('mentor_id', $mentorId);
+            })
+            ->select('users.*') // Asegurar que seleccionamos todas las columnas de users
+            ->distinct();
+            // No aplicamos with/withCount aquí todavía, lo haremos después de unir
+
+        // 3. Obtener estudiantes inscritos en los cursos activos del mentor
+        $studentsFromEnrollments = collect(); // Inicializar como colección vacía
+        if ($mentorCourseIds->isNotEmpty()) {
+            $studentsFromEnrollments = User::whereHas('roles', function($query) {
+                    $query->where('name', 'student');
+                })
+                ->whereHas('enrollments', function($enrollmentQuery) use ($mentorCourseIds) {
+                    $enrollmentQuery->whereIn('course_id', $mentorCourseIds);
+                })
+                ->select('users.*') // Asegurar que seleccionamos todas las columnas de users
+                ->distinct();
+        }
+
+        // 4. Combinar IDs, eliminar duplicados y luego obtener los modelos completos con sus relaciones
+        $studentIdsFromSessions = $studentsFromSessions->pluck('id');
+        $studentIdsFromEnrollments = $studentsFromEnrollments instanceof \Illuminate\Database\Eloquent\Builder ? $studentsFromEnrollments->pluck('id') : $studentsFromEnrollments->pluck('id');
+        
+        $allStudentIds = $studentIdsFromSessions->merge($studentIdsFromEnrollments)->unique();
+
+        $students = User::whereIn('id', $allStudentIds)
             ->with(['profile'])
-            ->withCount(['mentorshipSessions as upcoming_sessions' => function($query) {
-                $query->where('start_time', '>=', now())
+            ->withCount(['mentorshipSessions as upcoming_sessions' => function($query) use ($mentorId) {
+                $query->where('mentor_id', $mentorId)
+                      ->where('start_time', '>=', now())
                       ->where('status', 'scheduled');
             }])
-            ->withCount(['mentorshipSessions as completed_sessions' => function($query) {
-                $query->where('status', 'completed');
+            ->withCount(['mentorshipSessions as completed_sessions' => function($query) use ($mentorId) {
+                $query->where('mentor_id', $mentorId)
+                      ->where('status', 'completed');
             }])
+            ->orderBy('name') // Opcional: ordenar por nombre
             ->paginate(10);
             
         return view('mentor.students.index', compact('students'));
@@ -135,14 +176,29 @@ class MentorController extends Controller
      */
     public function showStudent($id)
     {
-        $student = User::with(['profile', 'enrollments.course'])
-            ->whereHas('mentors', function($query) {
-                $query->where('mentor_id', Auth::id());
+        $mentorId = Auth::id();
+        
+        // Obtener el estudiante si está en los cursos del mentor o ha tenido sesiones con el mentor
+        $student = User::where('id', $id)
+            ->whereHas('roles', function($query) {
+                $query->where('name', 'student');
             })
-            ->findOrFail($id);
+            ->where(function($query) use ($mentorId) {
+                // Estudiantes que han tenido sesiones con el mentor
+                $query->whereHas('menteeSessions', function($q) use ($mentorId) {
+                    $q->where('mentor_id', $mentorId);
+                })
+                // O están inscritos en cursos del mentor
+                ->orWhereHas('enrollments.course', function($q) use ($mentorId) {
+                    $q->where('teacher_id', $mentorId);
+                });
+            })
+            ->with(['profile', 'enrollments.course'])
+            ->firstOrFail();
             
-        $sessions = MentorshipSession::where('mentor_id', Auth::id())
-            ->where('mentee_id', $id)
+        // Obtener las sesiones entre este mentor y el estudiante
+        $sessions = MentorshipSession::where('mentor_id', $mentorId)
+            ->where('student_id', $id)
             ->orderBy('start_time', 'desc')
             ->paginate(10);
             
@@ -180,7 +236,7 @@ class MentorController extends Controller
                 ];
             });
             
-        return view('mentor.calendar', compact('events'));
+        return view('mentor.calendar.index', compact('events'));
     }
     
     /**

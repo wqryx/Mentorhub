@@ -97,6 +97,14 @@ class Course extends Model
     }
     
     /**
+     * Obtener las inscripciones al curso.
+     */
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+    
+    /**
      * Obtener el rating promedio del curso.
      */
     public function getAverageRatingAttribute()

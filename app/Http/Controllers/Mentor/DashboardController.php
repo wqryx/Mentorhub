@@ -120,21 +120,6 @@ class DashboardController extends Controller
     }
     
     /**
-     * Muestra el calendario del mentor
-     *
-     * @return \Illuminate\View\View
-     */
-    public function calendar()
-    {
-        $mentor = Auth::user();
-        $sessions = MentorshipSession::where('mentor_id', $mentor->id)
-            ->where('status', '!=', 'cancelled')
-            ->get();
-            
-        return view('mentor.calendar', compact('sessions'));
-    }
-    
-    /**
      * Muestra los recursos del mentor
      *
      * @return \Illuminate\View\View
