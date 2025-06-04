@@ -86,7 +86,7 @@ class CalendarController extends Controller
                 
             'upcomingSessions' => MentorshipSession::where('mentee_id', $user->id)
                 ->where('status', 'confirmed')
-                ->where('scheduled_at', '>=', now())
+                ->where('start_time', '>=', now())
                 ->count(),
                 
             'pendingTasks' => Task::where('user_id', $user->id)

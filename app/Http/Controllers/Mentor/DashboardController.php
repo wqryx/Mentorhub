@@ -28,8 +28,8 @@ class DashboardController extends Controller
             ->get();
             
         $pendingRequests = MentorshipSession::where('mentor_id', $mentor->id)
-            ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
+            ->where('status', 'requested') // Changed from 'pending' to 'requested' to match the enum in migration
+            ->orderBy('requested_at', 'desc')
             ->take(5)
             ->get();
             
@@ -47,7 +47,7 @@ class DashboardController extends Controller
             ->where('read', false)
             ->count();
             
-        return view('mentor.index', compact(
+        return view('mentor.dashboard', compact(
             'upcomingSessions', 
             'pendingRequests', 
             'totalStudents', 
@@ -105,7 +105,7 @@ class DashboardController extends Controller
             ->where('read', false)
             ->update(['read' => true]);
             
-        return view('mentor.messages', compact('messages'));
+        return view('mentor.messages.index', compact('messages'));
     }
     
     /**
@@ -116,7 +116,7 @@ class DashboardController extends Controller
     public function profile()
     {
         $mentor = Auth::user();
-        return view('mentor.profile', compact('mentor'));
+        return view('mentor.profile.index', compact('mentor'));
     }
     
     /**

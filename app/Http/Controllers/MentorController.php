@@ -21,8 +21,8 @@ class MentorController extends Controller
         // Próximas sesiones
         $upcomingSessions = $user->mentorSessions()
             ->with(['mentee', 'course'])
-            ->where('scheduled_at', '>=', now())
-            ->orderBy('scheduled_at')
+            ->where('start_time', '>=', now())
+            ->orderBy('start_time')
             ->take(5)
             ->get();
             
@@ -44,7 +44,7 @@ class MentorController extends Controller
                 ->count() / max($user->mentorSessions()->count(), 1) * 100
         ];
         
-        return view('mentor.index', compact('upcomingSessions', 'pendingRequests', 'stats'));
+        return view('mentor.dashboard', compact('upcomingSessions', 'pendingRequests', 'stats'));
     }
     
     /**
@@ -55,7 +55,7 @@ class MentorController extends Controller
         $user = Auth::user();
         $specialties = $user->specialties ?? [];
         
-        return view('mentor.profile', compact('user', 'specialties'));
+        return view('mentor.profile.index', compact('user', 'specialties'));
     }
     
     /**
@@ -119,7 +119,7 @@ class MentorController extends Controller
         $students = $user->menteeStudents()
             ->with(['profile'])
             ->withCount(['mentorshipSessions as upcoming_sessions' => function($query) {
-                $query->where('scheduled_at', '>=', now())
+                $query->where('start_time', '>=', now())
                       ->where('status', 'scheduled');
             }])
             ->withCount(['mentorshipSessions as completed_sessions' => function($query) {
@@ -143,7 +143,7 @@ class MentorController extends Controller
             
         $sessions = MentorshipSession::where('mentor_id', Auth::id())
             ->where('mentee_id', $id)
-            ->orderBy('scheduled_at', 'desc')
+            ->orderBy('start_time', 'desc')
             ->paginate(10);
             
         return view('mentor.students.show', compact('student', 'sessions'));
@@ -159,14 +159,14 @@ class MentorController extends Controller
         // Obtener eventos para el calendario
         $events = $user->mentorSessions()
             ->with(['mentee', 'course'])
-            ->where('scheduled_at', '>=', now()->subMonths(1))
+            ->where('start_time', '>=', now()->subMonths(1))
             ->get()
             ->map(function($session) {
                 return [
                     'id' => $session->id,
                     'title' => $session->title . ' - ' . $session->mentee->name,
-                    'start' => $session->scheduled_at->toIso8601String(),
-                    'end' => $session->scheduled_at->addMinutes($session->duration)->toIso8601String(),
+                    'start' => $session->start_time->toIso8601String(),
+                    'end' => $session->start_time->addMinutes($session->duration)->toIso8601String(),
                     'url' => route('mentor.sessions.show', $session->id),
                     'backgroundColor' => $session->status === 'completed' ? '#28a745' : 
                                         ($session->status === 'cancelled' ? '#dc3545' : '#007bff'),
@@ -220,6 +220,6 @@ class MentorController extends Controller
             ->latest('updated_at')
             ->paginate(10);
             
-        return view('mentor.messages', compact('conversations'));
+        return view('mentor.messages.index', compact('conversations'));
     }
 }

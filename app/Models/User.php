@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Profile;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -102,6 +103,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's profile.
+     */
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+
+    /**
      * Check if user is a mentor
      */
     public function isMentor()
@@ -124,13 +133,21 @@ class User extends Authenticatable
     {
         return $this->hasMany(MentorshipSession::class, 'mentor_id');
     }
+    
+    /**
+     * Alias for mentorSessions for backward compatibility.
+     */
+    public function mentorshipSessions()
+    {
+        return $this->mentorSessions();
+    }
 
     /**
      * Obtiene las sesiones donde el usuario es estudiante.
      */
     public function menteeSessions()
     {
-        return $this->hasMany(MentorshipSession::class, 'mentee_id');
+        return $this->hasMany(MentorshipSession::class, 'student_id');
     }
 
     /**
@@ -152,10 +169,13 @@ class User extends Authenticatable
             'mentor_id',
             'id',
             'id',
-            'mentee_id'
+            'student_id'
         )->distinct();
     }
 
+    /**
+     * Obtiene los mentores asociados con el estudiante a través de sesiones.
+     */
     /**
      * Obtiene los mentores asociados con el estudiante a través de sesiones.
      */
@@ -164,7 +184,7 @@ class User extends Authenticatable
         return $this->hasManyThrough(
             User::class,
             MentorshipSession::class,
-            'mentee_id',
+            'student_id', // Cambiado de 'mentee_id' a 'student_id'
             'id',
             'id',
             'mentor_id'

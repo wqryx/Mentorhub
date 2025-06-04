@@ -23,28 +23,49 @@ class MentorshipSessionController extends Controller
     {
         $user = Auth::user();
         
+        // Obtener sesiones próximas (sin paginación para mostrar todas)
         $upcomingSessions = $user->mentorSessions()
-            ->with(['mentee', 'course'])
-            ->where('scheduled_at', '>=', now())
-            ->orderBy('scheduled_at')
+            ->with([
+                'student', 
+                'student.profile',
+                'course'
+            ])
+            ->where('start_time', '>=', now())
+            ->where('status', 'scheduled')
+            ->orderBy('start_time')
             ->get();
             
+        // Obtener sesiones pasadas con paginación
         $pastSessions = $user->mentorSessions()
-            ->with(['mentee', 'course'])
-            ->where('scheduled_at', '<', now())
-            ->orderBy('scheduled_at', 'desc')
+            ->with([
+                'student', 
+                'student.profile',
+                'course',
+                'review'
+            ])
+            ->where('start_time', '<', now())
+            ->orderBy('start_time', 'desc')
             ->paginate(10);
             
-        $pendingRequests = $user->mentorRequests()
+        // Obtener solicitudes pendientes
+        $pendingRequests = $user->mentorSessions()
+            ->with([
+                'student', 
+                'student.profile',
+                'course'
+            ])
             ->where('status', 'pending')
-            ->with(['mentee', 'course'])
             ->orderBy('created_at', 'desc')
             ->get();
-            
-        return view('mentor.mentorias', compact(
+        
+        // Usar las sesiones pasadas paginadas como mentorías principales
+        $mentorias = $pastSessions;
+        
+        return view('mentor.mentorias.index', compact(
             'upcomingSessions',
             'pastSessions',
-            'pendingRequests'
+            'pendingRequests',
+            'mentorias'
         ));
     }
 
@@ -58,13 +79,17 @@ class MentorshipSessionController extends Controller
      */
     public function create()
     {
-        $mentees = User::whereHas('roles', function($query) {
+        $students = User::whereHas('roles', function($query) {
                 $query->where('name', 'student');
             })
-            ->where('mentor_id', Auth::id())
+            ->whereIn('id', function($query) {
+                $query->select('student_id')
+                      ->from('mentor_sessions')
+                      ->where('mentor_id', Auth::id());
+            })
             ->pluck('name', 'id');
             
-        return view('mentor.sessions.create', compact('mentees'));
+        return view('mentor.mentorias.create', compact('students'));
     }
 
     /**
@@ -79,22 +104,30 @@ class MentorshipSessionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'mentee_id' => 'required|exists:users,id',
+            'student_id' => 'required|exists:users,id',
             'course_id' => 'required|exists:courses,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'scheduled_at' => 'required|date|after:now',
-            'duration' => 'required|integer|min:15|max:240',
-            'meeting_url' => 'nullable|url',
+            'start_time' => 'required|date|after:now',
+            'duration_minutes' => 'required|integer|min:15|max:240',
+            'meeting_link' => 'nullable|url',
+            'type' => 'required|in:one_time,recurring',
+            'format' => 'required|in:video_call,phone_call,in_person',
+            'student_goals' => 'nullable|string',
+            'mentor_notes' => 'nullable|string',
         ]);
         
+        // Set default values
         $validated['mentor_id'] = Auth::id();
         $validated['status'] = 'scheduled';
+        $validated['end_time'] = Carbon::parse($validated['start_time'])
+            ->addMinutes($validated['duration_minutes']);
         
+        // Create the session
         $session = MentorshipSession::create($validated);
         
-        // Notificar al estudiante sobre la nueva sesión
-        // $session->mentee->notify(new NewMentoringSession($session));
+        // Notify the student about the new session
+        // $session->student->notify(new NewMentoringSession($session));
         
         return redirect()->route('mentor.sessions.index')
             ->with('success', 'Sesión de mentoría programada correctamente.');
@@ -111,11 +144,16 @@ class MentorshipSessionController extends Controller
      */
     public function show(string $id)
     {
-        $session = MentorshipSession::with(['mentee', 'course', 'reviews'])
+        $session = MentorshipSession::with([
+                'student', 
+                'student.profile',
+                'course', 
+                'review'
+            ])
             ->where('mentor_id', Auth::id())
             ->findOrFail($id);
             
-        return view('mentor.sessions.show', compact('session'));
+        return view('mentor.mentorias.show', compact('session'));
     }
 
     /**
@@ -132,13 +170,17 @@ class MentorshipSessionController extends Controller
         $session = MentorshipSession::where('mentor_id', Auth::id())
             ->findOrFail($id);
             
-        $mentees = User::whereHas('roles', function($query) {
+        $students = User::whereHas('roles', function($query) {
                 $query->where('name', 'student');
             })
-            ->where('mentor_id', Auth::id())
+            ->whereIn('id', function($query) {
+                $query->select('student_id')
+                      ->from('mentor_sessions')
+                      ->where('mentor_id', Auth::id());
+            })
             ->pluck('name', 'id');
             
-        return view('mentor.sessions.edit', compact('session', 'mentees'));
+        return view('mentor.mentorias.edit', compact('session', 'students'));
     }
 
     /**
@@ -159,17 +201,36 @@ class MentorshipSessionController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'scheduled_at' => 'required|date|after:now',
-            'duration' => 'required|integer|min:15|max:240',
-            'meeting_url' => 'nullable|url',
+            'start_time' => 'required|date|after:now',
+            'duration_minutes' => 'required|integer|min:15|max:240',
+            'meeting_link' => 'nullable|url',
             'status' => 'required|in:scheduled,completed,cancelled',
-            'notes' => 'nullable|string',
+            'type' => 'required|in:one_time,recurring',
+            'format' => 'required|in:video_call,phone_call,in_person',
+            'student_goals' => 'nullable|string',
+            'mentor_notes' => 'nullable|string',
+            'outcome_summary' => 'nullable|string',
+            'cancellation_reason' => 'required_if:status,cancelled|string|nullable',
         ]);
+        
+        // Update end time based on start time and duration
+        $validated['end_time'] = Carbon::parse($validated['start_time'])
+            ->addMinutes($validated['duration_minutes']);
+            
+        // If session is being cancelled, set cancelled_at timestamp
+        if ($validated['status'] === 'cancelled' && $session->status !== 'cancelled') {
+            $validated['cancelled_at'] = now();
+        }
+        
+        // If session is being marked as completed, set completed_at timestamp
+        if ($validated['status'] === 'completed' && $session->status !== 'completed') {
+            $validated['completed_at'] = now();
+        }
         
         $session->update($validated);
         
-        // Notificar al estudiante sobre cambios en la sesión
-        // $session->mentee->notify(new MentoringSessionUpdated($session));
+        // Notify the student about session updates
+        // $session->student->notify(new MentoringSessionUpdated($session));
         
         return redirect()->route('mentor.sessions.show', $session->id)
             ->with('success', 'Sesión de mentoría actualizada correctamente.');
@@ -190,7 +251,7 @@ class MentorshipSessionController extends Controller
             ->findOrFail($id);
             
         // Solo permitir cancelar sesiones futuras
-        if ($session->scheduled_at > now()) {
+        if ($session->start_time > now()) {
             $session->update(['status' => 'cancelled']);
             
             // Notificar al estudiante sobre la cancelación
@@ -325,5 +386,42 @@ class MentorshipSessionController extends Controller
         
         return redirect()->back()
             ->with('success', 'Reseña enviada correctamente');
+    }
+    
+    /**
+     * Start a mentoring session.
+     *
+     * @param  string  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function start($id)
+    {
+        $session = MentorshipSession::where('mentor_id', Auth::id())
+            ->where('status', 'scheduled')
+            ->findOrFail($id);
+            
+        // Verificar que la sesión esté programada para comenzar pronto
+        if ($session->start_time > now()->addMinutes(15) || $session->start_time < now()->subMinutes(30)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La sesión no puede iniciarse en este momento. Debe estar dentro del rango de tiempo permitido.'
+            ], 400);
+        }
+        
+        // Actualizar el estado de la sesión
+        $session->update([
+            'status' => 'in_progress',
+            'started_at' => now()
+        ]);
+        
+        // Notificar al estudiante que la sesión ha comenzado
+        // $session->mentee->notify(new MentoringSessionStarted($session));
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Sesión iniciada correctamente',
+            'session' => $session->fresh(['mentee', 'course']),
+            'redirect_url' => $session->meeting_url
+        ]);
     }
 }

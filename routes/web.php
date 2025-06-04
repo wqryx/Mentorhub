@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\MessageController as AdminMessageController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentDashboardController as CustomStudentDashboardController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,6 +25,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+// Test route for checking database structure
+Route::get('/test/mentor-sessions', [TestController::class, 'checkTable'])->name('test.mentor-sessions');
 
 // Cargar rutas de autenticación desde auth.php
 require __DIR__.'/auth.php';
@@ -93,63 +97,17 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    // Rutas de mentor
-    Route::prefix('dashboard/mentor')->name('mentor.')->middleware(['auth'])->group(function () {
-        // Dashboard principal
-        Route::get('/', [MentorDashboardController::class, 'index'])->name('dashboard');
-        
-        // Cursos del mentor
-        Route::get('/courses', [MentorDashboardController::class, 'myCourses'])->name('courses');
-        
-        // Estudiantes asignados
-        Route::get('/students', [MentorDashboardController::class, 'students'])->name('students');
-        
-        // Mensajes
-        Route::get('/messages', [MentorDashboardController::class, 'messages'])->name('messages');
-        
-        // Perfil
-        Route::get('/profile', [MentorDashboardController::class, 'profile'])->name('profile');
-        
-        // Calendario
-        Route::get('/calendar', [MentorDashboardController::class, 'calendar'])->name('calendar');
-        
-        // Recursos
-        Route::get('/resources', [MentorDashboardController::class, 'resources'])->name('resources');
-        Route::get('/resources/create', [\App\Http\Controllers\Mentor\ResourceController::class, 'create'])->name('resources.create');
-        Route::post('/resources', [\App\Http\Controllers\Mentor\ResourceController::class, 'store'])->name('resources.store');
-        Route::get('/resources/{id}', [\App\Http\Controllers\Mentor\ResourceController::class, 'show'])->name('resources.show');
-        Route::get('/resources/{id}/edit', [\App\Http\Controllers\Mentor\ResourceController::class, 'edit'])->name('resources.edit');
-        Route::put('/resources/{id}', [\App\Http\Controllers\Mentor\ResourceController::class, 'update'])->name('resources.update');
-        Route::delete('/resources/{id}', [\App\Http\Controllers\Mentor\ResourceController::class, 'destroy'])->name('resources.destroy');
-        Route::get('/resources/{id}/download', [\App\Http\Controllers\Mentor\ResourceController::class, 'download'])->name('resources.download');
-        
-        // Mentorías
-        Route::get('/mentorias', [MentorDashboardController::class, 'mentorias'])->name('mentorias');
-        
-        // Sesiones de mentoría
-        Route::get('/sessions', [\App\Http\Controllers\Mentor\MentorshipSessionController::class, 'index'])->name('sessions.index');
-        Route::get('/sessions/create', [\App\Http\Controllers\Mentor\MentorshipSessionController::class, 'create'])->name('sessions.create');
-        Route::post('/sessions', [\App\Http\Controllers\Mentor\MentorshipSessionController::class, 'store'])->name('sessions.store');
-        Route::get('/sessions/{id}', [\App\Http\Controllers\Mentor\MentorshipSessionController::class, 'show'])->name('sessions.show');
-        Route::get('/sessions/{id}/edit', [\App\Http\Controllers\Mentor\MentorshipSessionController::class, 'edit'])->name('sessions.edit');
-        Route::put('/sessions/{id}', [\App\Http\Controllers\Mentor\MentorshipSessionController::class, 'update'])->name('sessions.update');
-        Route::delete('/sessions/{id}', [\App\Http\Controllers\Mentor\MentorshipSessionController::class, 'destroy'])->name('sessions.destroy');
-        Route::post('/sessions/{id}/status', [\App\Http\Controllers\Mentor\MentorshipSessionController::class, 'updateStatus'])->name('sessions.status');
-        Route::post('/sessions/{id}/respond', [\App\Http\Controllers\Mentor\MentorshipSessionController::class, 'respondToRequest'])->name('sessions.respond');
-        Route::post('/sessions/{id}/review', [\App\Http\Controllers\Mentor\MentorshipSessionController::class, 'addReview'])->name('sessions.review');
-        
-        // Gestión de cursos - rutas detalladas
-        Route::prefix('courses')->name('courses.')->group(function () {
-            Route::get('/create', [\App\Http\Controllers\Mentor\CourseController::class, 'create'])->name('create');
-            Route::post('/', [\App\Http\Controllers\Mentor\CourseController::class, 'store'])->name('store');
-            Route::get('/{id}', [\App\Http\Controllers\Mentor\CourseController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [\App\Http\Controllers\Mentor\CourseController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [\App\Http\Controllers\Mentor\CourseController::class, 'update'])->name('update');
-            Route::delete('/{id}', [\App\Http\Controllers\Mentor\CourseController::class, 'destroy'])->name('destroy');
-            Route::get('/{id}/students', [\App\Http\Controllers\Mentor\CourseController::class, 'students'])->name('students');
-            Route::get('/{id}/statistics', [\App\Http\Controllers\Mentor\CourseController::class, 'statistics'])->name('statistics');
-            Route::post('/{id}/duplicate', [\App\Http\Controllers\Mentor\CourseController::class, 'duplicate'])->name('duplicate');
-        });
+    // Rutas de gestión de cursos para el mentor
+    Route::middleware(['auth'])->prefix('mentor/courses')->name('mentor.courses.')->group(function () {
+        Route::get('/create', [\App\Http\Controllers\Mentor\CourseController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Mentor\CourseController::class, 'store'])->name('store');
+        Route::get('/{id}', [\App\Http\Controllers\Mentor\CourseController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [\App\Http\Controllers\Mentor\CourseController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [\App\Http\Controllers\Mentor\CourseController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\Mentor\CourseController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/students', [\App\Http\Controllers\Mentor\CourseController::class, 'students'])->name('students');
+        Route::get('/{id}/statistics', [\App\Http\Controllers\Mentor\CourseController::class, 'statistics'])->name('statistics');
+        Route::post('/{id}/duplicate', [\App\Http\Controllers\Mentor\CourseController::class, 'duplicate'])->name('duplicate');
     });
     
     // Rutas de estudiante - Movidas a routes/student.php

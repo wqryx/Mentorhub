@@ -11,33 +11,40 @@ Route::middleware(['auth', 'verified'])->prefix('mentor')->name('mentor.')->grou
     Route::get('/profile', [MentorController::class, 'profile'])->name('profile');
     Route::patch('/profile', [MentorController::class, 'updateProfile'])->name('profile.update');
     
-    // Rutas de mentorías
+    // Rutas de mentorías (RESTful)
+    Route::resource('mentorias', MentorshipSessionController::class);
+    
+    // Rutas adicionales para mentorías
     Route::prefix('mentorias')->name('mentorias.')->group(function () {
-        Route::get('/', [MentorController::class, 'mentorias'])->name('index');
-        Route::get('/create', [MentorController::class, 'createMentoria'])->name('create');
-        Route::post('/', [MentorController::class, 'storeMentoria'])->name('store');
-        Route::get('/{mentoria}', [MentorController::class, 'showMentoria'])->name('show');
-        Route::get('/{mentoria}/edit', [MentorController::class, 'editMentoria'])->name('edit');
-        Route::put('/{mentoria}', [MentorController::class, 'updateMentoria'])->name('update');
-        Route::delete('/{mentoria}', [MentorController::class, 'destroyMentoria'])->name('destroy');
-    });
-    
-    // Rutas de sesiones de mentoría (RESTful)
-    Route::resource('sessions', MentorshipSessionController::class)->except(['index']);
-    Route::get('sessions', [MentorshipSessionController::class, 'index'])->name('sessions.index');
-    
-    // Rutas adicionales para sesiones
-    Route::prefix('sessions')->name('sessions.')->group(function () {
-        // Actualizar estado de la sesión
-        Route::put('{session}/status', [MentorshipSessionController::class, 'updateStatus'])
+        // Actualizar estado de la mentoría
+        Route::put('{mentoria}/status', [MentorshipSessionController::class, 'updateStatus'])
             ->name('update-status');
             
         // Responder a solicitud de mentoría
-        Route::post('{session}/respond', [MentorshipSessionController::class, 'respondToRequest'])
+        Route::post('{mentoria}/respond', [MentorshipSessionController::class, 'respondToRequest'])
+            ->name('respond');
+            
+        // Añadir reseña a la mentoría
+        Route::post('{mentoria}/review', [MentorshipSessionController::class, 'addReview'])
+            ->name('review');
+    });
+    
+    // Ruta para sessions con su propio controlador
+    Route::resource('sessions', \App\Http\Controllers\Mentor\SessionController::class);
+    Route::prefix('sessions')->name('sessions.')->group(function () {
+        // Iniciar sesión de mentoría
+        Route::post('{session}/start', [\App\Http\Controllers\Mentor\SessionController::class, 'start'])
+            ->name('start');
+        // Actualizar estado de la sesión
+        Route::put('{session}/status', [\App\Http\Controllers\Mentor\SessionController::class, 'updateStatus'])
+            ->name('update-status');
+            
+        // Responder a solicitud de sesión
+        Route::post('{session}/respond', [\App\Http\Controllers\Mentor\SessionController::class, 'respondToRequest'])
             ->name('respond');
             
         // Añadir reseña a la sesión
-        Route::post('{session}/review', [MentorshipSessionController::class, 'addReview'])
+        Route::post('{session}/review', [\App\Http\Controllers\Mentor\SessionController::class, 'addReview'])
             ->name('review');
     });
     

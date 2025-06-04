@@ -33,7 +33,7 @@
                             <h5 class="font-weight-bold">Información General</h5>
                             <hr>
                             <p><strong><i class="far fa-calendar-alt me-2"></i>Fecha y Hora:</strong> 
-                                {{ $session->scheduled_at->format('l, d M Y - H:i') }}</p>
+                                {{ $session->start_time->format('l, d M Y - H:i') }}</p>
                             <p><strong><i class="far fa-clock me-2"></i>Duración:</strong> 
                                 {{ $session->duration }} minutos</p>
                             <p><strong><i class="fas fa-user-graduate me-2"></i>Estudiante:</strong> 
