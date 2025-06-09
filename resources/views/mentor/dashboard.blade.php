@@ -14,6 +14,20 @@
 
     <!-- Content Row -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Gestionar Mis Cursos Card -->
+        <a href="{{ route('mentor.courses.index') }}" class="bg-white rounded-lg shadow p-5 border-l-4 border-purple-500 hover:bg-purple-50 transition-colors duration-150 block">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-purple-600 uppercase mb-1">
+                        Formación
+                    </p>
+                    <p class="text-xl font-bold text-gray-800">Gestionar Mis Cursos</p>
+                </div>
+                <div class="bg-purple-100 p-3 rounded-full">
+                    <i class="fas fa-chalkboard-teacher text-xl text-purple-500"></i>
+                </div>
+            </div>
+        </a>
         <!-- Total de Sesiones Card -->
         <div class="bg-white rounded-lg shadow p-5 border-l-4 border-blue-500">
             <div class="flex items-center justify-between">

@@ -1,14 +1,29 @@
 @extends('mentor.layouts.app')
 
-@section('title', 'Estudiantes - ' . $course->title . ' - MentorHub')
+@section('title', 'Estudiantes del Curso: ' . ($course->name ?? 'N/A') . ' - MentorHub')
 
 @section('content')
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Estudiantes Inscritos en: {{ $course->title }}</h1>
-        <a href="{{ route('mentor.courses.show', $course->id) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            <i class="fas fa-arrow-left mr-2"></i> Volver al Curso
-        </a>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Estudiantes Inscritos en: <span class="text-blue-600">{{ $course->name ?? 'Curso Desconocido' }}</span></h1>
+            @if(isset($course))
+            <p class="text-sm text-gray-500">Código: {{ $course->code }}</p>
+            @endif
+        </div>
+        <div>
+            @if(isset($course))
+            <a href="{{ route('mentor.courses.show', $course->id) }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mb-2 md:mb-0 md:mr-2">
+                <i class="fas fa-info-circle mr-2"></i> Ver Detalles del Curso
+            </a>
+            @endif
+            <a href="{{ route('mentor.courses.index') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-arrow-left mr-2"></i> Volver a Mis Cursos
+            </a>
+        </div>
+
     </div>
 
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
@@ -82,9 +97,6 @@
                                         </div>
                                         <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                                             <div class="py-1" role="none">
-                                                <button type="button" @click="open = false; showMessageModal('{{ $student->id }}', '{{ addslashes($student->name) }}')" class="w-full text-left text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem" tabindex="-1">
-                                                    <i class="fas fa-envelope mr-2 text-blue-500"></i> Enviar mensaje
-                                                </button>
                                                 <button type="button" @click="open = false; showProgressModal('{{ $student->id }}', '{{ addslashes($student->name) }}', '{{ $student->pivot->progress }}')" class="w-full text-left text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem" tabindex="-1">
                                                     <i class="fas fa-chart-line mr-2 text-green-500"></i> Ver progreso
                                                 </button>
@@ -142,182 +154,6 @@
     </div>
 </div>
 
-<!-- Message Modal -->
-<div x-data="{
-    show: false,
-    student: { id: '', name: '' },
-    form: {
-        subject: '',
-        content: ''
-    },
-    errors: {},
-    loading: false,
-    success: false,
-    init() {
-        this.$watch('show', value => {
-            if (value) {
-                document.body.classList.add('overflow-hidden');
-            } else {
-                document.body.classList.remove('overflow-hidden');
-                // Reset form when closing
-                if (!value) {
-                    this.resetForm();
-                }
-            }
-        });
-        
-        // Listen for open-modal event
-        this.$el.addEventListener('open-modal', (e) => {
-            if (e.detail === 'messageModal') {
-                this.show = true;
-            }
-        });
-        
-        // Listen for set-student event
-        this.$el.addEventListener('set-student', (e) => {
-            this.student = { ...this.student, ...e.detail };
-        });
-    },
-    resetForm() {
-        this.form = { subject: '', content: '' };
-        this.errors = {};
-        this.success = false;
-    },
-    async submitForm() {
-        this.loading = true;
-        this.errors = {};
-        
-        try {
-            const response = await fetch(`/mentor/students/${this.student.id}/message`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify(this.form)
-            });
-            
-            const data = await response.json();
-            
-            if (!response.ok) {
-                if (response.status === 422) {
-                    this.errors = data.errors || {};
-                } else {
-                    throw new Error(data.message || 'Error al enviar el mensaje');
-                }
-            } else {
-                this.success = true;
-                this.resetForm();
-                // Close modal after 2 seconds
-                setTimeout(() => {
-                    this.show = false;
-                    this.success = false;
-                }, 2000);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            this.errors = { general: error.message || 'Error al enviar el mensaje' };
-        } finally {
-            this.loading = false;
-        }
-    }
-}" x-show="show" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" x-ref="dialog" aria-modal="true" style="display: none;">
-    <div x-show="show" 
-         x-transition:enter="ease-out duration-300" 
-         x-transition:enter-start="opacity-0" 
-         x-transition:enter-end="opacity-100" 
-         x-transition:leave="ease-in duration-200" 
-         x-transition:leave-start="opacity-100" 
-         x-transition:leave-end="opacity-0" 
-         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
-         @click="show = false"
-         aria-hidden="true">
-    </div>
-
-    <div class="fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div x-show="show" 
-                 x-transition:enter="ease-out duration-300" 
-                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
-                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
-                 x-transition:leave="ease-in duration-200" 
-                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
-                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
-                 class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                <div>
-                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                        <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                        </svg>
-                    </div>
-                    <div class="mt-3 text-center sm:mt-5">
-                        <h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">
-                            Enviar mensaje a <span x-text="student.name"></span>
-                        </h3>
-                        <div class="mt-2">
-                            <div x-show="success" class="rounded-md bg-green-50 p-4 mb-4">
-                                <div class="flex">
-                                    <div class="flex-shrink-0">
-                                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-green-800">¡Mensaje enviado con éxito!</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <form x-show="!success" @submit.prevent="submitForm">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label for="subject" class="block text-sm font-medium text-gray-700">Asunto</label>
-                                        <div class="mt-1">
-                                            <input type="text" x-model="form.subject" id="subject" name="subject" required
-                                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                                                :class="{'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:outline-none focus:ring-red-500': errors.subject}">
-                                            <p x-show="errors.subject" class="mt-2 text-sm text-red-600" x-text="errors.subject[0]"></p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="content" class="block text-sm font-medium text-gray-700">Mensaje</label>
-                                        <div class="mt-1">
-                                            <textarea rows="4" x-model="form.content" id="content" name="content" required
-                                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                                                :class="{'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:outline-none focus:ring-red-500': errors.content}"></textarea>
-                                            <p x-show="errors.content" class="mt-2 text-sm text-red-600" x-text="errors.content[0]"></p>
-                                        </div>
-                                    </div>
-                                    
-                                    <p x-show="errors.general" class="mt-2 text-sm text-red-600" x-text="errors.general"></p>
-                                </div>
-                                
-                                <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                                    <button type="submit"
-                                        :disabled="loading"
-                                        class="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-                                        :class="{'opacity-50 cursor-not-allowed': loading}">
-                                        <svg x-show="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        <span x-text="loading ? 'Enviando...' : 'Enviar mensaje'"></span>
-                                    </button>
-                                    <button type="button"
-                                        @click="show = false"
-                                        class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm">
-                                        Cancelar
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

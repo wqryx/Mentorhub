@@ -1,200 +1,301 @@
-@extends('layouts.app')
+@extends('mentor.layouts.app')
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/mentor-courses.css') }}">
-@endpush
+@section('title', 'Crear Nuevo Curso - MentorHub')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Crear Nuevo Curso</h5>
-                    <div class="card-tools">
-                        <a href="{{ route('mentor.courses.index') }}" class="btn btn-sm btn-primary">
-                            <i class="fas fa-arrow-left"></i> Volver a Mis Cursos
-                        </a>
-                    </div>
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm">
+            <li>
+                <a href="{{ route('mentor.dashboard') }}" class="text-gray-400 hover:text-gray-500">
+                    <i class="fas fa-home"></i>
+                    <span class="sr-only">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right fa-xs text-gray-400"></i>
+                    <a href="{{ route('mentor.courses.index') }}" class="ml-2 text-gray-500 hover:text-gray-700">Mis Cursos</a>
                 </div>
-                <div class="card-body">
-                    <form action="{{ route('mentor.courses.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label for="title">Título del Curso <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required>
-                                    @error('title')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="short_description">Descripción Corta <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('short_description') is-invalid @enderror" id="short_description" name="short_description" value="{{ old('short_description') }}" required maxlength="255">
-                                    <small class="text-muted">Máximo 255 caracteres. Esta descripción aparecerá en las tarjetas de cursos.</small>
-                                    @error('short_description')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="description">Descripción Completa <span class="text-danger">*</span></label>
-                                    <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="6" required>{{ old('description') }}</textarea>
-                                    @error('description')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="what_will_learn">Lo que aprenderás</label>
-                                    <textarea class="form-control @error('what_will_learn') is-invalid @enderror" id="what_will_learn" name="what_will_learn" rows="4">{{ old('what_will_learn') }}</textarea>
-                                    <small class="text-muted">Describe lo que los estudiantes aprenderán en este curso. Puedes usar formato de lista con viñetas (- item).</small>
-                                    @error('what_will_learn')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="requirements">Requisitos previos</label>
-                                    <textarea class="form-control @error('requirements') is-invalid @enderror" id="requirements" name="requirements" rows="4">{{ old('requirements') }}</textarea>
-                                    <small class="text-muted">Describe los conocimientos previos que necesitan los estudiantes. Puedes usar formato de lista con viñetas (- item).</small>
-                                    @error('requirements')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="image">Imagen del Curso</label>
-                                    <div class="custom-file">
-                                        <input type="file" class="custom-file-input @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
-                                        <label class="custom-file-label" for="image">Seleccionar imagen</label>
-                                    </div>
-                                    <small class="form-text text-muted">Tamaño recomendado: 1280x720 pixeles (16:9)</small>
-                                    @error('image')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                    <div class="mt-2">
-                                        <img id="image-preview" src="{{ asset('images/course-placeholder.jpg') }}" class="img-fluid rounded" alt="Vista previa">
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="speciality_id">Especialidad <span class="text-danger">*</span></label>
-                                    <select class="form-control @error('speciality_id') is-invalid @enderror" id="speciality_id" name="speciality_id" required>
-                                        <option value="">Seleccionar especialidad</option>
-                                        @foreach($specialities as $id => $name)
-                                            <option value="{{ $id }}" {{ old('speciality_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('speciality_id')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="level">Nivel <span class="text-danger">*</span></label>
-                                    <select class="form-control @error('level') is-invalid @enderror" id="level" name="level" required>
-                                        <option value="beginner" {{ old('level') == 'beginner' ? 'selected' : '' }}>Principiante</option>
-                                        <option value="intermediate" {{ old('level') == 'intermediate' ? 'selected' : '' }}>Intermedio</option>
-                                        <option value="advanced" {{ old('level') == 'advanced' ? 'selected' : '' }}>Avanzado</option>
-                                    </select>
-                                    @error('level')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="price">Precio <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">€</span>
-                                        </div>
-                                        <input type="number" class="form-control @error('price') is-invalid @enderror" id="price" name="price" value="{{ old('price', '0') }}" min="0" step="0.01" required>
-                                    </div>
-                                    <small class="form-text text-muted">Establece 0 para cursos gratuitos</small>
-                                    @error('price')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="duration">Duración (horas) <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control @error('duration') is-invalid @enderror" id="duration" name="duration" value="{{ old('duration', '1') }}" min="1" required>
-                                    @error('duration')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                
-                                <div class="form-group">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="is_published" name="is_published" value="1" {{ old('is_published') ? 'checked' : '' }}>
-                                        <label class="custom-control-label" for="is_published">Publicar inmediatamente</label>
-                                    </div>
-                                    <small class="form-text text-muted">Si no está marcado, el curso quedará como borrador.</small>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="is_featured" name="is_featured" value="1" {{ old('is_featured') ? 'checked' : '' }}>
-                                        <label class="custom-control-label" for="is_featured">Curso destacado</label>
-                                    </div>
-                                    <small class="form-text text-muted">Los cursos destacados aparecen en la página principal.</small>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group mt-4">
-                            <button type="submit" class="btn btn-primary">Crear Curso</button>
-                            <a href="{{ route('mentor.courses.index') }}" class="btn btn-secondary">Cancelar</a>
-                        </div>
-                    </form>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right fa-xs text-gray-400"></i>
+                    <span class="ml-2 text-gray-700">Nuevo Curso</span>
                 </div>
-            </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="flex-1 min-w-0">
+            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                <i class="fas fa-plus-circle text-blue-600 mr-2"></i>Crear Nuevo Curso
+            </h1>
         </div>
     </div>
-</div>
-@endsection
 
-@section('scripts')
+    <!-- Form Section -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <form action="{{ route('mentor.courses.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="px-4 py-5 sm:p-6">
+                <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <!-- Course Name -->
+                    <div class="sm:col-span-4">
+                        <label for="name" class="block text-sm font-medium text-gray-700">
+                            Nombre del Curso <span class="text-red-500">*</span>
+                        </label>
+                        <div class="mt-1">
+                            <input type="text" name="name" id="name" required
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                value="{{ old('name') }}" placeholder="Ej: Desarrollo Web con Laravel">
+                            @error('name')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Course Code -->
+                    <div class="sm:col-span-2">
+                        <label for="code" class="block text-sm font-medium text-gray-700">
+                            Código del Curso <span class="text-red-500">*</span>
+                        </label>
+                        <div class="mt-1">
+                            <input type="text" name="code" id="code" required
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                value="{{ old('code') }}" placeholder="Ej: DW-LARAVEL-01">
+                            @error('code')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="sm:col-span-6">
+                        <label for="description" class="block text-sm font-medium text-gray-700">
+                            Descripción del Curso
+                        </label>
+                        <div class="mt-1">
+                            <textarea id="description" name="description" rows="3"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border border-gray-300 rounded-md"
+                                placeholder="Describe el contenido y objetivos del curso">{{ old('description') }}</textarea>
+                            @error('description')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Speciality -->
+                    <div class="sm:col-span-3">
+                        <label for="speciality_id" class="block text-sm font-medium text-gray-700">
+                            Especialidad
+                        </label>
+                        <div class="mt-1">
+                            <select id="speciality_id" name="speciality_id"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                <option value="">Seleccionar especialidad</option>
+                                @foreach($specialities as $id => $name)
+                                    <option value="{{ $id }}" {{ old('speciality_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            @error('speciality_id')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Level -->
+                    <div class="sm:col-span-3">
+                        <label for="level" class="block text-sm font-medium text-gray-700">
+                            Nivel <span class="text-red-500">*</span>
+                        </label>
+                        <div class="mt-1">
+                            <select id="level" name="level" required
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                <option value="Principiante" {{ old('level') == 'Principiante' ? 'selected' : '' }}>Principiante</option>
+                                <option value="Intermedio" {{ old('level') == 'Intermedio' ? 'selected' : '' }}>Intermedio</option>
+                                <option value="Avanzado" {{ old('level') == 'Avanzado' ? 'selected' : '' }}>Avanzado</option>
+                            </select>
+                            @error('level')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Credits -->
+                    <div class="sm:col-span-2">
+                        <label for="credits" class="block text-sm font-medium text-gray-700">
+                            Créditos
+                        </label>
+                        <div class="mt-1">
+                            <input type="number" name="credits" id="credits" min="0"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                value="{{ old('credits') }}" placeholder="Ej: 5">
+                            @error('credits')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Hours per Week -->
+                    <div class="sm:col-span-2">
+                        <label for="hours_per_week" class="block text-sm font-medium text-gray-700">
+                            Horas por Semana
+                        </label>
+                        <div class="mt-1">
+                            <input type="number" name="hours_per_week" id="hours_per_week" min="0"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                value="{{ old('hours_per_week') }}" placeholder="Ej: 10">
+                            @error('hours_per_week')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="sm:col-span-3">
+                        <label for="start_date" class="block text-sm font-medium text-gray-700">
+                            Fecha de Inicio <span class="text-red-500">*</span>
+                        </label>
+                        <div class="mt-1">
+                            <input type="date" name="start_date" id="start_date" required
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                value="{{ old('start_date') }}">
+                            @error('start_date')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- End Date -->
+                    <div class="sm:col-span-3">
+                        <label for="end_date" class="block text-sm font-medium text-gray-700">
+                            Fecha de Finalización
+                        </label>
+                        <div class="mt-1">
+                            <input type="date" name="end_date" id="end_date"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                value="{{ old('end_date') }}">
+                            @error('end_date')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Classroom -->
+                    <div class="sm:col-span-3">
+                        <label for="classroom" class="block text-sm font-medium text-gray-700">
+                            Aula/Virtual
+                        </label>
+                        <div class="mt-1">
+                            <input type="text" name="classroom" id="classroom"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                value="{{ old('classroom') }}" placeholder="Ej: Aula 101 o Enlace Zoom">
+                            @error('classroom')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Schedule -->
+                    <div class="sm:col-span-3">
+                        <label for="schedule" class="block text-sm font-medium text-gray-700">
+                            Horario
+                        </label>
+                        <div class="mt-1">
+                            <input type="text" name="schedule" id="schedule"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                value="{{ old('schedule') }}" placeholder="Ej: Lunes y Miércoles 18:00-20:00">
+                            @error('schedule')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Course Image -->
+                    <div class="sm:col-span-6">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Imagen del Curso
+                        </label>
+                        <div class="mt-1 flex items-center">
+                            <span class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
+                                <svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            </span>
+                            <label for="course_image" class="ml-5">
+                                <div class="py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
+                                    Cambiar
+                                </div>
+                                <input id="course_image" name="course_image" type="file" class="sr-only" accept="image/*">
+                            </label>
+                        </div>
+                        @error('course_image')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Active Status -->
+                    <div class="sm:col-span-6">
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                <input id="is_active" name="is_active" type="checkbox" value="1"
+                                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                                    {{ old('is_active', true) ? 'checked' : '' }}>
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label for="is_active" class="font-medium text-gray-700">Curso activo</label>
+                                <p class="text-gray-500">Los cursos inactivos no serán visibles para los estudiantes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="mt-8 pt-5 border-t border-gray-200 flex justify-end">
+                    <a href="{{ route('mentor.courses.index') }}"
+                        class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Cancelar
+                    </a>
+                    <button type="submit"
+                        class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-save mr-2"></i>Guardar Curso
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@push('scripts')
 <script>
-    $(document).ready(function() {
-        // Vista previa de la imagen
-        $('#image').change(function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#image-preview').attr('src', e.target.result);
-                }
-                reader.readAsDataURL(file);
-                
-                // Actualizar etiqueta del input
-                $('.custom-file-label').text(file.name);
+    // Actualizar vista previa de la imagen seleccionada
+    document.getElementById('course_image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.createElement('img');
+                preview.src = e.target.result;
+                preview.className = 'h-12 w-12 rounded-full object-cover';
+                document.querySelector('.bg-gray-100').innerHTML = '';
+                document.querySelector('.bg-gray-100').appendChild(preview);
             }
-        });
-        
-        // Inicializar editor de texto enriquecido si está disponible
-        if (typeof ClassicEditor !== 'undefined') {
-            ClassicEditor.create(document.querySelector('#description'))
-                .catch(error => {
-                    console.error(error);
-                });
-                
-            ClassicEditor.create(document.querySelector('#what_will_learn'))
-                .catch(error => {
-                    console.error(error);
-                });
-                
-            ClassicEditor.create(document.querySelector('#requirements'))
-                .catch(error => {
-                    console.error(error);
-                });
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Validar que la fecha de fin sea posterior a la de inicio
+    document.getElementById('start_date').addEventListener('change', function() {
+        const endDate = document.getElementById('end_date');
+        if (endDate.value && new Date(endDate.value) < new Date(this.value)) {
+            endDate.value = '';
+            alert('La fecha de finalización debe ser posterior a la fecha de inicio');
         }
     });
 </script>
+@endpush
 @endsection

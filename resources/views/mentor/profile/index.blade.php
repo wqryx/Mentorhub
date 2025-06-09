@@ -3,7 +3,40 @@
 @section('title', 'Mi Perfil - MentorHub')
 
 @push('styles')
-<!-- Estilos específicos para el perfil si son necesarios -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .profile-photo-upload {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .profile-photo-upload img {
+        transition: opacity 0.3s;
+    }
+    .profile-photo-upload:hover img {
+        opacity: 0.8;
+    }
+    .profile-photo-upload .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+        border-radius: 50%;
+    }
+    .profile-photo-upload:hover .overlay {
+        opacity: 1;
+    }
+    .select2-container {
+        width: 100% !important;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -21,12 +54,20 @@
                 <!-- Cabecera con foto de perfil -->
                 <div class="p-6 flex flex-col items-center border-b border-gray-200">
                     <div class="relative mb-4">
-                        <img class="h-32 w-32 rounded-full object-cover border-4 border-white shadow" 
-                            src="{{ auth()->user()->photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&color=7F9CF5&background=EBF4FF' }}">
-                        <button class="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 shadow hover:bg-blue-700 transition-colors duration-150"
-                                data-bs-toggle="modal" data-bs-target="#changePhotoModal">
-                            <i class="fas fa-camera"></i>
-                        </button>
+                        <form id="photoUploadForm" enctype="multipart/form-data">
+                            @csrf
+                            <input type="file" id="photoInput" name="photo" accept="image/*" class="hidden" />
+                            <label for="photoInput" class="profile-photo-upload cursor-pointer">
+                                <img id="profilePhoto" class="h-32 w-32 rounded-full object-cover border-4 border-white shadow" 
+                                    src="{{ auth()->user()->photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&color=7F9CF5&background=EBF4FF' }}"
+                                    alt="{{ auth()->user()->name }}">
+                                <div class="overlay">
+                                    <span class="text-white">
+                                        <i class="fas fa-camera text-2xl"></i>
+                                    </span>
+                                </div>
+                            </label>
+                        </form>
                     </div>
                     <h3 class="text-xl font-bold text-gray-800">{{ auth()->user()->name }}</h3>
                     <p class="text-sm text-gray-500">Mentor</p>
@@ -131,9 +172,9 @@
                                 @else
                                     <p class="text-gray-500 mb-4">No has agregado una biografía profesional todavía. Comparte tu experiencia y conocimientos para que los estudiantes te conozcan mejor.</p>
                                 @endif
-                                <button class="inline-flex items-center px-3 py-1.5 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-150" data-bs-toggle="modal" data-bs-target="#editBioModal">
+                                <a href="#bio" class="inline-flex items-center px-3 py-1.5 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-150" onclick="event.preventDefault(); document.querySelector('a[href=\'#bio\']').click();">
                                     <i class="fas fa-edit mr-2"></i> Editar biografía
-                                </button>
+                                </a>
                             </div>
                             
                             <h3 class="text-xl font-semibold text-gray-800 mb-4">Experiencia Profesional</h3>
@@ -167,9 +208,9 @@
                                 @empty
                                     <p class="text-gray-500">No has agregado experiencia profesional todavía.</p>
                                 @endforelse
-                                <button class="inline-flex items-center px-3 py-1.5 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-150" data-bs-toggle="modal" data-bs-target="#addExperienceModal">
-                                    <i class="fas fa-plus-circle mr-2"></i> Añadir experiencia
-                                </button>
+                                <a href="#bio" class="inline-flex items-center px-3 py-1.5 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-150" onclick="event.preventDefault(); document.querySelector('a[href=\'#bio\']').click();">
+                                    <i class="fas fa-plus mr-2"></i> Añadir experiencia
+                                </a>
                             </div>
                             
                             <h3 class="text-xl font-semibold text-gray-800 mb-4">Educación</h3>
@@ -203,9 +244,9 @@
                                 @empty
                                     <p class="text-gray-500">No has agregado información educativa todavía.</p>
                                 @endforelse
-                                <button class="inline-flex items-center px-3 py-1.5 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-150" data-bs-toggle="modal" data-bs-target="#addEducationModal">
-                                    <i class="fas fa-plus-circle mr-2"></i> Añadir educación
-                                </button>
+                                <a href="#bio" class="inline-flex items-center px-3 py-1.5 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-150" onclick="event.preventDefault(); document.querySelector('a[href=\'#bio\']').click();">
+                                    <i class="fas fa-plus mr-2"></i> Añadir educación
+                                </a>
                             </div>
                         </div>
                         
@@ -227,9 +268,9 @@
                                         <p class="text-gray-500">No has seleccionado especialidades todavía.</p>
                                     @endforelse
                                 </div>
-                                <button class="inline-flex items-center px-3 py-1.5 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-150" data-bs-toggle="modal" data-bs-target="#addSpecialityModal">
-                                    <i class="fas fa-plus-circle mr-2"></i> Añadir especialidad
-                                </button>
+                                <a href="#specialities" class="inline-flex items-center px-3 py-1.5 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-150" onclick="event.preventDefault(); document.querySelector('a[href=\'#specialities\']').click();">
+                                    <i class="fas fa-plus mr-2"></i> Añadir especialidad
+                                </a>
                             </div>
                             
                             <h3 class="text-xl font-semibold text-gray-800 mb-2 mt-8">Habilidades</h3>
@@ -259,73 +300,87 @@
                             <h3 class="text-xl font-semibold text-gray-800 mb-2">Mi Disponibilidad</h3>
                             <p class="text-gray-600 mb-6">Configura tus horarios disponibles para sesiones de mentoría.</p>
                             
-                            <div class="overflow-x-auto mb-6">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Día</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Disponible</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Horario</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        @php
-                                            $days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-                                        @endphp
-                                        
-                                        @foreach($days as $index => $day)
-                                            <tr class="{{ $index % 2 === 0 ? 'bg-white' : 'bg-gray-50' }}">
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $day }}</td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <label class="inline-flex relative items-center cursor-pointer">
-                                                        <input type="checkbox" id="day{{ $index }}" 
-                                                            class="sr-only peer"
-                                                            {{ isset($availability[$index]) && $availability[$index]['available'] ? 'checked' : '' }}>
-                                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                                    </label>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <div class="flex items-center space-x-2">
-                                                        <select class="block w-24 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm" 
-                                                               id="startTime{{ $index }}" 
-                                                               {{ isset($availability[$index]) && $availability[$index]['available'] ? '' : 'disabled' }}>
-                                                            @for($hour = 8; $hour <= 20; $hour++)
-                                                                <option value="{{ sprintf('%02d:00', $hour) }}" 
-                                                                       {{ isset($availability[$index]) && $availability[$index]['start_time'] == sprintf('%02d:00', $hour) ? 'selected' : '' }}>
-                                                                    {{ sprintf('%02d:00', $hour) }}
-                                                                </option>
-                                                                <option value="{{ sprintf('%02d:30', $hour) }}" 
-                                                                       {{ isset($availability[$index]) && $availability[$index]['start_time'] == sprintf('%02d:30', $hour) ? 'selected' : '' }}>
-                                                                    {{ sprintf('%02d:30', $hour) }}
-                                                                </option>
-                                                            @endfor
-                                                        </select>
-                                                        <span class="text-gray-500">a</span>
-                                                        <select class="block w-24 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm" 
-                                                               id="endTime{{ $index }}" 
-                                                               {{ isset($availability[$index]) && $availability[$index]['available'] ? '' : 'disabled' }}>
-                                                            @for($hour = 8; $hour <= 21; $hour++)
-                                                                <option value="{{ sprintf('%02d:00', $hour) }}" 
-                                                                       {{ isset($availability[$index]) && $availability[$index]['end_time'] == sprintf('%02d:00', $hour) ? 'selected' : '' }}>
-                                                                    {{ sprintf('%02d:00', $hour) }}
-                                                                </option>
-                                                                <option value="{{ sprintf('%02d:30', $hour) }}" 
-                                                                       {{ isset($availability[$index]) && $availability[$index]['end_time'] == sprintf('%02d:30', $hour) ? 'selected' : '' }}>
-                                                                    {{ sprintf('%02d:30', $hour) }}
-                                                                </option>
-                                                            @endfor
-                                                        </select>
-                                                    </div>
-                                                </td>
+                            <form id="availabilityForm">
+                                @csrf
+                                <div class="overflow-x-auto mb-6">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Día</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Disponible</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Horario</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-150 inline-flex items-center" id="saveAvailabilityBtn">
-                                <i class="fas fa-save mr-2"></i> Guardar disponibilidad
-                            </button>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            @php
+                                                $days = [
+                                                    1 => ['name' => 'Lunes', 'db' => 'monday'],
+                                                    2 => ['name' => 'Martes', 'db' => 'tuesday'],
+                                                    3 => ['name' => 'Miércoles', 'db' => 'wednesday'],
+                                                    4 => ['name' => 'Jueves', 'db' => 'thursday'],
+                                                    5 => ['name' => 'Viernes', 'db' => 'friday'],
+                                                    6 => ['name' => 'Sábado', 'db' => 'saturday'],
+                                                    0 => ['name' => 'Domingo', 'db' => 'sunday']
+                                                ];
+                                            @endphp
+                                            
+                                            @foreach($days as $dayIndex => $dayInfo)
+                                                @php
+                                                    $dayData = $availability[$dayIndex] ?? [
+                                                        'available' => false,
+                                                        'start_time' => '09:00',
+                                                        'end_time' => '17:00',
+                                                        'day_name' => $dayInfo['name']
+                                                    ];
+                                                    $isAvailable = $dayData['available'] ?? false;
+                                                    $startTime = \Carbon\Carbon::parse($dayData['start_time'])->format('H:i');
+                                                    $endTime = \Carbon\Carbon::parse($dayData['end_time'])->format('H:i');
+                                                @endphp
+                                                <tr class="{{ $loop->even ? 'bg-gray-50' : 'bg-white' }}">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                        {{ $dayInfo['name'] }}
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <label class="inline-flex items-center cursor-pointer">
+                                                            <input type="checkbox" 
+                                                                   name="availability[{{ $dayIndex }}][is_available]" 
+                                                                   value="1" 
+                                                                   class="day-checkbox" 
+                                                                   data-day="{{ $dayIndex }}"
+                                                                   {{ $isAvailable ? 'checked' : '' }}>
+                                                            <span class="ml-2 text-sm text-gray-700">
+                                                                {{ $isAvailable ? 'Disponible' : 'No disponible' }}
+                                                            </span>
+                                                        </label>
+                                                        <input type="hidden" name="availability[{{ $dayIndex }}][day_of_week]" value="{{ $dayInfo['db'] }}">
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <div class="flex items-center space-x-2 time-inputs" {{ !$isAvailable ? 'style=display:none;' : '' }}>
+                                                            <input type="time" 
+                                                                   name="availability[{{ $dayIndex }}][start_time]" 
+                                                                   value="{{ $startTime }}"
+                                                                   class="time-input block w-32 px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                                   {{ !$isAvailable ? 'disabled' : '' }}>
+                                                            <span class="text-gray-500">a</span>
+                                                            <input type="time" 
+                                                                   name="availability[{{ $dayIndex }}][end_time]" 
+                                                                   value="{{ $endTime }}"
+                                                                   class="time-input block w-32 px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                                   {{ !$isAvailable ? 'disabled' : '' }}>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="flex justify-end">
+                                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-150 inline-flex items-center">
+                                        <i class="fas fa-save mr-2"></i> Guardar disponibilidad
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                         
                         <!-- Pestaña de Configuración -->
@@ -686,22 +741,274 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Previsualización de foto de perfil
-        const photoFile = document.getElementById('photoFile');
-        const photoPreview = document.getElementById('photoPreview');
+    // Toast notification function
+    function showToast(type, message) {
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 px-6 py-3 rounded-md text-white shadow-lg z-50 transition-all duration-300 transform translate-x-0 opacity-100 ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`;
         
-        if (photoFile) {
-            photoFile.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        photoPreview.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
+        toast.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Remove toast after 5 seconds
+        setTimeout(() => {
+            toast.style.transform = 'translateX(120%)';
+            toast.style.opacity = '0';
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
                 }
+            }, 300);
+        }, 5000);
+    }
+    
+    // Toggle time inputs based on availability checkbox
+    function toggleTimeInputs(checkbox) {
+        const dayIndex = checkbox.id.replace('day', '');
+        const startTime = document.getElementById(`startTime${dayIndex}`);
+        const endTime = document.getElementById(`endTime${dayIndex}`);
+        
+        if (startTime && endTime) {
+            startTime.disabled = !checkbox.checked;
+            endTime.disabled = !checkbox.checked;
+        }
+    }
+    
+    // Initialize time pickers
+    function initializeTimePickers() {
+        // Initialize time inputs
+        const timeInputs = document.querySelectorAll('input[type="time"]');
+        timeInputs.forEach(input => {
+            // Set default time if empty
+            if (!input.value) {
+                input.value = input.id.includes('start') ? '09:00' : '17:00';
+            }
+        });
+        
+        // Toggle time inputs based on initial state
+        document.querySelectorAll('input[type="checkbox"][id^="day"]').forEach(checkbox => {
+            toggleTimeInputs(checkbox);
+            
+            // Add event listener for changes
+            checkbox.addEventListener('change', function() {
+                toggleTimeInputs(this);
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            e.preventDefault();
+            
+            // Find the target element
+            const targetElement = document.querySelector(targetId);
+            if (!targetElement) return;
+            
+            // If it's a tab, activate it
+            const tabTrigger = document.querySelector(`[href="${targetId}"][data-bs-toggle="tab"]`);
+            if (tabTrigger) {
+                new bootstrap.Tab(tabTrigger).show();
+            }
+            
+            // Scroll to the element
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
+    });
+
+    // Initialize Select2 for specialities
+    $('select[multiple]').select2({
+        placeholder: 'Selecciona tus especialidades',
+        allowClear: true,
+            width: '100%',
+            closeOnSelect: false
+        });
+        
+        // Initialize Select2 for timezone
+        $('#timezone').select2({
+            width: '100%',
+            placeholder: 'Selecciona tu zona horaria'
+        });
+        
+        // Initialize time pickers and availability toggles
+        initializeTimePickers();
+        
+        // Handle availability form submission
+        const availabilityForm = document.getElementById('availabilityForm');
+        if (availabilityForm) {
+            availabilityForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(availabilityForm);
+                const submitBtn = availabilityForm.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerHTML;
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Guardando...';
+                
+                // Prepare availability data
+                const availabilityData = [];
+                const days = [
+                    { id: 0, name: 'sunday', label: 'Domingo' },
+                    { id: 1, name: 'monday', label: 'Lunes' },
+                    { id: 2, name: 'tuesday', label: 'Martes' },
+                    { id: 3, name: 'wednesday', label: 'Miércoles' },
+                    { id: 4, name: 'thursday', label: 'Jueves' },
+                    { id: 5, name: 'friday', label: 'Viernes' },
+                    { id: 6, name: 'saturday', label: 'Sábado' }
+                ];
+                
+                days.forEach(day => {
+                    const checkbox = document.getElementById(`day${day.id}`);
+                    const startTime = document.getElementById(`startTime${day.id}`);
+                    const endTime = document.getElementById(`endTime${day.id}`);
+                    
+                    availabilityData.push({
+                        day_of_week: day.id, // Enviar el número del día (0-6)
+                        is_available: checkbox.checked,
+                        start_time: startTime ? startTime.value : '09:00',
+                        end_time: endTime ? endTime.value : '17:00',
+                        recurring: true
+                    });
+                });
+                
+                // Send data to server
+                fetch('{{ route("mentor.availability.update") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ availability: availabilityData })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('success', '¡Disponibilidad actualizada correctamente!');
+                    } else {
+                        throw new Error(data.message || 'Error al actualizar la disponibilidad');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('error', error.message || 'Error al actualizar la disponibilidad');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                });
+            });
+        }
+
+        // Handle basic info form submission
+        const basicInfoForm = document.getElementById('basicInfoForm');
+        if (basicInfoForm) {
+            basicInfoForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(basicInfoForm);
+                const submitBtn = basicInfoForm.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerHTML;
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Guardando...';
+                
+                fetch(basicInfoForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        showToast('success', '¡Información actualizada correctamente!');
+                        
+                        // Close the modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('editBasicInfoModal'));
+                        if (modal) modal.hide();
+                        
+                        // Update the page to reflect changes
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        throw new Error(data.message || 'Error al actualizar la información');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('error', error.message || 'Error al actualizar la información');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                });
+            });
+        }
+        
+        // Handle profile photo upload
+        const photoInput = document.getElementById('photoInput');
+        const photoForm = document.getElementById('photoUploadForm');
+        
+        if (photoInput && photoForm) {
+            photoInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (!file) return;
+                
+                // Show loading state
+                const submitBtn = photoForm.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.disabled = true;
+                
+                const formData = new FormData(photoForm);
+                
+                fetch('{{ route("mentor.profile.photo.update") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the profile photo
+                        document.getElementById('profilePhoto').src = data.photo_url;
+                        
+                        // Show success message
+                        showToast('success', '¡Foto de perfil actualizada correctamente!');
+                    } else {
+                        throw new Error(data.message || 'Error al actualizar la foto de perfil');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('error', error.message || 'Error al actualizar la foto de perfil');
+                })
+                .finally(() => {
+                    if (submitBtn) submitBtn.disabled = false;
+                });
             });
         }
         
@@ -751,18 +1058,83 @@
             });
         }
         
-        // Manejar disponibilidad
-        const dayCheckboxes = document.querySelectorAll('input[id^="day"]');
-        
-        dayCheckboxes.forEach((checkbox, index) => {
-            const startTimeSelect = document.getElementById(`startTime${index}`);
-            const endTimeSelect = document.getElementById(`endTime${index}`);
-            
-            checkbox.addEventListener('change', function() {
-                startTimeSelect.disabled = !this.checked;
-                endTimeSelect.disabled = !this.checked;
-            });
+        // Toggle time inputs when day availability checkbox is clicked
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('day-checkbox')) {
+                const dayRow = e.target.closest('tr');
+                const timeInputs = dayRow.querySelector('.time-inputs');
+                const timeInputFields = timeInputs.querySelectorAll('.time-input');
+                
+                if (e.target.checked) {
+                    timeInputs.style.display = 'flex';
+                    timeInputFields.forEach(input => input.disabled = false);
+                } else {
+                    timeInputs.style.display = 'none';
+                    timeInputFields.forEach(input => input.disabled = true);
+                }
+            }
         });
+        
+        // Handle availability form submission
+        const availabilityForm = document.getElementById('availabilityForm');
+        if (availabilityForm) {
+            availabilityForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const availabilityData = {
+                    _token: formData.get('_token'),
+                    availability: {}
+                };
+
+                // Process form data into the expected format
+                formData.forEach((value, key) => {
+                    if (key.startsWith('availability[')) {
+                        const dayMatch = key.match(/availability\[(\d+)\]\[(\w+)\]/);
+                        if (dayMatch) {
+                            const dayIndex = dayMatch[1];
+                            const field = dayMatch[2];
+                            
+                            if (!availabilityData.availability[dayIndex]) {
+                                availabilityData.availability[dayIndex] = {};
+                            }
+                            
+                            availabilityData.availability[dayIndex][field] = value;
+                        }
+                    }
+                });
+
+                // Show loading state
+                const submitButton = availabilityForm.querySelector('button[type="submit"]');
+                const originalButtonText = submitButton.innerHTML;
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Guardando...';
+
+                // Send data via AJAX
+                fetch('{{ route("mentor.availability.update") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(availabilityData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showToast('success', 'Disponibilidad actualizada correctamente');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('error', 'Error al actualizar la disponibilidad');
+                })
+                .finally(() => {
+                    // Restore button state
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                });
+            });
+        }
         
         // Manejar envío de formularios
         // Estos son ejemplos y deberían adaptarse a la lógica real de tu aplicación

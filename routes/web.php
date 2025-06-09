@@ -109,6 +109,18 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/students', [\App\Http\Controllers\Mentor\CourseController::class, 'students'])->name('students');
         Route::get('/{id}/statistics', [\App\Http\Controllers\Mentor\CourseController::class, 'statistics'])->name('statistics');
         Route::post('/{id}/duplicate', [\App\Http\Controllers\Mentor\CourseController::class, 'duplicate'])->name('duplicate');
+
+        // Modules for a specific course (Mentor)
+        Route::prefix('/{course}/modules')->name('modules.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Mentor\ModuleController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Mentor\ModuleController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Mentor\ModuleController::class, 'store'])->name('store');
+            Route::get('/{module}', [\App\Http\Controllers\Mentor\ModuleController::class, 'show'])->name('show');
+            Route::get('/{module}/edit', [\App\Http\Controllers\Mentor\ModuleController::class, 'edit'])->name('edit');
+            Route::put('/{module}', [\App\Http\Controllers\Mentor\ModuleController::class, 'update'])->name('update');
+            Route::delete('/{module}', [\App\Http\Controllers\Mentor\ModuleController::class, 'destroy'])->name('destroy');
+            // Optional: Route::post('/reorder', [\App\Http\Controllers\Mentor\ModuleController::class, 'reorder'])->name('reorder');
+        });
     });
     
     // Rutas de estudiante - Movidas a routes/student.php

@@ -11,14 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Primero crear la tabla sin las claves foráneas
-        Schema::create('enrollments', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('course_id');
-            $table->enum('status', ['pending', 'active', 'completed', 'expired', 'cancelled'])->default('pending');
-            $table->date('enrollment_date');
-            $table->date('completion_date')->nullable();
+        if (!Schema::hasTable('enrollments')) {
+            // Primero crear la tabla sin las claves foráneas
+            Schema::create('enrollments', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('user_id');
+                $table->unsignedBigInteger('course_id');
+                $table->enum('status', ['pending', 'active', 'completed', 'expired', 'cancelled'])->default('pending');
+                $table->date('enrollment_date');
+                $table->date('completion_date')->nullable();
+                $table->timestamps();
+                
+                // Asegurarse de que un usuario no se inscriba dos veces al mismo curso
+                $table->unique(['user_id', 'course_id']);
             $table->timestamps();
             
             // Asegurarse de que un usuario no se inscriba dos veces al mismo curso
@@ -37,7 +42,8 @@ return new class extends Migration
                   ->references('id')
                   ->on('courses')
                   ->onDelete('cascade');
-        });
+            });
+        }
     }
 
     /**

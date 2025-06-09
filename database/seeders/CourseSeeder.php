@@ -39,7 +39,8 @@ class CourseSeeder extends Seeder
                 'end_date' => now()->addMonths(4),
                 'classroom' => 'Online',
                 'schedule' => 'Lunes, Miércoles y Viernes 19:00-21:00',
-                'teacher_id' => $teacher->id // Asegúrate que tu tabla courses usa user_id para el profesor
+                'teacher_id' => $teacher->id, // Asegúrate que tu tabla courses usa user_id para el profesor
+                'creator_id' => $teacher->id // El creador del curso será el mismo que el profesor
             ],
             [
                 'name' => 'Programación PHP Avanzada y Patrones de Diseño',
@@ -53,7 +54,8 @@ class CourseSeeder extends Seeder
                 'end_date' => now()->addMonths(3),
                 'classroom' => 'Online',
                 'schedule' => 'Martes y Jueves 18:00-21:00',
-                'teacher_id' => $teacher->id
+                'teacher_id' => $teacher->id,
+                'creator_id' => $teacher->id
             ],
             [
                 'name' => 'Creación de APIs RESTful con Lumen y Laravel',
@@ -67,7 +69,8 @@ class CourseSeeder extends Seeder
                 'end_date' => now()->addMonths(5),
                 'classroom' => 'Aula Virtual 3',
                 'schedule' => 'Viernes 15:00-19:00 y Sábados 9:00-13:00',
-                'teacher_id' => $teacher->id
+                'teacher_id' => $teacher->id,
+                'creator_id' => $teacher->id
             ],
         ];
         

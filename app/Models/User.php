@@ -3,6 +3,11 @@
 namespace App\Models;
 
 use App\Models\Profile;
+use App\Models\Speciality;
+use App\Models\Experience;
+use App\Models\Education;
+use App\Models\MentorAvailability;
+use App\Models\MentorshipSession;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -95,19 +100,63 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is an admin
-     */
-    public function isAdmin()
-    {
-        return $this->role === 'admin';
-    }
-
-    /**
      * Get the user's profile.
      */
     public function profile()
     {
         return $this->hasOne(Profile::class);
+    }
+
+    /**
+     * Get the user's specialities.
+     */
+    public function specialities()
+    {
+        return $this->belongsToMany(Speciality::class, 'mentor_speciality', 'user_id', 'speciality_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the user's work experiences.
+     */
+    public function experiences()
+    {
+        return $this->hasMany(Experience::class);
+    }
+
+    /**
+     * Get the user's education history.
+     */
+    public function education()
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    /**
+     * Get the user's availability.
+     */
+    public function availabilities()
+    {
+        return $this->hasMany(MentorAvailability::class, 'user_id');
+    }
+
+    /**
+     * Get the user's students (for mentors).
+     */
+    public function students()
+    {
+        return $this->belongsToMany(User::class, 'mentorship_sessions', 'mentor_id', 'student_id')
+            ->withPivot('status')
+            ->withTimestamps()
+            ->distinct();
+    }
+
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
     }
 
     /**
@@ -264,6 +313,15 @@ class User extends Authenticatable
     public function enrollments()
     {
         return $this->hasMany(Enrollment::class, 'user_id');
+    }
+
+    /**
+     * Obtiene las conversaciones del usuario.
+     */
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class, 'conversation_user', 'user_id', 'conversation_id')
+            ->withTimestamps();
     }
 }
 

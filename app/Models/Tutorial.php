@@ -62,6 +62,39 @@ class Tutorial extends Model
     }
     
     /**
+     * Get all of the tutorial's views.
+     */
+    public function views()
+    {
+        return $this->morphMany(View::class, 'viewable');
+    }
+    
+    /**
+     * Record a view for the tutorial.
+     */
+    public function recordView($userId = null)
+    {
+        return View::recordView($this, $userId);
+    }
+    
+    /**
+     * Get the view count for the tutorial.
+     */
+    public function getViewCountAttribute()
+    {
+        return $this->views()->count();
+    }
+    
+    /**
+     * Check if the tutorial has been viewed by a specific user.
+     */
+    public function isViewedByUser($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+        return $this->views()->where('user_id', $userId)->exists();
+    }
+    
+    /**
      * Obtener los usuarios que han completado este tutorial.
      */
     public function completedByUsers()

@@ -72,17 +72,18 @@ return new class extends Migration
                 // 1. Intentar eliminar las claves foráneas
                 // Es importante eliminar las claves foráneas ANTES de intentar eliminar el índice único que podrían estar utilizando.
                 try {
-                    $table->dropForeign($userFkName);
-                    Log::info("Dropped foreign key '$userFkName' on 'enrollments' table.");
+                    // Drop foreign key by column name for robustness
+                    $table->dropForeign(['user_id']);
+                    Log::info("Dropped foreign key on 'user_id' in 'enrollments' table.");
                 } catch (\Exception $e) {
-                    // No es crítico si no existe, podría haber sido eliminada antes o no existir.
-                    Log::info("Could not drop foreign key '$userFkName' on 'enrollments' table (it might not exist or another issue occurred): " . $e->getMessage());
+                    Log::info("Could not drop foreign key on 'user_id' in 'enrollments' table (it might not exist or another issue occurred): " . $e->getMessage());
                 }
                 try {
-                    $table->dropForeign($courseFkName);
-                    Log::info("Dropped foreign key '$courseFkName' on 'enrollments' table.");
+                    // Drop foreign key by column name for robustness
+                    $table->dropForeign(['course_id']);
+                    Log::info("Dropped foreign key on 'course_id' in 'enrollments' table.");
                 } catch (\Exception $e) {
-                    Log::info("Could not drop foreign key '$courseFkName' on 'enrollments' table (it might not exist or another issue occurred): " . $e->getMessage());
+                    Log::info("Could not drop foreign key on 'course_id' in 'enrollments' table (it might not exist or another issue occurred): " . $e->getMessage());
                 }
 
                 // 2. Intentar eliminar el índice único

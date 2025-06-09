@@ -24,11 +24,11 @@ class CourseController extends Controller
     {
         $mentor = Auth::user();
         $courses = Course::where('creator_id', $mentor->id)
-            ->withCount(['modules', 'students'])
+            ->withCount(['modules', 'students']) // Assuming 'students' is the correct relationship name for enrollments/students in a course
             ->orderBy('created_at', 'desc')
             ->paginate(10);
             
-        return view('mentor.my_courses', compact('courses'));
+        return view('mentor.courses.index', compact('courses'));
     }
 
     /**
@@ -52,48 +52,51 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'short_description' => 'required|string|max:255',
-            'level' => 'required|in:beginner,intermediate,advanced',
-            'price' => 'required|numeric|min:0',
-            'is_published' => 'boolean',
-            'is_featured' => 'boolean',
-            'speciality_id' => 'required|exists:specialities,id',
-            'image' => 'nullable|image|max:2048',
-            'duration' => 'required|integer|min:1',
-            'requirements' => 'nullable|string',
-            'what_will_learn' => 'nullable|string',
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:courses,code',
+            'description' => 'nullable|string',
+            'level' => 'required|in:Principiante,Intermedio,Avanzado',
+            'credits' => 'nullable|integer|min:0',
+            'hours_per_week' => 'nullable|integer|min:0',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'classroom' => 'nullable|string|max:255',
+            'schedule' => 'nullable|string|max:255',
+            'speciality_id' => 'nullable|exists:specialities,id',
+            'course_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            // is_active is handled by $request->boolean('is_active') directly in $courseData
         ]);
         
         $courseData = [
-            'title' => $validated['title'],
-            'slug' => Str::slug($validated['title']),
-            'description' => $validated['description'],
-            'short_description' => $validated['short_description'],
+            'name' => $validated['name'],
+            'slug' => Str::slug($validated['name']),
+            'code' => $validated['code'],
+            'description' => $validated['description'] ?? null, // Ensure nullable fields are handled
             'level' => $validated['level'],
-            'price' => $validated['price'],
-            'is_published' => $request->has('is_published'),
-            'is_featured' => $request->has('is_featured'),
-            'speciality_id' => $validated['speciality_id'],
+            'credits' => $validated['credits'] ?? null,
+            'hours_per_week' => $validated['hours_per_week'] ?? null,
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'] ?? null,
+            'classroom' => $validated['classroom'] ?? null,
+            'schedule' => $validated['schedule'] ?? null,
+            'speciality_id' => $validated['speciality_id'] ?? null,
             'creator_id' => Auth::id(),
-            'duration' => $validated['duration'],
-            'requirements' => $validated['requirements'] ?? null,
-            'what_will_learn' => $validated['what_will_learn'] ?? null,
+            'is_active' => $request->boolean('is_active'),
         ];
         
-        // Manejar imagen del curso
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = Str::slug($validated['title']) . '-' . time() . '.' . $image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('courses', $imageName, 'public');
-            $courseData['image'] = $imagePath;
+        if ($request->hasFile('course_image')) {
+            $image = $request->file('course_image');
+            $safeName = Str::slug($validated['name']);
+            $imageName = $safeName . '-' . time() . '.' . $image->getClientOriginalExtension();
+            // Stores in storage/app/public/course_images. Ensure 'php artisan storage:link' was run.
+            $imagePath = $image->storeAs('course_images', $imageName, 'public'); 
+            $courseData['image_path'] = $imagePath; // Path is relative to the 'public' disk's root
         }
         
         $course = Course::create($courseData);
         
-        return redirect()->route('mentor.courses')
-            ->with('success', 'Curso creado correctamente');
+        return redirect()->route('mentor.courses.index')
+            ->with('success', 'Curso creado correctamente.');
     }
 
     /**
@@ -144,52 +147,53 @@ class CourseController extends Controller
             ->findOrFail($id);
             
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'short_description' => 'required|string|max:255',
-            'level' => 'required|in:beginner,intermediate,advanced',
-            'price' => 'required|numeric|min:0',
-            'is_published' => 'boolean',
-            'is_featured' => 'boolean',
-            'speciality_id' => 'required|exists:specialities,id',
-            'image' => 'nullable|image|max:2048',
-            'duration' => 'required|integer|min:1',
-            'requirements' => 'nullable|string',
-            'what_will_learn' => 'nullable|string',
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:courses,code,' . $course->id,
+            'description' => 'nullable|string',
+            'level' => 'required|in:Principiante,Intermedio,Avanzado',
+            'credits' => 'nullable|integer|min:0',
+            'hours_per_week' => 'nullable|integer|min:0',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'classroom' => 'nullable|string|max:255',
+            'schedule' => 'nullable|string|max:255',
+            'speciality_id' => 'nullable|exists:specialities,id',
+            'course_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         
         $courseData = [
-            'title' => $validated['title'],
-            'slug' => Str::slug($validated['title']),
-            'description' => $validated['description'],
-            'short_description' => $validated['short_description'],
+            'name' => $validated['name'],
+            'slug' => Str::slug($validated['name']),
+            'code' => $validated['code'],
+            'description' => $validated['description'] ?? null,
             'level' => $validated['level'],
-            'price' => $validated['price'],
-            'is_published' => $request->has('is_published'),
-            'is_featured' => $request->has('is_featured'),
-            'speciality_id' => $validated['speciality_id'],
-            'duration' => $validated['duration'],
-            'requirements' => $validated['requirements'] ?? null,
-            'what_will_learn' => $validated['what_will_learn'] ?? null,
+            'credits' => $validated['credits'] ?? null,
+            'hours_per_week' => $validated['hours_per_week'] ?? null,
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'] ?? null,
+            'classroom' => $validated['classroom'] ?? null,
+            'schedule' => $validated['schedule'] ?? null,
+            'speciality_id' => $validated['speciality_id'] ?? null,
+            'is_active' => $request->boolean('is_active'),
         ];
         
-        // Manejar imagen del curso
-        if ($request->hasFile('image')) {
-            // Eliminar imagen anterior si existe
-            if ($course->image) {
-                Storage::disk('public')->delete($course->image);
+        if ($request->hasFile('course_image')) {
+            // Delete old image if it exists and is not null
+            if ($course->image_path) {
+                Storage::disk('public')->delete($course->image_path);
             }
             
-            $image = $request->file('image');
-            $imageName = Str::slug($validated['title']) . '-' . time() . '.' . $image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('courses', $imageName, 'public');
-            $courseData['image'] = $imagePath;
+            $image = $request->file('course_image');
+            $safeName = Str::slug($validated['name']);
+            $imageName = $safeName . '-' . time() . '.' . $image->getClientOriginalExtension();
+            $imagePath = $image->storeAs('course_images', $imageName, 'public');
+            $courseData['image_path'] = $imagePath;
         }
         
         $course->update($courseData);
         
-        return redirect()->route('mentor.courses')
-            ->with('success', 'Curso actualizado correctamente');
+        return redirect()->route('mentor.courses.index')
+            ->with('success', 'Curso actualizado correctamente.');
     }
 
     /**
@@ -205,15 +209,15 @@ class CourseController extends Controller
             ->findOrFail($id);
             
         // Eliminar imagen si existe
-        if ($course->image) {
-            Storage::disk('public')->delete($course->image);
+        if ($course->image_path) {
+            Storage::disk('public')->delete($course->image_path);
         }
         
         // Eliminar el curso y sus relaciones (módulos, tutoriales, contenidos)
         $course->delete();
         
-        return redirect()->route('mentor.courses')
-            ->with('success', 'Curso eliminado correctamente');
+        return redirect()->route('mentor.courses.index')
+            ->with('success', 'Curso eliminado correctamente.');
     }
     
     /**
@@ -273,12 +277,30 @@ class CourseController extends Controller
             ->take(5)
             ->get();
             
+        // Obtener estudiantes recientes (últimos 5 que accedieron al curso)
+        $recentStudents = $course->students()
+            ->withPivot(['progress', 'last_activity', 'completed_at'])
+            ->orderBy('course_user.updated_at', 'desc')
+            ->take(5)
+            ->get();
+            
+        // Obtener actividad reciente (ejemplo simplificado)
+        $recentActivities = collect(); // Aquí deberías cargar actividades reales de tu sistema
+        
+        // Contar el número total de lecciones para calcular el progreso
+        $totalLessons = $course->modules->sum(function($module) {
+            return $module->tutorials->count();
+        });
+            
         return view('mentor.courses.statistics', compact(
             'course', 
             'completionRate', 
             'averageProgress', 
             'popularModules', 
-            'popularTutorials'
+            'popularTutorials',
+            'recentStudents',
+            'recentActivities',
+            'totalLessons'
         ));
     }
     

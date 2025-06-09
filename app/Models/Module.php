@@ -61,6 +61,39 @@ class Module extends Model
     }
     
     /**
+     * Get all of the module's views.
+     */
+    public function views()
+    {
+        return $this->morphMany(View::class, 'viewable');
+    }
+    
+    /**
+     * Record a view for the module.
+     */
+    public function recordView($userId = null)
+    {
+        return View::recordView($this, $userId);
+    }
+    
+    /**
+     * Get the view count for the module.
+     */
+    public function getViewCountAttribute()
+    {
+        return $this->views()->count();
+    }
+    
+    /**
+     * Check if the module has been viewed by a specific user.
+     */
+    public function isViewedByUser($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+        return $this->views()->where('user_id', $userId)->exists();
+    }
+    
+    /**
      * Scope para ordenar los módulos por su orden.
      */
     public function scopeOrdered($query)

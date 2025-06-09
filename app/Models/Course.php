@@ -24,21 +24,21 @@ class Course extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'title',
-        'description',
-        'image',
-        'status',
-        'price',
-        'duration',
-        'level',
-        'category_id',
-        'instructor_id',
-        'is_featured',
-        'is_premium',
+        'name', // Renamed from 'title'
         'slug',
-        'meta_title',
-        'meta_description',
-        'meta_keywords'
+        'code', // New
+        'description',
+        'level',
+        'credits', // New
+        'hours_per_week', // New
+        'start_date', // New
+        'end_date', // New
+        'classroom', // New
+        'schedule', // New
+        'image_path', // Renamed from 'image'
+        'is_active', // New, effectively replaces 'status' or 'is_published' logic from controller
+        'creator_id', // Replaces 'instructor_id'
+        'speciality_id', // Added for speciality relationship
     ];
     
     /**
@@ -47,8 +47,9 @@ class Course extends Model
      * @var array
      */
     protected $casts = [
-        'is_featured' => 'boolean',
-        'is_premium' => 'boolean',
+        'is_active' => 'boolean',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -63,11 +64,28 @@ class Course extends Model
     }
     
     /**
-     * Obtener el instructor asociado al curso.
+     * Obtener la especialidad asociada al curso.
+     */
+    public function speciality()
+    {
+        return $this->belongsTo(Speciality::class);
+    }
+    
+    /**
+     * Obtener el creador (mentor) asociado al curso.
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_id');
+    }
+    
+    /**
+     * Alias para compatibilidad con código existente que usa instructor
+     * @deprecated Use creator() instead
      */
     public function instructor()
     {
-        return $this->belongsTo(User::class, 'instructor_id');
+        return $this->creator();
     }
     
     /**

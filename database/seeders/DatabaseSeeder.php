@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             // Usar nuestros seeders personalizados
             BasicRolesAndPermissionsSeeder::class,
             SettingsSeeder::class,
+            SpecialitySeeder::class, // Add Speciality seeder
             CourseSeeder::class,
             ModuleSeeder::class,
             EnrollmentSeeder::class,
