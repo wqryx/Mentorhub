@@ -13,7 +13,63 @@ use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentDashboardController as CustomStudentDashboardController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
+
+// Ruta para la política de privacidad
+Route::get('/privacidad', function () {
+    return view('privacy-policy');
+})->name('privacy.policy');
+
+// Ruta para los términos y condiciones
+Route::get('/terminos', function () {
+    return view('terms');
+})->name('terms');
+
+// Ruta para la política de cookies
+Route::get('/cookies', function () {
+    return view('cookies');
+})->name('cookies');
+
+// Ruta para la declaración de accesibilidad
+Route::get('/accesibilidad', function () {
+    return view('accessibility');
+})->name('accessibility');
+
+// Ruta para las Preguntas Frecuentes (FAQ)
+Route::get('/faq', function () {
+    return view('faq');
+})->name('faq');
+
+// Ruta para las Guías y Recursos
+Route::get('/guias', function () {
+    return view('guides');
+})->name('guides');
+
+// Ruta para los Tutoriales
+Route::get('/tutoriales', function () {
+    return view('tutorials');
+})->name('tutorials.index');
+
+// Ruta para la Comunidad
+Route::get('/comunidad', function () {
+    return view('community');
+})->name('community');
+
+// Ruta para Eventos
+Route::get('/eventos', function () {
+    return view('events');
+})->name('events');
+
+// Ruta para el Blog
+Route::get('/blog', function () {
+    return view('blog');
+})->name('blog');
+
+// Ruta para acceso de invitados
+Route::get('/guest', function () {
+    return view('guest');
+})->name('guest');
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +117,14 @@ Route::middleware(['auth'])->group(function () {
         
         // Rutas de usuarios
         Route::resource('users', AdminUserController::class);
+        
+        // Rutas de aprobación de mentores
+        Route::get('mentors/pending', [AdminUserController::class, 'pendingApprovals'])
+            ->name('mentors.pending');
+        Route::post('users/{user}/approve', [AdminUserController::class, 'approveMentor'])
+            ->name('users.approve');
+        Route::post('users/{user}/reject', [AdminUserController::class, 'rejectMentor'])
+            ->name('users.reject');
         
         // Rutas de cursos
         Route::resource('courses', AdminCourseController::class);
@@ -126,6 +190,9 @@ Route::middleware(['auth'])->group(function () {
     // Rutas de estudiante - Movidas a routes/student.php
     // Aquí solo mantenemos la redirección al dashboard de estudiante
 });
+
+// Rutas del formulario de contacto
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.submit');
 
 // Rutas de administración
 require __DIR__.'/admin.php';

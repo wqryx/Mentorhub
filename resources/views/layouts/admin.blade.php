@@ -64,6 +64,17 @@
                             <i class="fas fa-users"></i> <span>Usuarios</span>
                         </a>
                     </li>
+                    <li class="sidebar-item {{ request()->routeIs('admin.mentors.pending') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('admin.mentors.pending') }}">
+                            <i class="fas fa-user-clock"></i> <span>Solicitudes de Mentores</span>
+                            @php
+                                $pendingCount = \App\Models\User::role('mentor')->where('is_active', false)->count();
+                            @endphp
+                            @if($pendingCount > 0)
+                                <span class="badge bg-danger rounded-pill ms-2">{{ $pendingCount }}</span>
+                            @endif
+                        </a>
+                    </li>
                     <li class="sidebar-item {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
                         <a class="sidebar-link" href="{{ route('admin.roles.index') }}">
                             <i class="fas fa-user-tag"></i> <span>Roles y Permisos</span>

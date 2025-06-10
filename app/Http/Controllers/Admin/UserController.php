@@ -12,6 +12,9 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UsersExport;
+use App\Notifications\MentorApprovalRequest;
+use App\Notifications\MentorRejected;
+use Illuminate\Support\Facades\Notification;
 
 class UserController extends Controller
 {
@@ -201,13 +204,92 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->update(['is_active' => !$user->is_active]);
         
-        return response()->json([
-            'status' => 'success',
-            'is_active' => $user->is_active,
-            'message' => 'Estado actualizado correctamente'
-        ]);
+        $status = $user->is_active ? 'activada' : 'desactivada';
+        return redirect()->back()
+            ->with('success', "La cuenta ha sido {$status} correctamente");
     }
-
+    
+    /**
+     * Approve a mentor registration
+     */
+    public function approveMentor($id)
+    {
+        $user = User::findOrFail($id);
+        
+        // Verificar que el usuario sea un mentor pendiente
+        if (!$user->hasRole('mentor')) {
+            return redirect()->back()
+                ->with('error', 'Este usuario no es un mentor pendiente de aprobación');
+        }
+        
+        // Activar la cuenta del mentor
+        $user->update(['is_active' => true]);
+        
+        // Notificar al usuario que su cuenta ha sido aprobada
+        $user->notify(new \App\Notifications\AccountApproved('mentor'));
+        
+        // Marcar la notificación como leída para todos los administradores
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->unreadNotifications()
+                ->where('type', 'App\Notifications\MentorApprovalRequest')
+                ->where('data->user_id', $user->id)
+                ->update(['read_at' => now()]);
+        }
+        
+        return redirect()->route('admin.users.show', $user->id)
+            ->with('success', 'La solicitud de mentor ha sido aprobada correctamente');
+    }
+    
+    /**
+     * Reject a mentor registration
+     */
+    public function rejectMentor(Request $request, $id)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+        
+        $user = User::findOrFail($id);
+        
+        // Verificar que el usuario sea un mentor pendiente
+        if (!$user->hasRole('mentor')) {
+            return redirect()->back()
+                ->with('error', 'Este usuario no es un mentor pendiente de aprobación');
+        }
+        
+        // Enviar notificación de rechazo al usuario
+        $user->notify(new \App\Notifications\MentorRejected($request->rejection_reason));
+        
+        // Marcar la notificación como leída para todos los administradores
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->unreadNotifications()
+                ->where('type', 'App\Notifications\MentorApprovalRequest')
+                ->where('data->user_id', $user->id)
+                ->update(['read_at' => now()]);
+        }
+        
+        // Eliminar al usuario (o marcar como rechazado, según prefieras)
+        // $user->delete();
+        
+        return redirect()->route('admin.users.index')
+            ->with('success', 'La solicitud de mentor ha sido rechazada y el usuario ha sido notificado');
+    }
+    
+    /**
+     * Show pending mentor approvals
+     */
+    public function pendingApprovals()
+    {
+        $pendingMentors = User::role('mentor')
+            ->where('is_active', false)
+            ->latest()
+            ->paginate(15);
+            
+        return view('admin.users.pending-approvals', compact('pendingMentors'));
+    }
+    
     /**
      * Export users to CSV
      *
