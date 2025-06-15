@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\MentorController;
+use App\Http\Controllers\Mentor\MentorController;
 use App\Http\Controllers\Mentor\MentorshipSessionController;
 use App\Http\Controllers\Mentor\StudentInvitationController;
 use Illuminate\Support\Facades\Route;
@@ -43,10 +43,18 @@ Route::middleware(['auth', 'verified'])->prefix('mentor')->name('mentor.')->grou
         Route::get('/invite', [StudentInvitationController::class, 'create'])->name('create');
         Route::post('/invite', [StudentInvitationController::class, 'invite'])->name('store');
         Route::get('/{id}', [MentorController::class, 'showStudent'])->name('show');
+        
+        // Ruta para marcar estudiante como favorito en un curso
+        Route::post('{student}/favorite/{course}', [MentorController::class, 'favoriteStudent'])
+             ->name('favorite');
     });
     
     // Alias en español para compatibilidad
     Route::get('estudiantes', [MentorController::class, 'students'])->name('students');
+    
+    // Assign mentor to student
+    Route::post('students/{student}/assign', [MentorshipSessionController::class, 'assignMentor'])
+        ->name('students.assign');
     
     // Otras rutas del mentor
     Route::get('/calendar', [MentorController::class, 'calendar'])->name('calendar');

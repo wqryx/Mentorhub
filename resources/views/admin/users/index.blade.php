@@ -104,7 +104,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex flex-wrap gap-1">
-                                @foreach($user->roles as $role)
+                                @forelse($user->roles as $role)
                                     @php
                                         $roleColors = [
                                             'admin' => 'bg-purple-100 text-purple-800',
@@ -116,7 +116,11 @@
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $roleColor }}">
                                         {{ ucfirst($role->name) }}
                                     </span>
-                                @endforeach
+                                @empty
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                        Sin rol
+                                    </span>
+                                @endforelse
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">

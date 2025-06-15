@@ -2,41 +2,42 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Notification extends Model
 {
+    use \Illuminate\Notifications\Notifiable;
+    
     /**
-     * Los atributos que son asignables en masa.
+     * Indicates if the IDs are auto-incrementing.
      *
-     * @var array<int, string>
+     * @var bool
      */
-    protected $fillable = [
-        'user_id',
-        'title',
-        'message',
-        'read_at',
-        'type',
-        'data',
-    ];
+    public $incrementing = false;
 
     /**
-     * Los atributos que deben ser convertidos a tipos nativos.
+     * The "type" of the primary key ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+
+    /**
+     * The attributes that should be cast.
      *
      * @var array<string, string>
      */
     protected $casts = [
-        'read_at' => 'datetime',
         'data' => 'array',
+        'read_at' => 'datetime',
     ];
 
     /**
-     * Obtiene el usuario al que pertenece la notificación.
+     * Get the notifiable entity that the notification belongs to.
      */
-    public function user(): BelongsTo
+    public function notifiable()
     {
-        return $this->belongsTo(User::class);
+        return $this->morphTo();
     }
 }

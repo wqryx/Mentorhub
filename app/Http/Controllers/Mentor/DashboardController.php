@@ -7,6 +7,8 @@ use App\Models\Course;
 use App\Models\User;
 use App\Models\MentorshipSession;
 use App\Models\Message;
+use App\Models\Event;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -47,13 +49,39 @@ class DashboardController extends Controller
             ->where('read', false)
             ->count();
             
+        // Obtener eventos para el calendario
+        $upcomingEvents = Event::where(function($query) use ($mentor) {
+                $query->where('user_id', $mentor->id)
+                      ->orWhere('mentor_id', $mentor->id);
+            })
+            ->where('start_date', '>=', now())
+            ->orderBy('start_date', 'asc')
+            ->take(10)
+            ->get();
+            
+        // Formatear eventos para FullCalendar
+        $formattedEvents = [];
+        foreach ($upcomingEvents as $event) {
+            $formattedEvents[] = [
+                'id' => $event->id,
+                'title' => $event->title,
+                'start' => $event->start_date,
+                'end' => $event->end_date ?? $event->start_date->addHour(),
+                'url' => route('mentor.events.show', $event->id),
+                'backgroundColor' => $event->type === 'session' ? '#4F46E5' : '#10B981',
+                'borderColor' => $event->type === 'session' ? '#4338CA' : '#059669',
+            ];
+        }
+        
         return view('mentor.dashboard', compact(
             'upcomingSessions', 
             'pendingRequests', 
             'totalStudents', 
             'totalCourses', 
             'totalSessions',
-            'unreadMessages'
+            'unreadMessages',
+            'upcomingEvents',
+            'formattedEvents'
         ));
     }
     

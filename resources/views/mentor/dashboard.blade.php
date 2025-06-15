@@ -2,6 +2,57 @@
 
 @section('title', 'Dashboard de Mentor - MentorHub')
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+<style>
+    /* Estilos personalizados para el calendario */
+    #mentorCalendar .fc {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
+    #mentorCalendar .fc-header-toolbar {
+        margin-bottom: 1em;
+        padding: 0 1em;
+        padding-top: 1em;
+    }
+    #mentorCalendar .fc-toolbar-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #374151;
+    }
+    #mentorCalendar .fc-button {
+        background-color: #3b82f6;
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.15s ease-in-out;
+    }
+    #mentorCalendar .fc-button:hover {
+        background-color: #2563eb;
+    }
+    #mentorCalendar .fc-button:active {
+        background-color: #1d4ed8;
+    }
+    #mentorCalendar .fc-day-today {
+        background-color: #eff6ff !important;
+    }
+    #mentorCalendar .fc-event {
+        cursor: pointer;
+        padding: 2px 4px;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        border: none;
+    }
+    #mentorCalendar .fc-event:hover {
+        opacity: 0.9;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="container mx-auto">
     <!-- Page Heading -->
@@ -95,6 +146,20 @@
         </div>
     </div>
 
+    <!-- Calendario de Eventos -->
+    <div class="mt-8 bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-blue-600 flex items-center">
+                <i class="far fa-calendar-alt mr-2"></i>
+                Mi Calendario de Actividades
+            </h3>
+            <span class="text-sm text-gray-500">Haz clic en un evento para ver detalles</span>
+        </div>
+        <div class="p-6">
+            <div id="mentorCalendar" class="h-96"></div>
+        </div>
+    </div>
+
     <!-- Content Row -->
     <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Próximas Sesiones -->
@@ -180,56 +245,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Content Row - Calendario Mejorado -->
-    <div class="mt-8">
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-blue-600">Calendario de Sesiones</h3>
-                <span class="text-sm text-gray-500">Haz clic en un evento para ver detalles</span>
-            </div>
-            <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                    <div id="mentorCalendar" class="h-96 rounded-lg border border-blue-100 shadow-sm"></div>
-                </div>
-                <div>
-                    <h4 class="text-md font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-list-ul mr-2 text-blue-400"></i>Próximas Sesiones</h4>
-                    @if(isset($calendarEvents) && count($calendarEvents) > 0)
-                        <ul class="divide-y divide-gray-200">
-                            @foreach($calendarEvents as $event)
-                                <li class="py-3 flex items-center justify-between">
-                                    <div>
-                                        <div class="font-medium text-gray-800">
-                                            <i class="fas fa-user-graduate text-blue-400 mr-1"></i>
-                                            {{ $event['mentee'] ?? '-' }}
-                                            <span class="ml-2 text-xs text-gray-500">{{ $event['course'] ?? '' }}</span>
-                                        </div>
-                                        <div class="text-sm text-gray-500 mt-0.5">
-                                            <i class="far fa-calendar-alt mr-1"></i> {{ \Carbon\Carbon::parse($event['start'])->translatedFormat('D M Y, H:i') }}
-                                            <span class="ml-2"><i class="fas fa-clock mr-1"></i>{{ $event['duration'] ?? '—' }} min</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="px-2 py-0.5 rounded text-xs {{ $event['status'] === 'completed' ? 'bg-green-100 text-green-700' : ($event['status'] === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700') }}">
-                                            {{ ucfirst($event['status'] ?? '-') }}
-                                        </span>
-                                        @if(isset($event['url']))
-                                            <a href="{{ $event['url'] }}" class="text-blue-500 hover:text-blue-700 text-sm ml-2" title="Ver Detalles"><i class="fas fa-eye"></i></a>
-                                        @endif
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <div class="text-gray-400 text-center py-8">
-                            <i class="fas fa-calendar-times fa-2x mb-2"></i>
-                            <div class="text-sm">No hay sesiones programadas</div>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <!-- Modal para Rechazar Solicitud -->
@@ -237,17 +252,16 @@
 @endsection
 
 @push('styles')
-<!-- FullCalendar CSS -->
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css">
 <link rel="stylesheet" href="{{ asset('css/mentor-dashboard.css') }}">
 @endpush
 
 @push('scripts')
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
 <!-- FullCalendar JS -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales-all.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -262,8 +276,8 @@ document.addEventListener('DOMContentLoaded', function() {
             form.action = `/mentor/sessions/${requestId}/respond`;
         });
     }
-
-    // Inicializar el calendario
+    
+    // Inicializar FullCalendar si existe el elemento
     const calendarEl = document.getElementById('mentorCalendar');
     if (calendarEl) {
         const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -274,37 +288,53 @@ document.addEventListener('DOMContentLoaded', function() {
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
-            events: @json($calendarEvents ?? []),
+            buttonText: {
+                today: 'Hoy',
+                month: 'Mes',
+                week: 'Semana',
+                day: 'Día',
+                list: 'Lista'
+            },
+            events: @json($formattedEvents ?? []),
             eventClick: function(info) {
-                // Mostrar modal con detalles de la sesión
-                const event = info.event.extendedProps;
-                let details = `<div class='text-left'>` +
-                    `<div class='font-bold mb-1 text-blue-700'><i class='fas fa-user-graduate mr-1'></i>Alumno: ${event.mentee ?? '-'} </div>` +
-                    `<div class='mb-1'><i class='fas fa-book mr-1'></i>Curso: ${event.course ?? '-'} </div>` +
-                    `<div class='mb-1'><i class='fas fa-clock mr-1'></i>Duración: ${event.duration ?? '-'} min</div>` +
-                    `<div class='mb-1'><i class='fas fa-info-circle mr-1'></i>Estado: ${event.status ?? '-'}</div>` +
-                    (info.event.url ? `<a href='${info.event.url}' class='text-blue-600 underline' target='_blank'>Ver detalles</a>` : '') +
-                    `</div>`;
-                if (window.Swal) {
-                    Swal.fire({
-                        title: info.event.title,
-                        html: details,
-                        icon: 'info',
-                        confirmButtonText: 'Cerrar',
-                        customClass: {popup: 'rounded-lg'}
-                    });
-                } else {
-                    alert(info.event.title + "\n" + (event.mentee ? 'Alumno: ' + event.mentee : ''));
+                // Abrir el enlace del evento al hacer clic
+                if (info.event.url) {
+                    info.jsEvent.preventDefault();
+                    window.open(info.event.url, '_self');
                 }
-                return false;
+            },
+            height: 'auto',
+            navLinks: true,
+            nowIndicator: true,
+            editable: false,
+            selectable: false,
+            selectMirror: true,
+            dayMaxEvents: true,
+            firstDay: 1, // Lunes como primer día de la semana
+            businessHours: {
+                // Horario laboral de lunes a viernes de 9:00 a 20:00
+                daysOfWeek: [1, 2, 3, 4, 5],
+                startTime: '09:00',
+                endTime: '20:00',
             },
             eventTimeFormat: {
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: false
+            },
+            views: {
+                timeGrid: {
+                    dayMaxEventRows: 6 // Ajustar según sea necesario
+                }
             }
         });
+        
         calendar.render();
+        
+        // Ajustar el tamaño del calendario cuando cambia el tamaño de la ventana
+        window.addEventListener('resize', function() {
+            calendar.updateSize();
+        });
     }
 });
 </script>

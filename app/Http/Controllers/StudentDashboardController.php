@@ -42,8 +42,8 @@ class StudentDashboardController extends Controller
             ->take(4)
             ->get();
         
-        // Obtener próximos eventos
-        $upcomingEvents = Event::where('user_id', $user->id)
+        // Obtener próximos eventos a través de la relación event_user
+        $upcomingEvents = $user->events()
             ->where('start_date', '>=', Carbon::now())
             ->orderBy('start_date')
             ->take(3)
@@ -63,10 +63,10 @@ class StudentDashboardController extends Controller
             'coursesInProgress' => Enrollment::where('user_id', $user->id)->where('status', 'in_progress')->count(),
             'averageProgress' => Enrollment::where('user_id', $user->id)->avg('progress') ?? 0,
             'pendingTasks' => Task::where('user_id', $user->id)->where('status', 'pending')->count(),
-            'todayEvents' => Event::where('user_id', $user->id)
+            'todayEvents' => $user->events()
                 ->whereDate('start_date', Carbon::today())
                 ->count(),
-            'pendingEvents' => Event::where('user_id', $user->id)
+            'pendingEvents' => $user->events()
                 ->where('start_date', '>=', Carbon::now())
                 ->count(),
         ];
@@ -198,7 +198,10 @@ class StudentDashboardController extends Controller
     {
         $user = Auth::user();
         
-        $events = Event::where('user_id', $user->id)
+        // Get events where user is attending or events that are public
+        $events = Event::whereHas('attendees', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
             ->orWhere('is_public', true)
             ->get();
         

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Mentor;
 
 use App\Http\Controllers\Controller;
-use App\Models\MentorshipSession;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -434,6 +433,60 @@ class MentorshipSessionController extends Controller
      * @param  string  $id
      * @return \Illuminate\Http\JsonResponse
      */
+    /**
+     * Assign a mentor to a student
+     *
+     * @param  int  $studentId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function assignMentor($studentId)
+    {
+        try {
+            $mentor = Auth::user();
+            $student = User::findOrFail($studentId);
+            
+            // Check if mentor is already assigned
+            $existingSession = \App\Models\MentorshipSession::where('mentor_id', $mentor->id) // Use fully qualified namespace
+                ->where('student_id', $student->id)
+                ->first();
+                
+            if ($existingSession) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ya eres mentor de este estudiante.'
+                ]);
+            }
+            
+            // Create a new mentorship session
+$session = \App\Models\MentorshipSession::create([ // Use fully qualified namespace
+                'mentor_id' => $mentor->id,
+                'student_id' => $student->id,
+                'title' => 'Sesión de mentoría con ' . $mentor->name,
+                'description' => 'Sesión de mentoría inicial',
+                'start_time' => now()->addDay(),
+                'duration_minutes' => 60,
+                'status' => 'scheduled',
+                'type' => 'one_time',
+                'format' => 'video_call',
+            ]);
+            
+            // You can add notifications here if needed
+            // $student->notify(new AssignedToMentor($mentor, $session));
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Has sido asignado como mentor exitosamente.',
+                'session' => $session
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al asignar mentor: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
     public function start($id)
     {
         $session = MentorshipSession::where('mentor_id', Auth::id())

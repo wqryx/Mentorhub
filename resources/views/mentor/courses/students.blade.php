@@ -47,7 +47,9 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
-                                            <img class="h-10 w-10 rounded-full" src="{{ $student->profile_image ? asset('storage/' . $student->profile_image) : asset('images/default-avatar.png') }}" alt="{{ $student->name }}">
+                                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold">
+                                                {{ strtoupper(substr($student->name, 0, 1)) }}
+                                            </div>
                                         </div>
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900">{{ $student->name }}</div>
@@ -113,7 +115,7 @@
                                                         </button>
                                                     </form>
                                                 @else
-                                                    <form action="{{ route('mentor.courses.students.favorite', [$course->id, $student->id]) }}" method="POST" class="inline w-full">
+                                                    <form action="{{ route('mentor.students.favorite', ['student' => $student->id, 'course' => $course->id]) }}" method="POST" class="inline w-full">
                                                         @csrf
                                                         <button type="submit" class="w-full text-left text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem" tabindex="-1">
                                                             <i class="far fa-star mr-2 text-yellow-500"></i> Marcar como destacado

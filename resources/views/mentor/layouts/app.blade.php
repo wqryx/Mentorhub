@@ -34,10 +34,6 @@
                         <i class="fas fa-chalkboard-teacher mr-3"></i>
                         Mentorías
                     </a>
-                    <a href="{{ route('mentor.sessions.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-blue-700 rounded-md mb-1 transition-colors duration-200">
-                        <i class="fas fa-calendar-check mr-3"></i>
-                        Sesiones
-                    </a>
                     <a href="{{ route('mentor.students') }}" class="flex items-center px-4 py-2 text-white hover:bg-blue-700 rounded-md mb-1 transition-colors duration-200">
                         <i class="fas fa-user-graduate mr-3"></i>
                         Estudiantes
@@ -64,11 +60,8 @@
                             <a href="{{ route('mentor.dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('mentor.dashboard') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
                                 <i class="fas fa-tachometer-alt mr-1"></i> Tablero
                             </a>
-                            <a href="{{ route('mentor.mentorias.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('mentor.mentorias.*') && !request()->routeIs('mentor.sessions.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                            <a href="{{ route('mentor.mentorias.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('mentor.mentorias.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
                                 <i class="fas fa-chalkboard-teacher mr-1"></i> Mentorías
-                            </a>
-                            <a href="{{ route('mentor.sessions.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('mentor.sessions.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                                <i class="fas fa-calendar-check mr-1"></i> Sesiones
                             </a>
                             <a href="{{ route('mentor.students') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('mentor.students*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100' }}">
                                 <i class="fas fa-user-graduate mr-1"></i> Estudiantes

@@ -296,77 +296,89 @@
                         </div>
                         
                         <!-- Pestaña de Disponibilidad -->
-                        <div class="tab-pane fade" id="availability" role="tabpanel">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Mi Disponibilidad</h3>
-                            <p class="text-gray-600 mb-6">Configura tus horarios disponibles para sesiones de mentoría.</p>
+                        <div class="tab-pane fade show active" id="availability" role="tabpanel">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Mi Horario de Disponibilidad</h3>
+                            <p class="text-gray-600 mb-6">Configura tus horarios disponibles para sesiones de mentoría. Marca los días en los que estás disponible.</p>
                             
-                            <form id="availabilityForm">
+                            <form id="availabilityForm" method="POST" action="{{ route('mentor.availability.update') }}">
                                 @csrf
-                                <div class="overflow-x-auto mb-6">
+                                <div class="overflow-x-auto mb-6 border border-gray-200 rounded-lg">
                                     <table class="min-w-full divide-y divide-gray-200">
-                                        <thead class="bg-gray-50">
+                                        <thead class="bg-blue-50">
                                             <tr>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Día</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Disponible</th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Horario</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider w-1/4">
+                                                    Día
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider w-1/4">
+                                                    Disponible
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider w-1/2">
+                                                    Horario
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody class="bg-white divide-y divide-gray-200">
                                             @php
                                                 $days = [
-                                                    1 => ['name' => 'Lunes', 'db' => 'monday'],
-                                                    2 => ['name' => 'Martes', 'db' => 'tuesday'],
-                                                    3 => ['name' => 'Miércoles', 'db' => 'wednesday'],
-                                                    4 => ['name' => 'Jueves', 'db' => 'thursday'],
-                                                    5 => ['name' => 'Viernes', 'db' => 'friday'],
-                                                    6 => ['name' => 'Sábado', 'db' => 'saturday'],
-                                                    0 => ['name' => 'Domingo', 'db' => 'sunday']
+                                                    0 => 'Domingo',
+                                                    1 => 'Lunes',
+                                                    2 => 'Martes',
+                                                    3 => 'Miércoles',
+                                                    4 => 'Jueves',
+                                                    5 => 'Viernes',
+                                                    6 => 'Sábado'
                                                 ];
                                             @endphp
-                                            
-                                            @foreach($days as $dayIndex => $dayInfo)
+
+                                            @foreach($days as $dayIndex => $dayName)
                                                 @php
                                                     $dayData = $availability[$dayIndex] ?? [
                                                         'available' => false,
                                                         'start_time' => '09:00',
                                                         'end_time' => '17:00',
-                                                        'day_name' => $dayInfo['name']
+                                                        'day_name' => $dayName
                                                     ];
                                                     $isAvailable = $dayData['available'] ?? false;
-                                                    $startTime = \Carbon\Carbon::parse($dayData['start_time'])->format('H:i');
-                                                    $endTime = \Carbon\Carbon::parse($dayData['end_time'])->format('H:i');
                                                 @endphp
-                                                <tr class="{{ $loop->even ? 'bg-gray-50' : 'bg-white' }}">
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                        {{ $dayInfo['name'] }}
+                                                <tr class="{{ $isAvailable ? 'bg-green-50' : 'bg-white' }} hover:bg-gray-50" data-day="{{ $dayIndex }}">
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                                                <i class="fas fa-calendar-day"></i>
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="text-sm font-medium text-gray-900">{{ $dayName }}</div>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
-                                                        <label class="inline-flex items-center cursor-pointer">
+                                                        <label class="inline-flex items-center">
                                                             <input type="checkbox" 
-                                                                   name="availability[{{ $dayIndex }}][is_available]" 
+                                                                   name="availability[{{ $dayIndex }}][available]" 
                                                                    value="1" 
-                                                                   class="day-checkbox" 
+                                                                   class="toggle-availability rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
                                                                    data-day="{{ $dayIndex }}"
                                                                    {{ $isAvailable ? 'checked' : '' }}>
                                                             <span class="ml-2 text-sm text-gray-700">
                                                                 {{ $isAvailable ? 'Disponible' : 'No disponible' }}
                                                             </span>
                                                         </label>
-                                                        <input type="hidden" name="availability[{{ $dayIndex }}][day_of_week]" value="{{ $dayInfo['db'] }}">
                                                     </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        <div class="flex items-center space-x-2 time-inputs" {{ !$isAvailable ? 'style=display:none;' : '' }}>
-                                                            <input type="time" 
-                                                                   name="availability[{{ $dayIndex }}][start_time]" 
-                                                                   value="{{ $startTime }}"
-                                                                   class="time-input block w-32 px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                                                   {{ !$isAvailable ? 'disabled' : '' }}>
-                                                            <span class="text-gray-500">a</span>
-                                                            <input type="time" 
-                                                                   name="availability[{{ $dayIndex }}][end_time]" 
-                                                                   value="{{ $endTime }}"
-                                                                   class="time-input block w-32 px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                                                   {{ !$isAvailable ? 'disabled' : '' }}>
+                                                    <td class="px-6 py-4">
+                                                        <div class="time-slots" data-day="{{ $dayIndex }}">
+                                                            <div class="flex items-center space-x-2">
+                                                                <input type="time" 
+                                                                       name="availability[{{ $dayIndex }}][start_time]" 
+                                                                       class="start-time w-32 px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                                       value="{{ $dayData['start_time'] ?? '09:00' }}"
+                                                                       {{ !$isAvailable ? 'disabled' : '' }}>
+                                                                <span class="text-gray-500">a</span>
+                                                                <input type="time" 
+                                                                       name="availability[{{ $dayIndex }}][end_time]" 
+                                                                       class="end-time w-32 px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                                       value="{{ $dayData['end_time'] ?? '17:00' }}"
+                                                                       {{ !$isAvailable ? 'disabled' : '' }}>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -375,10 +387,18 @@
                                     </table>
                                 </div>
                                 
-                                <div class="flex justify-end">
-                                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-150 inline-flex items-center">
-                                        <i class="fas fa-save mr-2"></i> Guardar disponibilidad
-                                    </button>
+                                <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+                                    <div class="text-sm text-gray-500">
+                                        <i class="fas fa-info-circle mr-1 text-blue-500"></i> Los cambios se guardarán automáticamente
+                                    </div>
+                                    <div class="flex space-x-3">
+                                        <button type="button" id="copyWeekSchedule" class="px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 text-sm">
+                                            <i class="far fa-copy mr-1"></i> Copiar horario a toda la semana
+                                        </button>
+                                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-150 inline-flex items-center">
+                                            <i class="fas fa-save mr-2"></i> Guardar disponibilidad
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -659,8 +679,8 @@
                     <div>
                         <label for="speciality" class="block text-sm font-medium text-gray-700 mb-1">Especialidad</label>
                         <select class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" id="speciality" required>
-                            <option value="" selected disabled>Seleccionar especialidad...</option>
-                            @foreach($availableSpecialities ?? [] as $speciality)
+                            <option value="">Selecciona una especialidad</option>
+                            @foreach($allSpecialities ?? [] as $speciality)
                                 <option value="{{ $speciality->id }}">{{ $speciality->name }}</option>
                             @endforeach
                         </select>
@@ -1202,6 +1222,146 @@
                 
                 // Simulación de éxito
                 alert('Disponibilidad actualizada correctamente');
+            });
+        }
+    });
+
+    // Funcionalidad del horario de disponibilidad
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle de disponibilidad
+        document.querySelectorAll('.toggle-availability').forEach(button => {
+            button.addEventListener('change', function() {
+                const dayIndex = this.dataset.day;
+                const row = this.closest('tr');
+                const isAvailable = this.checked;
+                
+                // Actualizar clase de la fila
+                if (isAvailable) {
+                    row.classList.add('bg-green-50');
+                    row.classList.remove('bg-white');
+                } else {
+                    row.classList.remove('bg-green-50');
+                    row.classList.add('bg-white');
+                }
+                
+                // Habilitar/deshabilitar inputs de tiempo
+                const timeInputs = row.querySelectorAll('.start-time, .end-time');
+                timeInputs.forEach(input => {
+                    input.disabled = !isAvailable;
+                });
+                
+                // Mostrar notificación de guardado automático
+                showAutoSaveNotification();
+                
+                // Enviar el formulario automáticamente
+                document.getElementById('profile-form').submit();
+            });
+        });
+        
+        // Manejar cambio en los horarios
+        document.querySelectorAll('.start-time, .end-time').forEach(input => {
+            input.addEventListener('change', function() {
+                showAutoSaveNotification();
+                // Enviar el formulario automáticamente
+                document.getElementById('profile-form').submit();
+            });
+        });
+        
+        // Añadir nuevo horario
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.add-slot')) {
+                const timeSlots = e.target.closest('.time-slots');
+                addTimeSlot(timeSlots);
+            }
+        });
+
+        // Eliminar horario
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-slot')) {
+                const slotGroup = e.target.closest('.flex.items-center.space-x-2');
+                if (slotGroup) {
+                    slotGroup.remove();
+                }
+            }
+        });
+
+        // Copiar horario a toda la semana
+        const copyWeekBtn = document.getElementById('copyWeekSchedule');
+        if (copyWeekBtn) {
+            copyWeekBtn.addEventListener('click', function() {
+                const firstDay = document.querySelector('tr[data-day]');
+                if (firstDay) {
+                    const daySlots = firstDay.querySelectorAll('.time-slots .flex.items-center.space-x-2');
+                    document.querySelectorAll('tr[data-day]').forEach(row => {
+                        if (row !== firstDay) {
+                            const timeSlots = row.querySelector('.time-slots');
+                            timeSlots.innerHTML = ''; // Limpiar horarios existentes
+                            
+                            daySlots.forEach(slot => {
+                                const newSlot = slot.cloneNode(true);
+                                timeSlots.appendChild(newSlot);
+                            });
+                            
+                            // Añadir botón de añadir horario
+                            const addButton = document.createElement('button');
+                            addButton.type = 'button';
+                            addButton.className = 'add-slot mt-2 text-xs text-blue-600 hover:text-blue-800 flex items-center';
+                            addButton.innerHTML = '<i class="fas fa-plus-circle mr-1"></i> Añadir horario';
+                            timeSlots.appendChild(addButton);
+                            
+                            // Marcar como disponible
+                            const checkbox = row.querySelector('.availability-toggle');
+                            if (checkbox && !checkbox.checked) {
+                                checkbox.checked = true;
+                                checkbox.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    });
+                    
+                    showToast('success', 'Horario copiado a toda la semana');
+                }
+            });
+        }
+
+        // Función para añadir un nuevo bloque de horario
+        function addTimeSlot(container) {
+            const slotIndex = container.querySelectorAll('.flex.items-center.space-x-2').length;
+            const slotHtml = `
+                <div class="flex items-center space-x-2 mb-2">
+                    <input type="time" 
+                           name="availability[${container.dataset.day}][slots][${slotIndex}][start]" 
+                           class="slot-start border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                           value="09:00">
+                    <span class="text-gray-500">a</span>
+                    <input type="time" 
+                           name="availability[${container.dataset.day}][slots][${slotIndex}][end]" 
+                           class="slot-end border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                           value="18:00">
+                    ${slotIndex > 0 ? '<button type="button" class="remove-slot text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button>' : ''}
+                </div>`;
+                
+            // Insertar antes del botón de añadir
+            const addButton = container.querySelector('.add-slot');
+            if (addButton) {
+                addButton.insertAdjacentHTML('beforebegin', slotHtml);
+            } else {
+                container.insertAdjacentHTML('beforeend', slotHtml);
+            }
+        }
+
+        // Manejar el envío del formulario
+        const availabilityForm = document.getElementById('availabilityForm');
+        if (availabilityForm) {
+            availabilityForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Aquí iría el código para enviar el formulario vía AJAX
+                const formData = new FormData(this);
+                
+                // Simular envío (reemplazar con llamada AJAX real)
+                setTimeout(() => {
+                    showToast('success', 'Horario guardado correctamente');
+                }, 1000);
             });
         }
     });

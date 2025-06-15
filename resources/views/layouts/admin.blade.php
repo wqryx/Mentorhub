@@ -8,7 +8,17 @@
     <title>@yield('title') - MentorHub Admin</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <!-- For modern browsers -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <!-- For iOS devices -->
+    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+    <!-- Theme Color for Chrome, Firefox OS and others -->
+    <meta name="theme-color" content="#3f51b5">
+    <!-- Windows 8 and IE 10+ -->
+    <meta name="msapplication-TileColor" content="#3f51b5">
+    <meta name="msapplication-TileImage" content="{{ asset('favicon.ico') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -374,7 +384,7 @@
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
-    <script src="{{ asset('js/admin.js') }}"></script>
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <script src="{{ asset('js/datatables-custom.js') }}"></script>
     @stack('scripts')
 </body>

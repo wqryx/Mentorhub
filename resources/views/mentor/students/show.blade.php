@@ -170,7 +170,13 @@
                                     <span class="text-{{ $statusConfig['color'] }}-500" style="font-size: 1.25rem;"><i class="fas {{ $statusConfig['icon'] }}"></i></span>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm font-medium text-gray-900 truncate">{{ $session->title }}</p>
-                                        <p class="text-xs text-gray-500 truncate">{{ $session->scheduled_at->isoFormat('D MMM, YYYY - hh:mm A') }}</p>
+                                        <p class="text-xs text-gray-500 truncate">
+                                            @if($session->scheduled_at)
+                                                {{ $session->scheduled_at->isoFormat('D MMM, YYYY - hh:mm A') }}
+                                            @else
+                                                Sin fecha programada
+                                            @endif
+                                        </p>
                                     </div>
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $statusConfig['color'] }}-100 text-{{ $statusConfig['color'] }}-800">
                                         {{ $statusConfig['text'] }}

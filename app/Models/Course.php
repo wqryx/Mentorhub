@@ -147,10 +147,18 @@ class Course extends Model
     }
     
     /**
+     * Obtener los recursos adicionales del curso.
+     */
+    public function resources()
+    {
+        return $this->hasMany(Resource::class);
+    }
+    
+    /**
      * Scope para filtrar cursos publicados.
      */
     public function scopePublished($query)
     {
-        return $query->where('status', 'published');
+        return $query->where('is_active', true);
     }
 }

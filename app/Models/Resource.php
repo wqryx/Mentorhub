@@ -16,18 +16,17 @@ class Resource extends Model
      * @var array
      */
     protected $fillable = [
+        'course_id',
         'title',
         'description',
-        'type',
         'url',
+        'type',
         'file_path',
-        'creator_id',
-        'course_id',
-        'is_public',
-        'is_premium',
-        'tags',
-        'views_count',
-        'downloads_count',
+        'file_name',
+        'file_size',
+        'file_type',
+        'is_active',
+        'order',
     ];
 
     /**
@@ -36,28 +35,34 @@ class Resource extends Model
      * @var array
      */
     protected $casts = [
-        'is_public' => 'boolean',
-        'is_premium' => 'boolean',
-        'tags' => 'array',
+        'is_active' => 'boolean',
+        'order' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
 
     /**
-     * Obtiene el creador del recurso.
-     */
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'creator_id');
-    }
-
-    /**
-     * Obtiene el curso asociado con el recurso.
+     * Obtiene el curso al que pertenece el recurso.
      */
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+    
+    /**
+     * Obtiene el creador del recurso a través del curso.
+     */
+    public function creator()
+    {
+        return $this->hasOneThrough(
+            User::class,
+            Course::class,
+            'id', // Foreign key on courses table
+            'id', // Foreign key on users table
+            'course_id', // Local key on resources table
+            'creator_id' // Local key on courses table
+        );
     }
 
     /**

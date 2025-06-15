@@ -26,9 +26,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with('roles')
-            ->withCount('roles')
-            ->latest();
+        // Cargar usuarios con sus roles
+        $query = User::with(['roles' => function($q) {
+            $q->select('name');
+        }])->latest();
 
         // Búsqueda por nombre o email
         if ($request->has('search') && !empty($request->search)) {
@@ -52,7 +53,9 @@ class UserController extends Controller
         }
 
         $users = $query->paginate(15);
-        $roles = Role::all();
+        
+        // Obtener todos los roles disponibles
+        $roles = Role::orderBy('name')->get(['id', 'name']);
         
         return view('admin.users.index', compact('users', 'roles'));
     }

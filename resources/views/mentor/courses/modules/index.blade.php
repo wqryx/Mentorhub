@@ -15,7 +15,7 @@
                class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                 <i class="fas fa-arrow-left mr-2"></i> Volver al Curso
             </a>
-            <a href="{{ route('mentor.courses.modules.create', $course->id) }}" 
+            <a href="{{ route('mentor.courses.modules.create', $course) }}" 
                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
                 <i class="fas fa-plus mr-2"></i> Nuevo Módulo
             </a>
@@ -87,15 +87,15 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end space-x-2">
-                                        <a href="{{ route('mentor.courses.modules.show', ['course' => $course->id, 'module' => $module->id]) }}" 
+                                        <a href="{{ route('mentor.courses.modules.show', ['course' => $course, 'module' => $module]) }}" 
                                            class="text-blue-600 hover:text-blue-900" title="Ver">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('mentor.courses.modules.edit', ['course' => $course->id, 'module' => $module->id]) }}" 
+                                        <a href="{{ route('mentor.courses.modules.edit', ['course' => $course, 'module' => $module]) }}" 
                                            class="text-yellow-600 hover:text-yellow-900 ml-3" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('mentor.courses.modules.destroy', ['course' => $course->id, 'module' => $module->id]) }}" 
+                                        <form action="{{ route('mentor.courses.modules.destroy', ['course' => $course, 'module' => $module]) }}" 
                                               method="POST" class="inline" 
                                               onsubmit="return confirm('¿Estás seguro de eliminar este módulo? Esta acción no se puede deshacer.');">
                                             @csrf

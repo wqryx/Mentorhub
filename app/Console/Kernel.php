@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\UpdateUserRoles::class,
         \App\Console\Commands\PruneActivityLogs::class,
         \App\Console\Commands\SetupActivityLogs::class,
+        \App\Console\Commands\CleanOrphanedEnrollments::class,
     ];
 
     /**

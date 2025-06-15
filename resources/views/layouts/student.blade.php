@@ -7,6 +7,19 @@
 
     <title>{{ config('app.name', 'MentorHub') }} - Dashboard de Estudiante</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <!-- For modern browsers -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <!-- For iOS devices -->
+    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+    <!-- Theme Color for Chrome, Firefox OS and others -->
+    <meta name="theme-color" content="#3f51b5">
+    <!-- Windows 8 and IE 10+ -->
+    <meta name="msapplication-TileColor" content="#3f51b5">
+    <meta name="msapplication-TileImage" content="{{ asset('favicon.ico') }}">
+
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap">
     
@@ -19,6 +32,9 @@
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     @stack('styles')
 
+    <!-- Favicon -->
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+        
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
@@ -27,7 +43,7 @@
         <!-- Sidebar -->
         <nav id="sidebar" class="sidebar">
             <div class="sidebar-header">
-                <a href="{{ route('student.index') }}">
+                <a href="{{ route('student.dashboard') }}">
                     <img src="{{ asset('images/logo.png') }}" alt="MentorHub" class="sidebar-logo">
                 </a>
                 <button type="button" id="sidebarCollapse" class="btn d-md-none">
@@ -53,8 +69,8 @@
             </div>
 
             <ul class="list-unstyled sidebar-menu">
-                <li class="{{ request()->routeIs('student.index') || request()->routeIs('student.dashboard') ? 'active' : '' }}">
-                    <a href="{{ route('student.index') }}">
+                <li class="{{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('student.dashboard') }}">
                         <i class="fas fa-home"></i> Inicio
                     </a>
                 </li>
@@ -82,7 +98,7 @@
                     </a>
                 </li>
                 <li class="{{ request()->routeIs('student.courses.*.progress*') ? 'active' : '' }}">
-                    <a href="{{ route('student.courses.index') }}">
+                    <a href="{{ route('student.courses') }}">
                         <i class="fas fa-chart-line"></i> Progreso
                     </a>
                 </li>

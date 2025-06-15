@@ -52,7 +52,7 @@
     <!-- Formulario -->
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
         <div class="px-4 py-5 sm:p-6">
-            <form action="{{ route('mentor.courses.modules.store', $course->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('mentor.courses.modules.store', $course) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="space-y-6">
                     <div class="grid grid-cols-1 gap-6">

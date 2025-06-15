@@ -25,7 +25,7 @@ class ModuleController extends Controller
             abort(403, 'No tienes permiso para gestionar los módulos de este curso.');
         }
 
-        $modules = $course->modules()->orderBy('order', 'asc')->get(); // Assuming an 'order' column for modules
+        $modules = $course->modules()->orderBy('order', 'asc')->paginate(10); // Paginación con 10 elementos por página
 
         return view('mentor.courses.modules.index', compact('course', 'modules'));
     }
@@ -112,9 +112,10 @@ class ModuleController extends Controller
         if ($course->creator_id !== Auth::id() || $module->course_id !== $course->id) {
             abort(403, 'No tienes permiso para ver este módulo.');
         }
-        // TODO: Return view for showing a module
-        // return view('mentor.courses.modules.show', compact('course', 'module'));
-        return response('Show module ' . $module->id . ' for course ' . $course->id . ' (Mentor) - Not Implemented Yet', 501);
+        // Cargar el módulo con sus relaciones necesarias
+        $module->load('tutorials');
+        
+        return view('mentor.courses.modules.show', compact('course', 'module'));
     }
 
     /**

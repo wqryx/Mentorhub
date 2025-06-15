@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Mentor;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\MentorshipSession;
@@ -160,9 +161,6 @@ class MentorController extends Controller
         }
     }
     
-    /**
-     * Actualiza el perfil del mentor
-     */
     /**
      * Update mentor availability
      *
@@ -390,6 +388,32 @@ class MentorController extends Controller
             ->paginate(10);
             
         return view('mentor.students.show', compact('student', 'sessions'));
+    }
+    
+    /**
+     * Marcar/desmarcar un estudiante como favorito en un curso
+     */
+    public function favoriteStudent(Request $request, $courseId, $studentId)
+    {
+        $mentor = auth()->user();
+        
+        // Verificar que el mentor sea el propietario del curso
+        $course = $mentor->courses()->findOrFail($courseId);
+        
+        // Verificar que el estudiante esté inscrito en el curso
+        if (!$course->students()->where('user_id', $studentId)->exists()) {
+            return back()->with('error', 'El estudiante no está inscrito en este curso.');
+        }
+        
+        // Alternar el estado de favorito
+        $currentStatus = $course->students()->where('user_id', $studentId)->first()->pivot->is_favorite ?? false;
+        $course->students()->updateExistingPivot($studentId, ['is_favorite' => !$currentStatus]);
+        
+        $message = $currentStatus 
+            ? 'Estudiante eliminado de favoritos correctamente.' 
+            : '¡Estudiante marcado como favorito correctamente!';
+            
+        return back()->with('success', $message);
     }
     
     /**

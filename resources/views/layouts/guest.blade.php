@@ -7,8 +7,7 @@
 
         <title>{{ config('app.name', 'MentorHub') }}</title>
 
-        <!-- Favicon -->
-        <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
+
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

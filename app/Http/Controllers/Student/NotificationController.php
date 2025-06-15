@@ -29,10 +29,13 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
         
-        $notifications = Notification::where('user_id', $user->id)
-            ->orWhere('is_global', true)
+        // Get user's notifications using the polymorphic relationship
+        $notifications = $user->notifications()
             ->orderBy('created_at', 'desc')
             ->paginate(15);
+            
+        // Mark all unread notifications as read
+        $user->unreadNotifications->markAsRead();
         
         return view('student.notifications.index', compact('notifications'));
     }
@@ -43,20 +46,16 @@ class NotificationController extends Controller
      * @param int $notification
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function show($notification)
+    public function show($notificationId)
     {
         $user = Auth::user();
         
-        $notification = Notification::where(function($query) use ($user) {
-                $query->where('user_id', $user->id)
-                    ->orWhere('is_global', true);
-            })
-            ->findOrFail($notification);
+        // Find the notification for the authenticated user
+        $notification = $user->notifications()->findOrFail($notificationId);
         
-        // Marcar como leída si no lo está
-        if (!$notification->read_at) {
-            $notification->read_at = now();
-            $notification->save();
+        // Mark the notification as read if it's unread
+        if ($notification->unread()) {
+            $notification->markAsRead();
         }
         
         return view('student.notifications.show', compact('notification'));
@@ -71,12 +70,8 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
         
-        Notification::where(function($query) use ($user) {
-                $query->where('user_id', $user->id)
-                    ->orWhere('is_global', true);
-            })
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+        // Mark all unread notifications as read
+        $user->unreadNotifications->markAsRead();
         
         return redirect()->back()->with('success', 'Todas las notificaciones han sido marcadas como leídas.');
     }

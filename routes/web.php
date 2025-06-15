@@ -16,6 +16,16 @@ use App\Http\Controllers\TestController;
 use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
+// Ruta para el favicon
+Route::get('/favicon.ico', function () {
+    return response()->file(public_path('favicon.ico'));
+})->name('favicon');
+
+// Ruta principal
+Route::get('/', function () {
+    return view('welcome');
+})->name('home')->middleware(['guest']);
+
 // Ruta para la política de privacidad
 Route::get('/privacidad', function () {
     return view('privacy-policy');
@@ -80,7 +90,12 @@ Route::get('/guest', function () {
 // Página principal
 Route::get('/', function () {
     return view('welcome');
-})->name('home');
+})->name('home')->middleware(['guest']);
+
+// Evitar bucle de redirección
+Route::get('/dashboard', function () {
+    return redirect()->route('home');
+})->name('dashboard');
 
 // Test route for checking database structure
 Route::get('/test/mentor-sessions', [TestController::class, 'checkTable'])->name('test.mentor-sessions');
@@ -192,6 +207,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Rutas del formulario de contacto
+Route::get('/contacto', function () {
+    return view('contact');
+})->name('contact');
+
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.submit');
 
 // Rutas de administración

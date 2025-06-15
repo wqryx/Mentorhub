@@ -15,6 +15,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Event;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -77,6 +78,11 @@ class User extends Authenticatable
      *
      * @return string
      */
+    /**
+     * Get the URL to the user's profile photo.
+     *
+     * @return string
+     */
     public function getProfilePhotoUrlAttribute()
     {
         if ($this->profile_photo_path) {
@@ -89,6 +95,16 @@ class User extends Authenticatable
         })->join(' '));
         
         return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=7F9CF5&background=EBF4FF';
+    }
+    
+    /**
+     * Alias for getProfilePhotoUrlAttribute()
+     * 
+     * @return string
+     */
+    public function getAvatarUrl()
+    {
+        return $this->profile_photo_url;
     }
 
     /**
@@ -198,6 +214,32 @@ class User extends Authenticatable
     {
         return $this->hasMany(MentorshipSession::class, 'student_id');
     }
+    
+    /**
+     * Alias para menteeSessions para mantener compatibilidad.
+     */
+    public function studentSessions()
+    {
+        return $this->menteeSessions();
+    }
+    
+    /**
+     * Obtiene los cursos creados por el usuario (si es mentor).
+     */
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'creator_id');
+    }
+    
+    /**
+     * Obtiene los cursos en los que el usuario está inscrito (si es estudiante).
+     */
+    public function enrolledCourses()
+    {
+        return $this->belongsToMany(Course::class, 'enrollments', 'user_id', 'course_id')
+            ->withTimestamps()
+            ->withPivot(['enrolled_at', 'completed_at']);
+    }
 
     /**
      * Obtiene las solicitudes de mentoría pendientes para el mentor.
@@ -220,6 +262,14 @@ class User extends Authenticatable
             'id',
             'student_id'
         )->distinct();
+    }
+
+    /**
+     * Alias for menteeStudents() for backward compatibility.
+     */
+    public function mentorStudents()
+    {
+        return $this->menteeStudents();
     }
 
     /**
@@ -321,6 +371,16 @@ class User extends Authenticatable
     public function conversations()
     {
         return $this->belongsToMany(Conversation::class, 'conversation_user', 'user_id', 'conversation_id')
+            ->withTimestamps();
+    }
+    
+    /**
+     * Get the events that the user is attending.
+     */
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_user', 'user_id', 'event_id')
+            ->withPivot('status', 'attended')
             ->withTimestamps();
     }
 }

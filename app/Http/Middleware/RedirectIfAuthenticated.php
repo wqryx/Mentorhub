@@ -19,6 +19,11 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next, ...$guards)
     {
+        // Si es la ruta raíz, permitir acceso sin redirección
+        if ($request->is('/')) {
+            return $next($request);
+        }
+
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {

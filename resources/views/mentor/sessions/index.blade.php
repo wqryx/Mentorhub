@@ -83,42 +83,62 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($upcomingSessions as $session)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4">
                                         <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <img class="h-10 w-10 rounded-full" src="{{ $session->mentee->profile_photo_url }}" alt="{{ $session->mentee->name }}">
+                                            <div class="flex-shrink-0 h-12 w-12">
+                                                <img class="h-12 w-12 rounded-full" src="{{ $session->mentee->profile_photo_url }}" alt="{{ $session->mentee->name }}">
                                             </div>
                                             <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">{{ $session->mentee->name }}</div>
+                                                <div class="text-sm font-semibold text-gray-900">{{ $session->mentee->name }}</div>
                                                 <div class="text-sm text-gray-500">{{ $session->mentee->email }}</div>
+                                                @if($session->course)
+                                                    <div class="mt-2">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                                            <i class="fas fa-book mr-1"></i> {{ $session->course->name }}
+                                                        </span>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($session->start_time)->format('d M Y, H:i') }}</div>
-                                        <div class="text-sm text-gray-500">Finaliza: {{ \Carbon\Carbon::parse($session->end_time)->format('H:i') }}</div>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-md bg-blue-50 text-blue-600">
+                                                <i class="far fa-calendar-alt text-xl"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ \Carbon\Carbon::parse($session->start_time)->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
+                                                </div>
+                                                <div class="text-sm text-gray-500">
+                                                    <i class="far fa-clock mr-1"></i> {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($session->end_time)->format('H:i') }}
+                                                    <span class="mx-2">•</span>
+                                                    {{ $session->duration }} minutos
+                                                </div>
+                                                @if($session->description)
+                                                    <div class="mt-1 text-sm text-gray-600 line-clamp-2">
+                                                        {{ $session->description }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $session->duration }} minutos
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ $session->course->title ?? 'N/A' }}</div>
-                                        <div class="text-sm text-gray-500">{{ $session->meeting_platform }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($session->status === 'scheduled')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Programada
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col items-start space-y-2">
+                                            <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                {{ $session->status === 'scheduled' ? 'bg-green-100 text-green-800' : 
+                                                   ($session->status === 'completed' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                                {{ ucfirst($session->status) }}
                                             </span>
-                                        @elseif($session->status === 'in_progress')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                En curso
-                                            </span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                {{ ucfirst(str_replace('_', ' ', $session->status)) }}
-                                            </span>
-                                        @endif
+                                            @if($session->status === 'scheduled' && $session->start_time <= now()->addMinutes(15) && $session->start_time >= now())
+                                                <a href="{{ route('mentor.sessions.show', $session) }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                    <i class="fas fa-play-circle mr-1.5"></i> Iniciar Sesión
+                                                </a>
+                                            @endif
+                                            <a href="{{ route('mentor.sessions.show', $session) }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                                                Ver detalles <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex space-x-2">
@@ -258,105 +278,7 @@
 
             <!-- Pestaña de Historial -->
             <div x-show="activeTab === 'past'" x-transition>
-                @if($pastSessions->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Estudiante
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Fecha y Hora
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Duración
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Curso
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Estado
-                                    </th>
-                                    <th scope="col" class="relative px-6 py-3">
-                                        <span class="sr-only">Acciones</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($pastSessions as $session)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <img class="h-10 w-10 rounded-full" src="{{ $session->mentee->profile_photo_url }}" alt="{{ $session->mentee->name }}">
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">{{ $session->mentee->name }}</div>
-                                                <div class="text-sm text-gray-500">{{ $session->mentee->email }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($session->start_time)->format('d M Y, H:i') }}</div>
-                                        <div class="text-sm text-gray-500">Finalizó: {{ \Carbon\Carbon::parse($session->end_time)->format('H:i') }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $session->duration }} minutos
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ $session->course->title ?? 'N/A' }}</div>
-                                        <div class="text-sm text-gray-500">{{ $session->meeting_platform }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($session->status === 'completed')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Completada
-                                            </span>
-                                        @elseif($session->status === 'cancelled')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                Cancelada
-                                            </span>
-                                        @elseif($session->status === 'no_show')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                No asistió
-                                            </span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                {{ ucfirst(str_replace('_', ' ', $session->status)) }}
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex space-x-2 justify-end">
-                                            <a href="{{ route('mentor.sessions.show', $session->id) }}" class="text-blue-600 hover:text-blue-900">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            @if(!$session->reviewed_by_mentor)
-                                                <button @click="openModal('reviewSessionModal', { id: {{ $session->id }} })" class="text-yellow-600 hover:text-yellow-900">
-                                                    <i class="fas fa-star"></i>
-                                                </button>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="px-6 py-4 border-t border-gray-200">
-                        {{ $pastSessions->links() }}
-                    </div>
-                @else
-                    <div class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">No hay historial de sesiones</h3>
-                        <p class="mt-1 text-sm text-gray-500">Aún no has tenido sesiones de mentoría.</p>
-                    </div>
-                @endif
+                @include('mentor.sessions._past_sessions')
             </div>
         </div>
     </div>

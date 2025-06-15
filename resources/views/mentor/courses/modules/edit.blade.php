@@ -27,11 +27,11 @@
             </li>
             <li class="flex items-center">
                 <span class="mx-2 text-gray-400">/</span>
-                <a href="{{ route('mentor.courses.show', $course->id) }}" class="text-gray-500 hover:text-blue-600">{{ $course->title }}</a>
+                <a href="{{ route('mentor.courses.show', $course) }}" class="text-gray-500 hover:text-blue-600">{{ $course->title }}</a>
             </li>
             <li class="flex items-center">
                 <span class="mx-2 text-gray-400">/</span>
-                <a href="{{ route('mentor.courses.modules.index', $course->id) }}" class="text-gray-500 hover:text-blue-600">Módulos</a>
+                <a href="{{ route('mentor.courses.modules.index', $course) }}" class="text-gray-500 hover:text-blue-600">Módulos</a>
             </li>
             <li class="flex items-center">
                 <span class="mx-2 text-gray-400">/</span>
@@ -42,13 +42,13 @@
 
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl font-bold text-gray-800">Editar Módulo: <span class="text-blue-600">{{ $module->title }}</span></h1>
-        <a href="{{ route('mentor.courses.modules.index', $course->id) }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        <a href="{{ route('mentor.courses.modules.index', $course) }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
             <i class="fas fa-arrow-left mr-2"></i>Volver a Módulos
         </a>
     </div>
 
     <div class="p-6 bg-white rounded-lg shadow-md">
-        <form action="{{ route('mentor.courses.modules.update', ['course' => $course->id, 'module' => $module->id]) }}" method="POST">
+        <form action="{{ route('mentor.courses.modules.update', ['course' => $course, 'module' => $module]) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -78,7 +78,7 @@
                     <label for="slug" class="block text-sm font-medium text-gray-700">URL Amigable (Slug)</label>
                     <div class="flex mt-1 rounded-md shadow-sm">
                         <span class="inline-flex items-center px-3 text-gray-500 bg-gray-100 border border-r-0 border-gray-300 slug-prefix rounded-l-md sm:text-sm">
-                            {{ route('mentor.courses.show', $course->id, false) }}/modules/
+{{ route('mentor.courses.show', $course, false) }}/modules/
                         </span>
                         <input type="text" name="slug" id="slug" value="{{ old('slug', $module->slug) }}" placeholder="se-auto-generara-del-titulo"
                                class="flex-1 block w-full min-w-0 border-gray-300 rounded-none focus:ring-blue-500 focus:border-blue-500 rounded-r-md sm:text-sm @error('slug') border-red-500 @enderror">

@@ -17,8 +17,46 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Course::with('user')->latest()->paginate(10);
-        return view('courses.index', compact('courses'));
+        // Enable query logging
+        \DB::enableQueryLog();
+        
+        $user = auth()->user();
+        
+        // Get enrolled course IDs
+        $enrolledCourseIds = $user->enrollments()->pluck('course_id');
+        
+        // Get all enrollments with course, instructor, and category (paginated)
+        $enrollments = $user->enrollments()
+            ->with(['course' => function($query) {
+                $query->with(['instructor', 'category']);
+            }])
+            ->latest()
+            ->paginate(10);
+            
+        // Get in-progress courses (non-paginated for the top section)
+        $inProgressCourses = $user->enrollments()
+            ->with(['course' => function($query) {
+                $query->with(['instructor', 'category']);
+            }])
+            ->whereHas('course', function($query) {
+                $query->where('is_active', true);
+            })
+            ->latest()
+            ->get()
+            ->pluck('course');
+        
+        // Get available courses (not enrolled)
+        $availableCourses = Course::withoutGlobalScopes()
+            ->where('is_active', true)
+            ->whereNotIn('id', $enrolledCourseIds)
+            ->with(['instructor', 'category'])
+            ->latest()
+            ->paginate(12);
+            
+        // Log the queries for debugging
+        \Log::info('Queries executed:', \DB::getQueryLog());
+        
+        return view('student.courses.index', compact('enrollments', 'inProgressCourses', 'availableCourses'));
     }
 
     /**
@@ -61,6 +99,15 @@ class CourseController extends Controller
     public function show(Course $course)
     {
         $course->load(['modules.tutorials.contents']);
+        
+        // Check if user is authenticated and enrolled in the course
+        if (auth()->check() && auth()->user()->enrollments()->where('course_id', $course->id)->exists()) {
+            // If enrolled, use the student view
+            $enrollment = auth()->user()->enrollments()->where('course_id', $course->id)->first();
+            return view('student.courses.show', compact('course', 'enrollment'));
+        }
+        
+        // Otherwise, use the public view
         return view('courses.show', compact('course'));
     }
 

@@ -65,7 +65,15 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $course->duration }}
+                                @if($course->start_date && $course->end_date)
+                                    {{ $course->hours_per_week ? $course->hours_per_week . 'h/semana' : 'No especificado' }}
+                                    <div class="text-xs text-gray-400">
+                                        {{ \Carbon\Carbon::parse($course->start_date)->format('d/m/Y') }} - 
+                                        {{ \Carbon\Carbon::parse($course->end_date)->format('d/m/Y') }}
+                                    </div>
+                                @else
+                                    Sin fechas definidas
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 ${{ number_format($course->price, 2) }}
@@ -73,18 +81,17 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @php
                                     $statusColors = [
-                                        'draft' => 'bg-gray-100 text-gray-800',
-                                        'published' => 'bg-green-100 text-green-800',
-                                        'archived' => 'bg-red-100 text-red-800',
+                                        1 => 'bg-green-100 text-green-800',
+                                        0 => 'bg-gray-100 text-gray-800',
                                     ];
                                     $statusLabels = [
-                                        'draft' => 'Borrador',
-                                        'published' => 'Publicado',
-                                        'archived' => 'Archivado',
+                                        1 => 'Activo',
+                                        0 => 'Inactivo',
                                     ];
+                                    $status = $course->is_active ? 1 : 0;
                                 @endphp
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColors[$course->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                    {{ $statusLabels[$course->status] ?? ucfirst($course->status) }}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColors[$status] ?? 'bg-gray-100 text-gray-800' }}">
+                                    {{ $statusLabels[$status] ?? 'Desconocido' }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

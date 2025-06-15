@@ -58,11 +58,11 @@
         <div class="mt-4 flex md:mt-0 md:ml-4">
             <a href="{{ route('mentor.courses.modules.index', $course->id) }}" 
                class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                <i class="fas fa-layer-group mr-2"></i> Gestionar Módulos
+                <i class="fas fa-layer-group mr-2"></i> Gestionar Cursos
             </a>
             <a href="{{ route('mentor.courses.edit', $course->id) }}" 
                class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
-                <i class="fas fa-edit mr-2"></i> Editar Módulos
+                <i class="fas fa-edit mr-2"></i> Editar Cursos
             </a>
         </div>
     </div>

@@ -456,16 +456,17 @@
                     <div class="col-span-12 md:col-span-3 space-y-6">
                         <!-- Tarjeta de Gráfico Circular con estilo moderno -->
                         <div class="card p-5">
-                            <h3 class="text-base font-medium mb-3">Rendimiento Global</h3>
+                            <h3 class="text-base font-medium mb-3">Métricas de la Plataforma</h3>
                             
                             <div class="flex flex-col items-center">
                                 @php
-                                    // Obtener métricas reales (ejemplo con datos estáticos por ahora)
-                                    $performancePercentage = 79; // Porcentaje de rendimiento general
-                                    $activityIncrease = 12; // % de aumento en actividad
-                                    $retentionIncrease = 8; // % de aumento en retención
+                                    // Datos de ejemplo (deberían venir del controlador)
+                                    $resourceUsage = 68; // % de uso de recursos (videos, documentos, quizzes)
+                                    $forumActivity = 82; // % de actividad en foros
+                                    $conversionRate = 45; // % de conversión a estudiantes de pago
                                     
-                                    // Calcular el offset para el círculo de progreso (339.5 es la circunferencia aproximada)
+                                    // Calcular el rendimiento general como promedio de las métricas
+                                    $performancePercentage = round(($resourceUsage + $forumActivity + $conversionRate) / 3);
                                     $circumference = 339.5;
                                     $offset = $circumference - ($performancePercentage / 100 * $circumference);
                                 @endphp
@@ -476,7 +477,7 @@
                                         <!-- Círculo de fondo -->
                                         <circle class="text-gray-200" cx="60" cy="60" r="54" fill="none" stroke="currentColor" stroke-width="12"></circle>
                                         <!-- Círculo de progreso -->
-                                        <circle class="text-blue-600 transform -rotate-90 origin-center" 
+                                        <circle class="text-indigo-600 transform -rotate-90 origin-center" 
                                                 cx="60" cy="60" r="54" 
                                                 fill="none" 
                                                 stroke="currentColor" 
@@ -492,23 +493,44 @@
                                 
                                 <div class="text-center mb-4">
                                     <h4 class="font-medium text-gray-800">Rendimiento General</h4>
-                                    <p class="text-sm text-gray-500">Mejora con respecto al mes anterior</p>
+                                    <p class="text-sm text-gray-500">Estado actual de la plataforma</p>
                                 </div>
                                 
-                                <div class="w-full grid grid-cols-2 gap-4">
-                                    <div class="bg-blue-50 p-3 rounded-lg text-center shadow-sm hover:shadow-md transition-shadow duration-200">
-                                        <p class="text-sm font-medium text-gray-600">Actividad</p>
-                                        <p class="text-lg font-bold text-blue-600">+{{ $activityIncrease }}%</p>
-                                        <div class="h-1 w-full bg-blue-100 mt-2 rounded-full overflow-hidden">
-                                            <div class="h-full bg-blue-500" style="width: {{ min($activityIncrease, 100) }}%"></div>
+                                <div class="w-full space-y-3">
+                                    <!-- Uso de Recursos -->
+                                    <div class="bg-indigo-50 p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <p class="text-sm font-medium text-gray-600">Uso de Recursos</p>
+                                            <p class="text-sm font-bold text-indigo-600">{{ $resourceUsage }}%</p>
                                         </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-indigo-600 h-2 rounded-full" style="width: {{ $resourceUsage }}%"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Videos, documentos y quizzes</p>
                                     </div>
-                                    <div class="bg-green-50 p-3 rounded-lg text-center shadow-sm hover:shadow-md transition-shadow duration-200">
-                                        <p class="text-sm font-medium text-gray-600">Retención</p>
-                                        <p class="text-lg font-bold text-green-600">+{{ $retentionIncrease }}%</p>
-                                        <div class="h-1 w-full bg-green-100 mt-2 rounded-full overflow-hidden">
-                                            <div class="h-full bg-green-500" style="width: {{ min($retentionIncrease, 100) }}%"></div>
+                                    
+                                    <!-- Actividad en Foros -->
+                                    <div class="bg-blue-50 p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <p class="text-sm font-medium text-gray-600">Actividad en Foros</p>
+                                            <p class="text-sm font-bold text-blue-600">{{ $forumActivity }}%</p>
                                         </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-500 h-2 rounded-full" style="width: {{ $forumActivity }}%"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Preguntas y respuestas</p>
+                                    </div>
+                                    
+                                    <!-- Tasa de Conversión -->
+                                    <div class="bg-green-50 p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <p class="text-sm font-medium text-gray-600">Tasa de Conversión</p>
+                                            <p class="text-sm font-bold text-green-600">{{ $conversionRate }}%</p>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: {{ $conversionRate }}%"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Usuarios a estudiantes de pago</p>
                                     </div>
                                 </div>
                             </div>

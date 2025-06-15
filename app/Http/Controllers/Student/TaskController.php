@@ -94,6 +94,31 @@ class TaskController extends Controller
     }
     
     /**
+     * Mostrar el formulario para crear una nueva tarea
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create()
+    {
+        $user = Auth::user();
+        
+        // Obtener cursos del estudiante para el select
+        $courses = Course::whereHas('students', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->pluck('title', 'id');
+            
+        // Prioridades para el select
+        $priorities = [
+            'Alta' => 'Alta',
+            'Media' => 'Media',
+            'Baja' => 'Baja'
+        ];
+        
+        return view('student.tasks.create', compact('courses', 'priorities'));
+    }
+    
+    /**
      * Almacenar una nueva tarea
      *
      * @param  \Illuminate\Http\Request  $request

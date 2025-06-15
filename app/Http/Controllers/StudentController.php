@@ -42,8 +42,8 @@ class StudentController extends Controller
             ->take(4)
             ->get();
         
-        // Obtener próximos eventos
-        $upcomingEvents = Event::where('user_id', $user->id)
+        // Obtener próximos eventos a través de la relación event_user
+        $upcomingEvents = $user->events()
             ->where('start_date', '>=', Carbon::now())
             ->orderBy('start_date')
             ->take(3)
@@ -63,7 +63,7 @@ class StudentController extends Controller
             'coursesInProgress' => Enrollment::where('user_id', $user->id)->where('status', 'in_progress')->count(),
             'averageProgress' => Enrollment::where('user_id', $user->id)->avg('progress') ?? 0,
             'pendingTasks' => Task::where('user_id', $user->id)->where('status', 'pending')->count(),
-            'todayEvents' => Event::where('user_id', $user->id)
+            'todayEvents' => $user->events()
                 ->whereDate('start_date', Carbon::today())
                 ->count(),
         ];
@@ -84,8 +84,16 @@ class StudentController extends Controller
             ->with('course')
             ->latest()
             ->paginate(12);
+            
+        // Get in-progress courses for the sidebar
+        $inProgressCourses = Enrollment::where('user_id', $user->id)
+            ->where('status', 'in_progress')
+            ->with('course')
+            ->latest()
+            ->take(5)
+            ->get();
         
-        return view('student.courses.index', compact('enrollments'));
+        return view('student.courses.index', compact('enrollments', 'inProgressCourses'));
     }
 
     /**

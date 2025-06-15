@@ -34,6 +34,13 @@ Route::middleware('guest')->group(function () {
         ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
+        
+    // Inicio de sesión para administradores
+    Route::get('admin/login', [AuthenticatedSessionController::class, 'create'])
+        ->name('admin.login');
+
+    Route::post('admin/login', [AuthenticatedSessionController::class, 'store'])
+        ->name('admin.login.submit');
 
     // Recuperación de contraseña
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])

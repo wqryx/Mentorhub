@@ -148,7 +148,7 @@ class StudentController extends Controller
             ->where('course_id', $course->id)
             ->first();
         
-        return view('courses.show', compact('course', 'enrollment'));
+        return view('student.courses.show', compact('course', 'enrollment'));
     }
     
     /**

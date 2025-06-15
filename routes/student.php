@@ -16,6 +16,7 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     
     // Rutas para cursos
     Route::get('/courses', [DashboardController::class, 'courses'])->name('courses');
+    Route::get('/courses/available', [DashboardController::class, 'availableCourses'])->name('courses.available');
     Route::get('/courses/{id}', [DashboardController::class, 'showCourse'])->name('courses.show');
     Route::get('/courses/{course}/progress', [DashboardController::class, 'courseProgress'])->name('course.progress');
     
@@ -29,9 +30,26 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     // Rutas de perfil
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.update-avatar');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+    Route::post('/profile/preferences', [ProfileController::class, 'updatePreferences'])->name('profile.update-preferences');
+    
+    // Configuración de privacidad
+    Route::patch('/settings/privacy', [ProfileController::class, 'updatePrivacySettings'])
+        ->name('settings.update-privacy');
+        
+    // Configuración de apariencia
+    Route::patch('/settings/appearance', [ProfileController::class, 'updateAppearanceSettings'])
+        ->name('settings.update-appearance');
+        
+    // Configuración de aprendizaje
+    Route::patch('/settings/learning', [ProfileController::class, 'updateLearningSettings'])
+        ->name('settings.update-learning');
     
     // Rutas de notificaciones
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+    Route::patch('/settings/notifications', [ProfileController::class, 'updateNotificationPreferences'])
+        ->name('settings.update-notifications');
     Route::get('/notifications/{notification}', [NotificationController::class, 'show'])->name('notifications.show');
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     
@@ -47,6 +65,7 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     
     // Rutas de tareas
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks');
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
     Route::put('/tasks/{id}', [TaskController::class, 'update'])->name('tasks.update');
     Route::post('/tasks/{id}/toggle-status', [TaskController::class, 'toggleStatus'])->name('tasks.toggle-status');
@@ -56,9 +75,9 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     // Rutas de calificaciones
     Route::get('/grades', [DashboardController::class, 'grades'])->name('grades');
     
+    // Ruta para la sección de mentores
+    Route::get('/mentor', [DashboardController::class, 'mentor'])->name('mentor');
+    
     // Rutas para configuración
     Route::get('/settings', [DashboardController::class, 'settings'])->name('settings');
-    
-    // Rutas para mentor
-    Route::get('/mentor', [DashboardController::class, 'mentor'])->name('mentor');
 });

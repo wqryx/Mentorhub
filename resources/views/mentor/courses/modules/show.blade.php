@@ -22,7 +22,7 @@
                             <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                             </svg>
-                            <a href="{{ route('mentor.courses.show', $course->id) }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            <a href="{{ route('mentor.courses.show', $course) }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">
                                 {{ $course->name }}
                             </a>
                         </div>
@@ -32,7 +32,7 @@
                             <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                             </svg>
-                            <a href="{{ route('mentor.courses.modules.index', $course->id) }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            <a href="{{ route('mentor.courses.modules.index', $course) }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">
                                 Módulos
                             </a>
                         </div>
@@ -50,11 +50,10 @@
             <h1 class="mt-2 text-2xl font-bold text-gray-900">{{ $module->title }}</h1>
         </div>
         <div class="flex space-x-3">
-            <a href="{{ route('mentor.courses.modules.edit', ['course' => $course->id, 'module' => $module->id]) }}" 
-               class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <a href="{{ route('mentor.courses.modules.edit', ['course' => $course, 'module' => $module]) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 <i class="fas fa-edit mr-2"></i> Editar
             </a>
-            <a href="{{ route('mentor.courses.modules.index', $course->id) }}" 
+            <a href="{{ route('mentor.courses.modules.index', $course) }}" 
                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
                 <i class="fas fa-arrow-left mr-2"></i> Volver a Módulos
             </a>

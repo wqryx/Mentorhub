@@ -118,6 +118,20 @@ class SessionController extends BaseMentorshipSessionController
     public function edit($id)
     {
         $session = \App\Models\MentorshipSession::findOrFail($id);
-        return view($this->getViewName('edit'), compact('session'));
+        
+        // Get mentees for the current mentor
+        $mentees = \App\Models\User::whereHas('roles', function($q) {
+                $q->where('name', 'student');
+            })
+            ->whereHas('mentorSessions', function($q) {
+                $q->where('mentor_id', auth()->id());
+            })
+            ->pluck('name', 'id');
+            
+        // Get courses for the current mentor
+        $courses = \App\Models\Course::where('creator_id', auth()->id())
+            ->pluck('name', 'id');
+            
+        return view($this->getViewName('edit'), compact('session', 'mentees', 'courses'));
     }
 }
