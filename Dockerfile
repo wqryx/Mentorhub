@@ -41,7 +41,7 @@ RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-zi
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
 
