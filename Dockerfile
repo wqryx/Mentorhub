@@ -1,6 +1,8 @@
 FROM php:8.3-fpm-alpine
 
-RUN apk add --no-cache nginx \
+# Instalar dependencias del sistema, incluyendo Nginx, y extensiones de PHP necesarias
+# Añadimos 'apk update' para asegurarnos de que la lista de paquetes esté actualizada
+RUN apk update && apk add --no-cache nginx \
     php83-pdo_mysql \
     php83-mysqli \
     php83-tokenizer \
@@ -26,7 +28,7 @@ RUN apk add --no-cache nginx \
     php83-gettext \
     php83-sodium \
     php83-redis \
-    php83-pdo_pgsql 
+    php83-pdo_pgsql
 
 COPY --from=composer/composer:latest-bin /composer /usr/bin/composer
 
