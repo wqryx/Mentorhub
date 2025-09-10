@@ -1,39 +1,40 @@
 FROM php:8.3-fpm-alpine
 
 RUN apk add --no-cache nginx \
-    php8-pdo_mysql \
-    php8-mysqli \
-    php8-tokenizer \
-    php8-xml \
-    php8-mbstring \
-    php8-ctype \
-    php8-session \
-    php8-dom \
-    php8-json \
-    php8-zip \
-    php8-gd \
-    php8-fileinfo \
-    php8-opcache \
-    php8-openssl \
-    php8-exif \
-    php8-iconv \
-    php8-curl \
-    php8-bcmath \
-    php8-gmp \
-    php8-intl \
-    php8-pcntl \
-    php8-posix \
-    php8-gettext \
-    php8-xdebug \
-    php8-sodium \
-    php8-redis \
-    php8-pdo_pgsql # Para PostgreSQL, si lo usas
+    php83-pdo_mysql \
+    php83-mysqli \
+    php83-tokenizer \
+    php83-xml \
+    php83-mbstring \
+    php83-ctype \
+    php83-session \
+    php83-dom \
+    php83-json \
+    php83-zip \
+    php83-gd \
+    php83-fileinfo \
+    php83-opcache \
+    php83-openssl \
+    php83-exif \
+    php83-iconv \
+    php83-curl \
+    php83-bcmath \
+    php83-gmp \
+    php83-intl \
+    php83-pcntl \
+    php83-posix \
+    php83-gettext \
+    php83-sodium \
+    php83-redis \
+    php83-pdo_pgsql 
 
 COPY --from=composer/composer:latest-bin /composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
 COPY . .
+
+RUN composer install --no-dev --optimize-autoloader
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
